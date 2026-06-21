@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CookSim — Kitchen Simulator</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand">🍳 <span>CookSim</span></div>
+    <div class="hud">
+      <div class="stat"><label>Score</label><div id="score">0</div></div>
+      <div class="stat"><label>Served</label><div id="delivered">0</div></div>
+      <div class="stat"><label>Tick</label><div id="tick">0</div></div>
+      <div class="stat layout"><label>Kitchen</label><div id="layoutTitle">—</div></div>
+    </div>
+    <div class="links">
+      <button id="menuBtn" class="btn ghost">☰ Levels</button>
+      <a href="/editor" class="btn ghost">🧱 Level editor</a>
+      <span id="status" class="bad">connecting…</span>
+    </div>
+  </header>
+
+  <main>
+    <aside class="panel left">
+      <h3>Orders</h3>
+      <div id="orders" class="orders"></div>
+      <h3>Recipe book</h3>
+      <div id="recipeBook" class="recipes"></div>
+    </aside>
+
+    <section id="stageWrap" class="stage-wrap">
+      <canvas id="stage"></canvas>
+    </section>
+
+    <aside class="panel right">
+      <h3>Kitchen</h3>
+      <label class="field">Layout
+        <select id="layoutSel"></select>
+      </label>
+      <div class="row">
+        <label class="field small">Cooks
+          <select id="nplayers"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+        </label>
+        <label class="field small">Seed
+          <input id="seed" type="number" value="0" />
+        </label>
+      </div>
+      <button id="resetBtn" class="btn primary">↻ New game</button>
+      <div class="row">
+        <select id="genStyle"><option value="ring">ring</option><option value="divided">divided</option></select>
+        <button id="genBtn" class="btn">🎲 Random kitchen</button>
+      </div>
+
+      <h3>Speed</h3>
+      <label class="field">Ticks/sec: <span id="speedVal">7</span>
+        <input id="speed" type="range" min="0" max="20" step="1" value="7" />
+      </label>
+
+      <h3>Cooks &amp; bots</h3>
+      <div id="seats" class="seats"></div>
+      <button id="addAllBots" class="btn ghost">🤖 Fill all seats with bots</button>
+
+      <h3>Controls</h3>
+      <div class="help">
+        <p><b>Cook 1</b>: Arrow keys to move · <b>Space</b> to use/interact</p>
+        <p><b>Cook 2</b>: <b>W A S D</b> to move · <b>F</b> to interact</p>
+        <p>Hold <b>interact</b> on a cutting board to chop, on a sink to wash. Pots cook automatically when full; scoop with a clean plate, then deliver at the <b>PASS</b>.</p>
+      </div>
+    </aside>
+  </main>
+  <!-- Level select / results overlay -->
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div id="menuView">
+        <h1>🍳 CookSim</h1>
+        <p class="subtitle">Pick a kitchen. Fill orders before the timer runs out — earn ⭐⭐⭐.</p>
+        <div class="row center">
+          <label class="field small">Cooks <select id="menuPlayers"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+          <label class="checkfield"><input type="checkbox" id="menuBots" checked /> Add AI co-op bots</label>
+          <label class="checkfield"><input type="checkbox" id="menuSandbox" /> Sandbox (no timer)</label>
+        </div>
+        <div id="levelGrid" class="level-grid"></div>
+        <div class="row center">
+          <button id="menuRandom" class="btn">🎲 Random kitchen</button>
+          <a href="/editor" class="btn ghost">🧱 Build your own</a>
+        </div>
+      </div>
+      <div id="resultView" class="hidden">
+        <h1 id="resultTitle">Service complete!</h1>
+        <div id="stars" class="stars">★★★</div>
+        <div class="result-stats">
+          <div><label>Score</label><b id="rScore">0</b></div>
+          <div><label>Served</label><b id="rServed">0</b></div>
+          <div><label>Best</label><b id="rBest">0</b></div>
+        </div>
+        <div class="row center">
+          <button id="rAgain" class="btn primary">↻ Play again</button>
+          <button id="rMenu" class="btn">☰ Level select</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/static/js/render3d.js"></script>
+  <script type="module" src="/static/js/game.js"></script>
+</body>
+</html>

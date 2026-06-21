@@ -1,0 +1,15 @@
+name: cooksim
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - numpy
+      - gymnasium>=0.29
+      - pettingzoo>=1.24
+      - fastapi>=0.110
+      - uvicorn[standard]>=0.27
+      - websockets>=12
+      - pydantic>=2
+      - -e .

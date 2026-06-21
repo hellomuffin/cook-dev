@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CookSim — Level Editor</title>
+<link rel="stylesheet" href="/static/css/editor.css" />
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <h1>🍳 CookSim <span class="muted">Level Editor</span></h1>
+    <div class="name-wrap">
+      <label class="muted" for="layoutName">Name</label>
+      <input type="text" id="layoutName" value="untitled" />
+    </div>
+    <div class="spacer"></div>
+    <button id="btnValidate">Validate</button>
+    <button class="play" id="btnPlay">▶ Play this layout</button>
+  </header>
+
+  <aside class="sidebar">
+    <h2>Built-in layouts</h2>
+    <div class="field">
+      <select id="layoutSelect"><option value="">— choose —</option></select>
+      <button id="btnReloadLayouts" class="ghost" title="Refresh list">⟳</button>
+    </div>
+
+    <h2>Tools</h2>
+    <div class="toolrow" id="toolRow"></div>
+
+    <h2>Basics</h2>
+    <div class="palette" id="palBasics"></div>
+    <h2>Sources</h2>
+    <div class="palette" id="palSources"></div>
+    <h2>Stations</h2>
+    <div class="palette" id="palStations"></div>
+    <h2>Terminals</h2>
+    <div class="palette" id="palTerminals"></div>
+
+    <div class="divider"></div>
+
+    <h2>Grid size</h2>
+    <div class="field"><label>Width</label><input type="number" id="inpW" min="5" max="20" value="9" /></div>
+    <div class="field"><label>Height</label><input type="number" id="inpH" min="5" max="20" value="7" /></div>
+    <div class="row-btns"><button id="btnApplySize">Apply size</button><button id="btnClear" class="ghost">Clear</button></div>
+
+    <div class="divider"></div>
+
+    <h2>Procedural generate</h2>
+    <div class="field"><label>Width</label><input type="number" id="genW" min="5" max="20" value="11" /></div>
+    <div class="field"><label>Height</label><input type="number" id="genH" min="5" max="20" value="7" /></div>
+    <div class="field"><label>Players</label><input type="number" id="genPlayers" min="1" max="4" value="2" /></div>
+    <div class="field"><label>Pots</label><input type="number" id="genPots" min="0" max="6" value="2" /></div>
+    <div class="field"><label>Cutting boards</label><input type="number" id="genBoards" min="0" max="6" value="1" /></div>
+    <div class="field"><label>Style</label><select id="genStyle"><option value="ring">ring</option><option value="divided">divided</option></select></div>
+    <div class="field"><label>Seed</label><input type="number" id="genSeed" min="0" value="0" /></div>
+    <div class="field check"><input type="checkbox" id="genSink" checked /><label for="genSink">Include sink</label></div>
+    <div class="row-btns"><button id="btnGenerate" class="primary">Generate</button></div>
+
+    <div class="divider"></div>
+
+    <h2>Import / Export</h2>
+    <div class="row-btns">
+      <button id="btnExport">Export JSON</button>
+      <button id="btnCopy" class="ghost">Copy</button>
+    </div>
+    <textarea id="ioArea" placeholder="Paste a layout JSON here, then click Import…"></textarea>
+    <div class="row-btns"><button id="btnImport">Import JSON</button></div>
+  </aside>
+
+  <main class="stage">
+    <div id="banner" class="banner"></div>
+    <div class="gridwrap"><div class="grid" id="grid"></div></div>
+
+    <div class="legend">
+      <b>How to use:</b> pick a tool/terrain on the left, then <b>click</b> a cell to paint, or <b>click-drag</b> to paint many.
+      <b>Right-click</b> erases to floor. The <b>Spawn point</b> tool toggles a numbered chef on a floor tile (order = cook 0,1,2…).
+      <b>Fill</b> flood-fills a contiguous same-terrain region with the active terrain.
+      Source / station / terminal tiles render as a counter with their icon on top.
+      <br /><b>Legend:</b> 🧅 onion · 🍅 tomato · 🥬 lettuce · 🍄 mushroom · 🥩 meat · 🐟 fish · 🍞 bun · 🧀 cheese · 🍚 rice · 🍽️ plates ·
+      🍲 pot · 🍳 pan · 🔪 cutting board · 🚰 sink · 🛎️ serving · 🗑️ trash · 🧱 wall · 🪵 counter.
+    </div>
+  </main>
+</div>
+<script src="/static/js/editor.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cooksim"
+version = "0.1.0"
+description = "A high-fidelity, richly-featured Overcooked-style cooking simulator with RL (Gymnasium/PettingZoo) support and a WebGL renderer."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "CookSim" }]
+dependencies = [
+    "numpy",
+    "gymnasium>=0.29",
+    "pettingzoo>=1.24",
+]
+
+[project.optional-dependencies]
+server = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "websockets>=12", "pydantic>=2"]
+dev = ["pytest"]
+
+[project.scripts]
+cooksim-server = "cooksim.server.app:main"
+
+[tool.setuptools.packages.find]
+include = ["cooksim*"]
+
+[tool.setuptools.package-data]
+cooksim = ["layouts/*.txt"]
