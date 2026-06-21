@@ -48,7 +48,11 @@
   .badge b{color:var(--accent)}
 
   figure{margin:26px 0}
-  figure img{width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45);display:block}
+  figure img,figure video{width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45);display:block;background:#15131b}
+  .videowrap{position:relative}
+  .live-badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(224,83,61,.92);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:6px}
+  .live-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.3}}
   figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   .grid2 figure{margin:0}
@@ -124,9 +128,10 @@
       <div class="badge">Gym + <b>PettingZoo</b></div>
       <div class="badge">Level <b>editor</b></div>
     </div>
-    <figure>
-      <img src="assets/play-pizzeria.png" alt="CookSim real-time 3D gameplay in the pizzeria kitchen" />
-      <figcaption>The Pizzeria kitchen, rendered live in 3D in the browser. Two chefs, a glowing oven, a sink, order tickets on the left.</figcaption>
+    <figure class="videowrap">
+      <span class="live-badge">LIVE CAPTURE</span>
+      <video src="assets/hero.mp4" poster="assets/hero-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+      <figcaption>Real gameplay, recorded straight from the running app — two AI chefs cooking in the Pizzeria, rendered live in 3D in your browser. Nothing here is mocked up.</figcaption>
     </figure>
   </div>
 </header>
@@ -224,8 +229,11 @@ XDXSX     <span class="c">S = serving window</span></pre>
 
     <p>Customers order from this menu on a timer. Each order ticket shows the recipe and its steps, and a bar counts down — fill it
        in time for the reward, or eat a penalty when it expires.</p>
-    <figure><img src="assets/play-diner.png" alt="The Diner with many order tickets showing recipe steps"/>
-      <figcaption>The Diner. Notice each order ticket lists the recipe's steps — the game teaches you how to cook it.</figcaption></figure>
+    <figure class="videowrap">
+      <span class="live-badge">LIVE CAPTURE</span>
+      <video src="assets/diner.mp4" poster="assets/diner-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+      <figcaption>The Diner, recorded live: watch the chefs chop, fry and plate while the order tickets on the left tick down and the
+        score climbs. This is the real simulator running — every dish on screen was actually cooked step by step.</figcaption></figure>
 
     <div class="callout">
       <b>💡 One elegant trick.</b> Cooking stations are <b>recipe-blind</b> — a pot just turns whatever is inside from raw to cooked,
@@ -316,8 +324,12 @@ obs, info = env.<span class="f">reset</span>(seed=<span class="s">0</span>)
     <p>Remarkably, there are still <b>no downloaded art assets</b>. Every pot, onion, chef and tile is built from primitive shapes and
        procedural textures in code — so the whole game is self-contained, yet looks like a real kitchen from any angle.</p>
     <div class="grid2">
-      <figure><img src="assets/play-diner.png" alt="3D diner kitchen"/><figcaption>The Diner in full 3D — reflective pans, cast shadows, depth.</figcaption></figure>
-      <figure><img src="assets/play-burger.png" alt="3D burger bar"/><figcaption>Burger Bar — two chefs at the pans under studio lighting.</figcaption></figure>
+      <figure class="videowrap"><span class="live-badge">LIVE</span>
+        <video src="assets/pizzeria.mp4" poster="assets/pizzeria-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        <figcaption>Pizzeria — glowing ovens, cast shadows, reflective steel.</figcaption></figure>
+      <figure class="videowrap"><span class="live-badge">LIVE</span>
+        <video src="assets/burger.mp4" poster="assets/burger-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        <figcaption>Burger Bar — two chefs at the pans under studio lighting.</figcaption></figure>
     </div>
     <div class="callout">
       <b>💡 Why it suddenly looks real.</b> Three ingredients do most of the work: <b>shadow maps</b> (so objects sit on the floor instead of
@@ -405,6 +417,18 @@ pytest -q          <span class="c"># 20 tests: mechanics, RL conformance, determ
   </div>
 </section>
 
+<script>
+  // Play each gameplay clip only while it's on screen (saves CPU/battery).
+  const vids = document.querySelectorAll("video");
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const v = e.target;
+      if (e.isIntersecting) { v.play().catch(() => {}); }
+      else { v.pause(); }
+    }
+  }, { threshold: 0.25 });
+  vids.forEach(v => io.observe(v));
+</script>
 <footer>
   <div class="wrap">
     <p>🍳 <b>CookSim</b> — built with Python, FastAPI &amp; PixiJS.
