@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no arms or interaction animations. Actions like picking up and placing items are instantaneous, making the character feel robotic and the actions unclear. The cook does not turn to face interaction points.",
+      "fix": "Add simple arms to the character model. Implement short, non-blocking 'reach' and 'place' animations for all interactions. Ensure the character model rotates to face the object or station it is using.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Ingredients do not visually change state after being processed. The raw burger patty looks identical to the cooked one, which forces the player to rely solely on UI timers rather than at-a-glance visual information.",
+      "fix": "Create distinct materials or models for different ingredient states (e.g., raw vs. cooked patty, whole vs. chopped tomato). Swap the asset when the process (cooking, chopping) is complete.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Lighting",
+      "problem": "The scene lighting is flat, and the bright point lights attached to the characters create harsh, moving highlights that blow out colors and flatten the scene's depth. The bloom effect is excessive.",
+      "fix": "Remove the character-attached lights. Implement a more standard lighting model with a single key directional light to create clear shadows, a soft ambient light for fill, and screen-space ambient occlusion (SSAO) for contact shadows. Drastically reduce the bloom threshold and intensity.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Modeling",
+      "problem": "Kitchen stations are too abstract and lack identifying details. The stove is a generic box with a glow, the ingredient dispensers are plain cubes, and the serving pass is just a highlighted area on the floor.",
+      "fix": "Remodel the stations to resemble their real-world counterparts. Add burners and knobs to the stove, a faucet and basin to the sink, and model a distinct counter window for the serving pass. This will improve environmental storytelling and clarity.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character's grid-based movement is a stiff, linear translation with no secondary motion, making it feel lifeless.",
+      "fix": "Add subtle secondary animation to the movement, such as a gentle bob, waddle, or squash-and-stretch effect. This will add personality and improve the game feel without affecting gameplay precision.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Visual Effects (VFX)",
+      "problem": "The particle effects for cooking are generic yellow sparkles that don't communicate the action well. They look more magical than culinary.",
+      "fix": "Replace the sparkles with more context-appropriate VFX. For frying, use small, transparent puffs of smoke and sizzling oil particle effects. For chopping, use small chip particles that match the ingredient's color.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but falls significantly short of the 'Overcooked 2' quality bar due to major issues in presentation and feedback. The highest priorities are to address the lack of character animation, the unreadable state changes of food, and the poor lighting. These issues fundamentally impact game feel and action legibility, making the experience feel more like a debug visualization than a polished game. It is not ready.",
+  "clip": "cheeseburger"
+}

@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Characters have no movement or interaction animations. They snap instantly between grid squares and remain static when performing actions like chopping. This makes the game feel robotic and lacks the lively, tactile feel of its inspiration.",
+      "fix": "Implement tweening for movement between tiles to create smooth motion instead of teleporting. Add simple, expressive animations for key actions: a walking/running cycle, a chopping motion, a placing/picking up motion. These are critical for game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The plating and baking process is confusing. The AI puts raw, chopped ingredients onto what looks like a serving plate, then puts the entire plate into the oven. The step of transferring the baked good from a baking dish to a clean serving plate is also missing or instantaneous.",
+      "fix": "Clarify the process. Use a distinct model for a baking dish (e.g., a casserole dish). The flow should be: 1. Combine raw ingredients in the baking dish. 2. Bake the dish. 3. Take the hot dish out. 4. Use a clean plate to portion a serving from the baking dish. 5. Serve the plate.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting and materials are very flat. All surfaces have a uniform, diffuse appearance with no specular highlights, making the scene look like unpainted plastic or clay. The lighting is harsh and lacks softness or ambient occlusion, which removes depth.",
+      "fix": "Switch to a physically-based rendering (PBR) material workflow. Introduce subtle specular/metallic/roughness maps to differentiate surfaces like metal pots, wooden counters, and ceramic plates. Implement soft shadows and add screen-space ambient occlusion (SSAO) to create contact shadows and add depth to the scene.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The models for kitchen stations (oven, cutting board, dispensers) are extremely abstract and simplistic. The oven is a black cube, and the cutting board is just a textureless square. They lack the visual character and immediate recognizability seen in Overcooked.",
+      "fix": "Redesign the station models to have more detail and personality that reflects their function. Add handles and a glass door to the oven, give the cutting board some thickness and knife marks, and make the ingredient dispensers look more distinct.",
+      "severity": "medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook model does not rotate to face the station it is interacting with. It slides up to a cutting board or oven and interacts with it while facing forward, which looks unnatural and breaks immersion.",
+      "fix": "When an interaction starts, rotate the character model to face the target station. This is a simple change that significantly improves the sense that the character is performing the action.",
+      "severity": "low"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The particle effects for chopping are simple white puffs. While they provide feedback, they don't visually connect to the action of chopping a specific ingredient.",
+      "fix": "Create more thematic particle effects. For example, when chopping a potato, show small potato-colored bits flying off. This reinforces the action and adds to the game's visual flair.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project is a functional simulation of the core cooking loop but falls significantly short of its goal to look and feel like Overcooked 2. The complete lack of character animation is the most critical issue, resulting in a static and lifeless presentation. The rendering is basic, and the game logic for complex recipes is unclear. While action feedback is present, the game needs a major overhaul in animation, modeling, and lighting to be considered 'good enough'.",
+  "clip": "veggie_bake"
+}

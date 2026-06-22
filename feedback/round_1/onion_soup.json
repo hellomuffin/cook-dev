@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The player character has no animations. It slides rigidly across the floor, pops into place, and does not turn to face stations. This makes movement and interaction feel lifeless and robotic.",
+      "fix": "Implement a basic walk/run cycle. When the character stops at a station, have it quickly rotate to face the station. Add short, non-blocking 'use' animations for picking up, dropping, and plating to give actions more weight.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state of the cooking pot is not visually represented. It's impossible to tell how many onions have been added without looking at the UI. The pot looks identical whether it's empty, has one onion, or is full.",
+      "fix": "Add visual state changes to the pot model or its contents. For example, add a simple onion model inside the pot for each ingredient added. The liquid could appear and change color as it cooks.",
+      "severity": "High"
+    },
+    {
+      "area": "Gameplay Loop",
+      "problem": "The recipe for 'Onion Soup' is just 'add 3 onions to a pot'. A core mechanic of the Overcooked genre, chopping/processing ingredients, is missing entirely. This significantly reduces the game's mechanical depth and challenge.",
+      "fix": "Introduce a cutting board station and a 'chopping' step to the recipe. The player must take raw onions to the board, perform a timed 'chop' action, and only then can the chopped onions be placed in the pot.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Environment",
+      "problem": "Key kitchen stations (ingredient dispensers, plate stack, serving pass) are represented as generic blocks or abstract glowing areas. They don't look like functional kitchen equipment, which breaks the theme and makes the environment feel like a test level.",
+      "fix": "Create distinct, thematic 3D models for each station. The onion source should be a crate of onions, the plate source should be a stack of plates, and the serving pass should be a counter window. This will greatly improve the kitchen illusion.",
+      "severity": "Medium"
+    },
+    {
+      "area": "VFX & Feedback",
+      "problem": "The particle effects are generic and overused. The same swirling effect is used for pickup and drop-off, and the intense, solid glow for cooking and station locations is visually noisy and lacks thematic relevance (e.g., steam for cooking).",
+      "fix": "Create distinct and more subtle VFX. Use a small 'poof' for pickup, a 'splash' for adding to a pot, and a rising steam effect for cooking. Replace the static glows on stations with a more subtle 'shimmer' or highlight.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The character does not visibly reach for or interact with objects. Items simply appear or disappear from its 'hand' slot. Plating soup from a pot has no scooping motion, making the action feel disconnected.",
+      "fix": "Even without complex character rigs, a simple 'bob' or 'lunge' animation synchronized with the action button press would improve the sense of interaction. For plating, have the character lean over the pot briefly.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional prototype that demonstrates the core logic of a cooking game. However, it currently lacks the essential animation, visual feedback, and gameplay mechanics (like chopping) that define the Overcooked genre. The experience feels robotic and lacks the charm and satisfaction of its inspiration. Addressing the high-severity issues related to character animation, in-world state visualization, and the gameplay loop is critical before this can be considered 'good enough'.",
+  "clip": "onion_soup"
+}

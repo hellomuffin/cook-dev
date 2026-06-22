@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character is completely static during all interactions (chopping, cooking, plating). It doesn't animate, which makes the actions feel lifeless and robotic, undermining the 'game feel'.",
+      "fix": "Implement simple, punchy character animations for core actions. For chopping, add a rhythmic up-and-down motion with a knife prop. For cooking, an interaction animation where the cook leans in. For pick-up/put-down, a quick bending motion. Even a basic idle animation would add significant life.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and uniform, and shadows are either missing or too faint. This removes depth from the scene, making objects feel like they are floating. The materials are simple, uniform shaders that look like plastic.",
+      "fix": "Implement Screen-Space Ambient Occlusion (SSAO) to create contact shadows and ground objects. Use softer, more pronounced real-time shadows. Introduce more complex materials with specular and roughness maps to differentiate surfaces like metal pots, wooden counters, and ceramic plates.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is a rigid, linear slide across the grid. It lacks any sense of weight or personality, reinforcing the robotic feel.",
+      "fix": "Add a simple walk cycle or even a subtle procedural bob/waddle as the character moves. This secondary motion is crucial for making the character feel like a living entity rather than a cursor.",
+      "severity": "medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Raw ingredient models are overly simplistic blobs (e.g., white blob for rice, purple blob for onion), making them difficult to identify at a glance without the context of the dispenser.",
+      "fix": "Create more distinct and recognizable models for each raw ingredient. An onion should be a sphere with a visible root/sprout. Raw rice could be represented as a small bag or a more textured pile. This improves clarity and adds visual variety.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The bright, glowing orbs on the floor in the 'cramped_kitchen' scene are non-diegetic and break the kitchen theme. They look like something from a sci-fi game.",
+      "fix": "Replace the glowing orbs with diegetic floor markers that fit the environment, such as worn-out floor mats, painted squares, or simply a different tile pattern. If they are for setup only, they should be hidden during gameplay.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The kitchen stations (cutting board, serving pass, ingredient dispensers) are extremely basic geometric primitives that lack character and detail.",
+      "fix": "Add small details to the station models to increase their recognizability and fit the theme. For example, add a handle and knife marks to the cutting board, a heat lamp over the serving pass, and labels or unique spouts on the dispensers.",
+      "severity": "low"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The same generic yellow 'puff' particle effect is used for multiple, distinct interactions (placing rice in a pot, placing an egg in a pan).",
+      "fix": "Create unique VFX for different classes of interaction. Use a 'splash' or 'steam' effect for pots, a 'sizzle' with oil particles for pans, and small 'chip' particles for chopping. This provides better feedback and enhances the kitchen theme.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional and clear core loop, with excellent UI feedback for orders and scoring. However, it fails to feel like an 'Overcooked-style' game due to a critical lack of 'juice'. The complete absence of character animation makes the gameplay feel sterile and robotic. The rendering is basic, with flat lighting and overly simple models that break the kitchen illusion. The highest priority is to add character animations for all interactions, followed by improving the lighting and model details to build a more charming and believable world.",
+  "clip": "fried_rice"
+}

@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations for movement or interaction. It slides across the floor and objects pop in and out of its possession. This makes actions unclear and the game feel robotic.",
+      "fix": "Implement a basic walk/run cycle. Add simple, quick animations for picking up, placing, and using stations. The character should visibly hold items in its hands, not on its head.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is flat, with no shadows. This removes depth and makes objects feel like they are floating. The bright emissive circles on the floor are distracting and lack a clear source.",
+      "fix": "Add a primary directional light to the scene to cast soft real-time shadows from the cooks and dynamic objects. This will ground everything and significantly improve visual quality.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The character model is a simple primitive shape with no arms. It's impossible to tell if the cook is reaching for or interacting with a station, as it just slides up to it and an effect plays.",
+      "fix": "Update the character model to include simple arms. This is essential for the interaction animations (picking up, chopping, plating) to look believable and be legible.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Ingredient and food models are simplistic placeholders (e.g., a yellow sphere for a potato, a primitive fish shape). They don't look appealing or clearly communicate their state.",
+      "fix": "Create more detailed, stylized 3D models for all food items in their various states (raw, chopped, cooked, plated). The final plated dish should look like an assembled meal.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Level Design",
+      "problem": "The 'grand_kitchen' layout is a vast, empty square. This creates excessive, uninteresting travel time for the cook and doesn't resemble a functional kitchen layout.",
+      "fix": "Design more compact and thoughtfully laid-out kitchens that minimize dead space and create interesting gameplay challenges, similar to the design principles of Overcooked.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Object materials are very basic, with most surfaces having a uniform, diffuse plastic look. Metal doesn't look metallic, and wood lacks texture.",
+      "fix": "Implement a PBR material workflow. Use roughness and metallic maps to give surfaces appropriate physical properties. For example, make pots and pans metallic and reflective, and give wood counters a subtle grain and sheen.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Interaction feedback is a single, generic particle effect for all actions (picking up, plating, cooking). This provides no differentiation and feels repetitive.",
+      "fix": "Create unique particle effects and sound effects for different categories of actions: a 'pop' for pickup, a 'clink' for plating, a 'sizzle' for frying, and a 'ding' for completion.",
+      "severity": "Low"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "A successful delivery provides good UI feedback (score increases, order disappears), but the in-world feedback is nonexistent. The plate simply vanishes.",
+      "fix": "Add a satisfying visual effect when a dish is served, such as the plate quickly sliding off-screen accompanied by a 'swoosh' particle effect and sound.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but currently presents as a technical prototype, not a polished game. Critical issues in animation, rendering, and character design prevent it from achieving the look and feel of its inspiration, Overcooked 2. The highest priorities are adding character animations (movement, interaction) and implementing proper lighting with shadows to make the world feel tangible and actions legible.",
+  "clip": "fish_and_chips"
+}

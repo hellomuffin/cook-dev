@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is instantaneous, snapping between grid squares. This is extremely jarring and makes the game feel like a debug mode rather than a finished product.",
+      "fix": "Replace the instantaneous snapping with smooth, interpolated movement (lerping) between grid tiles. Add a basic walk/run animation cycle, even a simple bobbing motion, to convey locomotion.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene is visually flat and lacks depth because there are no shadows. Objects and characters appear to float above the ground, breaking the illusion of a physical space.",
+      "fix": "Implement real-time shadows. At a minimum, add projected 'blob' shadows under the cooks and any held items. For higher quality, use shadow mapping from a key light source.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The visual state change for ingredients is not clear. Raw fish looks almost identical to chopped fish, and rice shows no visual change after being cooked.",
+      "fix": "Create highly distinct models for each ingredient state. For example, raw fish could be a whole fish model, while chopped fish is a pile of neat slices. Cooked items should have a visible change, like a color shift or steam VFX.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pickup, place, chop) lack specific character animation. The cook remains static while a progress bar fills or an item appears/disappears, which feels disconnected.",
+      "fix": "Create short, distinct animations for core actions. The cook should turn to face the station and perform a 'reach' for pickups, and have an 'up-and-down' arm motion for chopping.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The final plated dish is an abstract composition of primitive shapes (a red blob on a white blob for sushi) that is difficult to identify and visually unappealing.",
+      "fix": "Model the final plated dishes to be recognizable, stylized versions of the actual food. The sushi plate should clearly show a sushi roll or nigiri.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Active cooking processes are not visually represented on the stations themselves. The pot of rice shows no steam or bubbling while it cooks, making it feel like a static prop.",
+      "fix": "Add persistent visual effects to stations during processing. A boiling pot should emit steam particles, a frying pan should have sizzling oil effects, and an oven should glow.",
+      "severity": "Medium"
+    },
+    {
+      "area": "VFX",
+      "problem": "The same generic yellow sparkle particle effect is used for nearly every action (pickup, place, serve), making the game's visual language repetitive and less clear.",
+      "fix": "Design unique particle effects for different categories of actions. For example, a small puff for pickups, a gentle ring for placement, and a celebratory burst for a successful delivery.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but falls significantly short of the 'Overcooked 2' quality bar. The most critical issues are the complete lack of movement animation and shadows, which make the game feel static, flat, and unfinished. Action legibility is also poor due to indistinct ingredient models and a lack of feedback on cooking processes. It currently feels more like a proof-of-concept simulation than an engaging game.",
+  "clip": "sushi"
+}

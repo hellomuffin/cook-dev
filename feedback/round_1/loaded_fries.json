@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "The visual state of ingredients does not change after processing. The potato looks identical whether it is raw or fried, making it impossible to know its state without looking at the UI.",
+      "fix": "Create distinct 3D models and/or textures for each state of an ingredient (e.g., a whole potato vs. a basket of fries). The object should visually change upon completion of a cooking step.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The plating mechanic is unintuitive and hard to read. The cook holds food, then picks up a plate, and the two items merge into a single held object. This is not how plating works.",
+      "fix": "Adopt the standard mechanic from Overcooked: plates must be placed on a counter first. The cook then places the finished food item onto the stationary plate to create the final dish, which can then be picked up.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Pick-up and drop-off actions are ambiguous. Items instantly appear or disappear from the cook's hands with no animation, making it hard to track interactions.",
+      "fix": "Add a simple, quick 'interact' animation (e.g., arms extending slightly) and a small particle effect or 'pop' to signify the moment of transfer. Also, ensure the cook character model snaps to face the station they are interacting with.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lacks depth and grounding due to the absence of shadows. Cooks and objects appear to float above the floor, and the lighting feels flat and uniform.",
+      "fix": "Implement real-time shadows. At a minimum, add projected 'blob' shadows under the cooks. For better quality, use shadow mapping from a primary light source to allow counters and objects to cast shadows.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook's movement is a stiff, linear slide. It lacks personality and feels 'floaty', detracting from the game's character and feel.",
+      "fix": "Implement a basic walk/run animation cycle for the cooks. Even a simple up-and-down bob or waddle would make the movement feel more grounded and alive.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The kitchen station models (fryer, dispensers) are overly simplistic and abstract (e.g., a black cylinder for a fryer), failing to clearly communicate their function or match the visual style of Overcooked 2.",
+      "fix": "Remodel the stations with more detail that suggests their purpose. A fryer should have a basket, a potato dispenser could be a crate, etc. Add more polys and texture detail to give them character.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There is a lack of satisfying feedback for successful actions. While the delivery effect is good, completing a cooking step or combining ingredients is silent and visually static.",
+      "fix": "Add small particle effects and audio cues for key gameplay moments: a puff of steam when frying is done, a 'click' when picking up a plate, a 'shine' when an ingredient is successfully placed. This 'juice' is critical for game feel.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional prototype but falls short of the Overcooked 2 quality bar due to critical issues in action legibility and visual feedback. The highest priorities are fixing the invisible ingredient state changes and the confusing plating mechanic. Following that, adding shadows, better animations, and more detailed models will be essential to creating a believable and engaging kitchen environment.",
+  "clip": "loaded_fries"
+}

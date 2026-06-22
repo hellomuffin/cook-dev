@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations. It slides rigidly across the floor without a walk cycle and stands perfectly still when interacting with stations. This makes the core gameplay feel static and devoid of personality.",
+      "fix": "Implement a basic set of character animations: a walk/run cycle, an idle animation, and short, expressive animations for interactions like chopping and placing/picking up items. This is the highest priority for improving game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "It is not visually clear that the cook is holding an item. Ingredients and plates snap into a position in front of the character model, appearing to float rather than be carried.",
+      "fix": "Define 'hand' attachment points on the character model. When an item is picked up, parent it to these points so it moves with the character's body. This should be paired with a brief 'pick up' animation.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is flat, and shadows are simple projected blobs. This results in a lack of depth and makes the environment feel less integrated and volumetric.",
+      "fix": "Improve the lighting model. Use a primary directional light to cast more defined shadows. Bake ambient occlusion into the environment assets to create soft contact shadows in corners and under static objects.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement starts and stops instantly, with no acceleration or deceleration. This feels robotic and lacks the 'juiciness' expected from this genre.",
+      "fix": "Add a small amount of easing or interpolation (lerping) to the character's movement logic. This will smooth out starts and stops, creating a more fluid and responsive feel.",
+      "severity": "medium"
+    },
+    {
+      "area": "VFX",
+      "problem": "The particle effect for chopping is a generic yellow sparkle that does not thematically relate to the action of cutting vegetables.",
+      "fix": "Replace the sparkle VFX with a more context-appropriate effect, such as small, stylized vegetable bits flying from the cutting board. This reinforces the cooking theme.",
+      "severity": "low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Object materials are simplistic, using mostly uniform colors. This makes surfaces like the countertops and floor look plasticky and visually uninteresting.",
+      "fix": "Introduce subtle, stylized textures or roughness maps to break up large surfaces. For example, a faint wood grain on counters or a tile pattern on the floor would add significant visual richness.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The simulation has a solid functional core; the game state and objectives are clear. However, it is critically deficient in animation and game feel, making the experience feel static and lifeless. The complete absence of character animation is the most severe issue. While the rendering is clean, it lacks the lighting, material, and VFX polish needed to create an engaging and believable kitchen environment comparable to its inspirations. It currently feels more like a technical prototype than a game.",
+  "clip": "greek_salad"
+}

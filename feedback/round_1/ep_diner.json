@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character is completely static during interactions like chopping or frying. They simply stand in front of a station while a progress ring fills up. This makes actions feel passive and lacks the satisfying feedback central to the genre.",
+      "fix": "Implement distinct, simple animations for each core action. For chopping, the character model should have a repetitive up-and-down motion. For cooking, it could look into the pot/pan. For plating, a quick 'placing' motion. Even without arms, the main body can be animated to convey the action.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Action Legibility",
+      "problem": "Ingredients do not have a distinct visual state after being processed. For example, a whole tomato on the cutting board looks identical after the 'chop' action is completed. The player cannot see the result of their action, which is critical for tracking game state.",
+      "fix": "Create separate models or textures for processed ingredients. A chopped tomato should be replaced by a model of diced tomatoes. A whole lettuce head should become a pile of chopped lettuce. This provides immediate visual confirmation that a step is complete.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Graphics",
+      "problem": "The scene's lighting and materials are too simple, resulting in a flat, sterile look. Shadows are simple projected blobs, and surfaces lack any material definition (e.g., metal pots aren't shiny). This fails to create depth and visual interest.",
+      "fix": "Implement a more advanced lighting model. Use real-time shadow mapping from a key light to ground objects and the character in the scene. Define material properties like specularity and roughness to differentiate surfaces like metal, ceramic, and wood.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Character",
+      "problem": "The cook character does not visibly reach for or interact with objects. When picking up an item, it just appears over their head. When placing it, it just appears on the counter. This breaks the physical illusion of interacting with the kitchen.",
+      "fix": "Animate the character model to lean or tilt towards the object being interacted with. This creates a sense of connection and physicality, even with a simple, armless model.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "A successful delivery is only indicated by a particle burst and a score change. The delivered plate simply vanishes from the serving pass. The moment of 'serving' itself is not clearly visualized.",
+      "fix": "Add a brief animation to the serving pass when a correct order is delivered. For example, the plate could slide away quickly, or a small 'ticket complete' stamp could appear and fade. This reinforces the success state.",
+      "severity": "Low"
+    },
+    {
+      "area": "Rendering & Environment",
+      "problem": "The environment assets are extremely basic geometric primitives (cubes for counters, cylinders for pots). This makes the kitchen feel like a blockout or a debug environment rather than a stylized diner.",
+      "fix": "Add subtle details and textures to the environment models. Bevel the edges of counters, add handles to the sides, put a texture on the floor, and create more distinct silhouettes for the cooking stations to make the world feel more crafted.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional simulation of the cooking loop, but it currently lacks the essential animation, visual feedback, and graphical polish required to feel like a playable game in the style of Overcooked. The highest priorities are adding character animations for all interactions and creating distinct visual models for processed ingredients. These changes are critical for action legibility and core game feel.",
+  "clip": "ep_diner"
+}

@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is instantaneous and grid-based, lacking any form of easing or secondary motion. The character snaps between tiles, which feels robotic and unsatisfying.",
+      "fix": "Implement a tweening function (e.g., ease-in-out) for movement between tiles, so the character smoothly slides from one to the next. Add a subtle bob or sway animation while moving to give the character more life.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Interaction with stations (chopping, cooking) has no character animation. The cook remains static while a progress bar fills, making it unclear what action is being performed without reading the UI.",
+      "fix": "Create and trigger simple, looping animations for each interaction type. For example, a two-frame up-and-down arm motion for chopping, or a stirring motion for pots. This is critical for visual feedback.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat, likely just an ambient source. This removes all depth from the scene. Counters do not cast shadows on the floor, and the character has a simple, unrealistic blob shadow.",
+      "fix": "Implement a proper lighting setup with at least one directional key light to create highlights and cast dynamic shadows from the cooks. Use baked lightmaps for the static kitchen geometry to create soft, realistic ambient occlusion and shadows with minimal performance cost.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state change for ingredients is instant. For example, a whole tomato on the cutting board immediately becomes a pile of chopped tomato once the progress bar is full.",
+      "fix": "Create one or two intermediate models for processing ingredients. As the chopping progress bar fills, cycle from whole -> half-chopped -> fully-chopped. For cooking, gradually blend the food's texture/color from raw to cooked.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are basic diffuse colors, making surfaces look like plastic. The wood counters, metal pots, and floor tiles lack texture and appropriate surface properties like roughness or specularity.",
+      "fix": "Introduce PBR materials. Add subtle wood grain textures, tile patterns with grout, and metallic/roughness maps for metal surfaces. This will dramatically improve visual quality even with a simple art style.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Key feedback events like picking up an item, placing it, and especially delivering a final dish lack impact. They are silent, instantaneous, and have no visual flourish.",
+      "fix": "Add 'juice'. Implement small pop/scale animations and particle effects for pickups and deliveries. A 'cha-ching' sound and a '+score' number popping up at the pass would make delivery much more rewarding.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Realism / Illusion",
+      "problem": "The kitchen environment is sterile and empty. It's a functional grid of stations but lacks the details that make it feel like a real, lived-in space.",
+      "fix": "Add non-interactive set dressing props. Examples: spice racks, hanging pans, wall clocks, floor mats, or small decorative plants. These details help sell the illusion of the environment.",
+      "severity": "Low"
+    },
+    {
+      "area": "Realism / Illusion",
+      "problem": "All dishes, including soups and rice bowls, are served on the same generic flat plate model.",
+      "fix": "Create a separate bowl model for dishes that require it. Swapping the model based on the recipe is a simple change that improves visual clarity and believability.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core simulation loop, but it currently feels more like a technical prototype than a polished game. The highest priorities are to address the complete lack of animation for character movement and interactions, and to implement a proper lighting model to give the scene depth. These changes are fundamental to achieving the target look and feel of a game like Overcooked 2. While the logic is present, it is missing the 'juice' and visual feedback that make such games satisfying to play and watch.",
+  "clip": "ep_grand"
+}

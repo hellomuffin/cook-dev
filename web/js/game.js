@@ -63,7 +63,9 @@
     controlled = { 0: SCHEME_A, 1: SCHEME_B };
     const msg = { type: "reset", layout, n_players: players, seed };
     if (recipe) msg.order_recipes = recipe.split(",");
-    if (sandbox) msg.config = { horizon: 1000000 };
+    // clean scoring for demos: points only on delivery, not on prep sub-steps
+    msg.config = { use_shaped_rewards: false };
+    if (sandbox) msg.config.horizon = 1000000;
     send(msg);
     for (let i = 0; i < bots; i++) { send({ type: "add_bot", player: i, kind: "greedy" }); delete controlled[i]; }
     send({ type: "set_speed", tps: speed });

@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Rendering",
+      "problem": "The lighting is uniformly flat and lacks depth, making the scene look sterile. There are no soft shadows, ambient occlusion, or bounced light, which are key to the visual style of Overcooked 2. The strong bloom effect on the character and interactive objects feels disconnected from this flat lighting.",
+      "fix": "Implement a baked lighting solution. Bake ambient occlusion into the lightmaps for corners and under objects. Use light probes to simulate bounced lighting on dynamic objects like the cook. Significantly tone down the constant bloom effect and reserve strong emissive effects for brief, impactful feedback moments like a completed dish.",
+      "severity": "high"
+    },
+    {
+      "area": "Asset Design",
+      "problem": "Key gameplay assets are visually ambiguous or overly simplistic. Plates and bowls use the same model, making it hard to distinguish dish types. Ingredient sources are just colored squares. The serving pass is an untextured black rectangle that looks like a void.",
+      "fix": "Create distinct 3D models for plates (flat) and bowls (deep). Replace the ingredient source squares with models of crates or bins filled with the corresponding food items (e.g., a crate of tomatoes). Detail the serving pass with a frame, counter, and perhaps a heat lamp to make it look like a functional part of a kitchen.",
+      "severity": "high"
+    },
+    {
+      "area": "Game Logic & Realism",
+      "problem": "Ingredients (specifically cheese for the Caprese salad) are acquired by the cook without being taken from a visible dispenser. The cook just has it suddenly. This breaks the core game loop of 'source -> process -> combine' and damages the kitchen illusion.",
+      "fix": "Ensure every ingredient required for any recipe has a unique, visible, and interactable dispenser station in the kitchen. The cook must always travel to a dispenser to pick up a raw ingredient.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character lacks 'intent' in its animations. It slides up to stations without reaching, and items snap into its hands instantly. This makes interactions feel robotic and weightless.",
+      "fix": "Add short procedural 'reach' animations where the character's upper body leans and arms extend towards the interaction point. Animate items moving quickly but smoothly from the station to the character's hands instead of snapping. This adds a sense of physical interaction.",
+      "severity": "med"
+    },
+    {
+      "area": "Feedback",
+      "problem": "A successful delivery provides minimal feedback. The plate disappears and the score number changes. This is functional but lacks the satisfying 'punch' that rewards the player for completing a task under pressure.",
+      "fix": "Enhance the delivery feedback loop. Add a rewarding sound effect, a particle burst at the serving pass, and a brief, juicy animation on the score counter (e.g., it shakes and grows before settling on the new value).",
+      "severity": "med"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The visual state of an ingredient on the cutting board doesn't change during the chopping process. It only transforms from 'raw' to 'chopped' at the end of the timer, providing no intermediate feedback.",
+      "fix": "While the progress bar is active, visually alter the ingredient model. This could be as simple as applying a shader that adds 'cut lines' or procedurally separating the mesh into a few pieces that jiggle with each chop animation.",
+      "severity": "low"
+    },
+    {
+      "area": "Animation",
+      "problem": "Character movement is a linear slide with instantaneous rotation. It lacks the organic, slightly bouncy and wobbly character that defines the 'feel' of Overcooked's chefs.",
+      "fix": "Add a subtle bobbing or swaying animation to the character's movement cycle. Implement rotational smoothing (e.g., slerp) so the character takes a few frames to turn towards the new direction of movement, making it feel less robotic.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The game has a functional core loop that is clearly understandable, but it currently feels like a technical prototype, not a polished game. It severely lacks the artistic and animation polish of its target, Overcooked 2. The flat lighting, placeholder-like assets, and lack of satisfying feedback are the most significant issues preventing it from achieving the desired look and feel. Addressing the high-severity rendering, asset, and logic issues should be the top priority.",
+  "clip": "ep_bistro"
+}
