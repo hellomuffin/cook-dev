@@ -223,10 +223,25 @@ class KitchenRenderer3D {
       const fa = new THREE.Mesh(this.cyl(0.03, 0.03, 0.3, 8), mat(0xcfd4d8, { metalness: 0.8, roughness: 0.3 }));
       fa.position.set(0, 0.28, -0.2); grp.add(fa);
     } else if (t === "serving") {
-      const back = new THREE.Mesh(this.box(0.84, 0.7, 0.16), mat(0x2f7d57, { roughness: 0.55 }));
-      back.position.set(0, 0.35, -0.34); back.castShadow = true; grp.add(back);
-      const strip = new THREE.Mesh(this.box(0.84, 0.1, 0.06), new THREE.MeshStandardMaterial({ color: 0x49b07d, emissive: 0x49b07d, emissiveIntensity: 1.1 }));
-      strip.position.set(0, 0.66, -0.27); grp.add(strip);
+      // a clear "PASS" hatch: a framed window above a glowing hand-off shelf
+      const frameMat = mat(0x3a3f47, { roughness: 0.5, metalness: 0.3 });
+      const left = new THREE.Mesh(this.box(0.12, 0.78, 0.5), frameMat); left.position.set(-0.42, 0.39, -0.1); left.castShadow = true; grp.add(left);
+      const right = new THREE.Mesh(this.box(0.12, 0.78, 0.5), frameMat); right.position.set(0.42, 0.39, -0.1); right.castShadow = true; grp.add(right);
+      const lintel = new THREE.Mesh(this.box(0.96, 0.16, 0.5), frameMat); lintel.position.set(0, 0.86, -0.1); lintel.castShadow = true; grp.add(lintel);
+      // dark "kitchen behind" opening
+      const opening = new THREE.Mesh(this.box(0.74, 0.6, 0.05), mat(0x14161b, { roughness: 0.9 }));
+      opening.position.set(0, 0.5, -0.28); grp.add(opening);
+      // glowing hand-off shelf at the front edge — where the plate goes
+      const shelf = new THREE.Mesh(this.box(0.84, 0.06, 0.34),
+        new THREE.MeshStandardMaterial({ color: 0x8be0b0, emissive: 0x36c07e, emissiveIntensity: 0.9, roughness: 0.4 }));
+      shelf.position.set(0, 0.12, 0.16); shelf.castShadow = true; grp.add(shelf);
+      // service bell on the shelf
+      const bellBase = new THREE.Mesh(this.cyl(0.1, 0.12, 0.03, 16), mat(0xddd6c4)); bellBase.position.set(0.26, 0.17, 0.16); grp.add(bellBase);
+      const bell = new THREE.Mesh(this.sph(0.08), mat(0xd9c24a, { metalness: 0.7, roughness: 0.3 })); bell.scale.y = 0.8; bell.position.set(0.26, 0.21, 0.16); grp.add(bell);
+      // a downward chevron over the shelf marking "drop here"
+      const chev = new THREE.Mesh(this.g("chev", () => new THREE.ConeGeometry(0.12, 0.16, 4)),
+        new THREE.MeshStandardMaterial({ color: 0xffe07a, emissive: 0xffc34a, emissiveIntensity: 1.3 }));
+      chev.rotation.x = Math.PI; chev.position.set(-0.12, 0.42, 0.12); grp.add(chev);
     } else if (t === "trash") {
       const bin = new THREE.Mesh(this.cyl(0.26, 0.22, 0.5, 16), mat(0x3a3d44, { roughness: 0.6 }));
       bin.position.y = 0.25; bin.castShadow = true; grp.add(bin);
@@ -269,25 +284,47 @@ class KitchenRenderer3D {
       case "potato": add(this.sph(0.16), M, 0, 0.13, 0, 1.2, 0.85, 0.95); break;
       default: add(this.sph(0.15), M, 0, 0.15);
     }
-    if (state === "chopped") { grp.scale.setScalar(0.82); grp.children.forEach((c, i) => { c.position.x += (i - 1) * 0.05; }); }
+    if (state === "chopped") {
+      // chopped = a little pile of diced cubes, clearly different from raw
+      grp.clear();
+      const dice = mat(col, { roughness: 0.5 });
+      const cube = this.g("dice", () => new THREE.BoxGeometry(0.09, 0.09, 0.09));
+      const spots = [[-0.1, 0.05, -0.05], [0.08, 0.05, 0.04], [0, 0.05, 0.11], [-0.04, 0.05, 0.05], [0.11, 0.05, -0.06], [-0.12, 0.14, 0.03]];
+      for (const [x, y, z] of spots) {
+        const d = new THREE.Mesh(cube, dice); d.position.set(x, y, z);
+        d.rotation.set(Math.sin(x * 9), x * 4 + z, Math.cos(z * 7)); d.castShadow = true; grp.add(d);
+      }
+    }
     if (state === "cooked") grp.traverse(o => { if (o.isMesh && o.material.emissive) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(0x3a1d00); o.material.emissiveIntensity = 0.25; } });
     return grp;
+  }
+
+  _isHotSoup(plate) {
+    const c = plate.contents || [];
+    return c.length >= 2 && c.every(i => i.state === "cooked") && c.every(i => i.name === c[0].name);
   }
 
   _plate(plate) {
     const grp = new THREE.Group();
     const dirty = plate.dirty;
-    const disc = new THREE.Mesh(this.cyl(0.32, 0.3, 0.04, 24), mat(dirty ? 0x9c8e74 : 0xf3f5f7, { roughness: 0.3 }));
-    disc.position.y = 0.02; disc.castShadow = true; grp.add(disc);
+    // a proper bowl: rim + concave interior, so plated food clearly sits in it
+    const bowl = new THREE.Mesh(this.cyl(0.34, 0.22, 0.1, 28), mat(dirty ? 0x9c8e74 : 0xf3f5f7, { roughness: 0.28 }));
+    bowl.position.y = 0.05; bowl.castShadow = true; grp.add(bowl);
+    const rim = new THREE.Mesh(this.g("bowlrim", () => new THREE.TorusGeometry(0.32, 0.03, 10, 28)), mat(dirty ? 0x8a7c64 : 0xe6e9ec, { roughness: 0.3 }));
+    rim.rotation.x = Math.PI / 2; rim.position.y = 0.1; grp.add(rim);
     if (!dirty && plate.contents && plate.contents.length) {
-      const cont = plate.contents, allCooked = cont.every(c => c.state === "cooked"), same = cont.every(c => c.name === cont[0].name);
-      if (allCooked && same && cont.length >= 2) {
+      const cont = plate.contents;
+      if (this._isHotSoup({ contents: cont })) {
         const col = ING[cont[0].name] ? tintFor("cooked", ING[cont[0].name].c) : 0xcc8844;
-        const soup = new THREE.Mesh(this.cyl(0.26, 0.26, 0.06, 24), new THREE.MeshStandardMaterial({ color: col, roughness: 0.35, emissive: new THREE.Color(col).multiplyScalar(0.12) }));
-        soup.position.y = 0.06; grp.add(soup);
+        // a generous domed serving of soup that fills the bowl
+        const soup = new THREE.Mesh(this.cyl(0.3, 0.28, 0.1, 28),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.32, emissive: new THREE.Color(col).multiplyScalar(0.16) }));
+        soup.position.y = 0.12; grp.add(soup);
+        const dome = new THREE.Mesh(this.sph(0.27), new THREE.MeshStandardMaterial({ color: col, roughness: 0.32 }));
+        dome.scale.y = 0.35; dome.position.y = 0.15; grp.add(dome);
       } else {
         const n = cont.length;
-        cont.forEach((c, i) => { const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.6); m.position.set((i - (n - 1) / 2) * 0.22, 0.04, 0); grp.add(m); });
+        cont.forEach((c, i) => { const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.62); m.position.set((i - (n - 1) / 2) * 0.2, 0.12, 0); grp.add(m); });
       }
     }
     return grp;
@@ -321,8 +358,8 @@ class KitchenRenderer3D {
     // number label sprite
     const spr = this._textSprite(String(p.id + 1), col);
     spr.position.y = 1.45; spr.scale.set(0.4, 0.4, 1); grp.add(spr);
-    // contact shadow blob
-    grp.userData = { legs: [lL, lR], arms: [aL, aR], heldSig: "0", held: null };
+    // an upper-body pivot so the cook can visibly lean in to interact
+    grp.userData = { legs: [lL, lR], arms: [aL, aR], torso: body, head, heldSig: "0", held: null, reach: 0, pop: 0 };
     this.dynGroup.add(grp);
     return grp;
   }
@@ -349,14 +386,36 @@ class KitchenRenderer3D {
       c.grp.position.set(wp.x, bob, wp.z);
       c.grp.rotation.y = THREE.MathUtils.lerp(c.grp.rotation.y, DIR_YAW[p.dir_name] || 0, 0.3);
       const sw = moving ? Math.sin(c.phase) * 0.5 : 0;
-      c.grp.userData.legs[0].rotation.x = sw; c.grp.userData.legs[1].rotation.x = -sw;
+      const ud = c.grp.userData;
+      ud.legs[0].rotation.x = sw; ud.legs[1].rotation.x = -sw;
+
+      // --- interaction animation: lean in and work the hands ---------
+      const interacting = p.action === "interact";
+      ud.reach = lerp(ud.reach, interacting ? 1 : 0, Math.min(1, dt * 12));
+      const work = interacting ? (Math.sin(c.phase * 3.2) * 0.5 + 0.5) : 0;  // chop/stir pumping
+      const armAng = -0.7 - ud.reach * 0.5 - work * ud.reach * 0.5;
+      ud.arms[0].rotation.x = armAng; ud.arms[1].rotation.x = armAng;
+      ud.torso.rotation.x = ud.reach * 0.22;          // lean toward the station
+      ud.head.position.z = 0.02 + ud.reach * 0.06;
+
       // held item
       const sig = this._itemSig(p.holding);
-      if (sig !== c.grp.userData.heldSig) {
-        if (c.grp.userData.held) c.grp.remove(c.grp.userData.held);
-        c.grp.userData.held = null;
-        if (p.holding) { const m = this._itemMesh(p.holding); m.position.set(0, 0.5, 0.4); m.scale.setScalar(0.9); c.grp.add(m); c.grp.userData.held = m; }
-        c.grp.userData.heldSig = sig;
+      if (sig !== ud.heldSig) {
+        if (ud.held) c.grp.remove(ud.held);
+        ud.held = null;
+        if (p.holding) {
+          const m = this._itemMesh(p.holding);
+          c.grp.add(m); ud.held = m;
+          ud.pop = 1;                                  // pop-in when just acquired
+        }
+        ud.heldSig = sig;
+      }
+      if (ud.held) {
+        ud.pop = lerp(ud.pop, 0, Math.min(1, dt * 8));
+        const reachZ = 0.4 + ud.reach * 0.18;          // extend toward station when working
+        const liftY = 0.5 + ud.reach * 0.05 + work * ud.reach * 0.05;
+        ud.held.position.set(0, liftY, reachZ);
+        ud.held.scale.setScalar(0.9 * (1 - 0.55 * ud.pop));
       }
     }
     for (const id in this.cooks) if (!seenCooks.has(+id)) { this.dynGroup.remove(this.cooks[id].grp); delete this.cooks[id]; }
