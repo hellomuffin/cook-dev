@@ -97,12 +97,19 @@
 
   footer{padding:50px 0 70px;text-align:center;color:var(--muted)}
   .tag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 3px}
+
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:18px 0}
+  .vgrid.eps{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+  .vcard{margin:0}
+  .vcard figcaption{text-align:left;font-size:12.5px}
+  .vtag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:1px 9px;font-size:11px;color:var(--accent);font-weight:700;margin-left:4px}
 </style>
 </head>
 <body>
 <nav>
   <div class="logo">🍳 <span>CookSim</span></div>
   <a href="#what">What</a>
+  <a href="#watch">▶ See it cook</a>
   <a href="#kitchen">Kitchen</a>
   <a href="#recipes">Recipes</a>
   <a href="#engine">Engine</a>
@@ -163,6 +170,40 @@
       tile they face. Everything — picking up an onion, stirring a pot, plating soup, serving a customer — is the same
       single action (<code class="inline">INTERACT</code>) applied in different places. That one idea makes the whole game simple to simulate
       <em>and</em> simple for an AI to learn.
+    </div>
+  </div>
+</section>
+
+
+<section id="watch">
+  <div class="wrap">
+    <div class="kicker">See it actually cook</div>
+    <h2>Real agents, real deliveries</h2>
+    <p>None of this is staged. Below are <b>unedited screen recordings</b> of the built-in AI chef (one cook) playing the
+       real game. Each clip shows a complete multi-step dish — gather, prep, cook, assemble — ending in a delivery at the pass
+       (watch the score climb and the sparkle fire). The order tickets on the left are pinned to one recipe so you can follow
+       the whole pipeline.</p>
+    <div class="vgrid">
+      <figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/onion_soup.mp4" poster="assets/clips/onion_soup.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Onion Soup</b> <span class="vtag">boil</span><br>Gather 3 onions → boil in the pot → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/greek_salad.mp4" poster="assets/clips/greek_salad.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Greek Salad</b> <span class="vtag">chop ×2</span><br>Chop lettuce + tomato on ONE board → add cheese → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/deluxe_burger.mp4" poster="assets/clips/deluxe_burger.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Deluxe Burger</b> <span class="vtag">fry + chop ×2</span><br>Fry a patty, chop lettuce & tomato, stack on a bun — 4 components</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/cheeseburger.mp4" poster="assets/clips/cheeseburger.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Cheeseburger</b> <span class="vtag">fry</span><br>Fry a patty → add bun + cheese → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/pizza.mp4" poster="assets/clips/pizza.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Pizza</b> <span class="vtag">bake</span><br>Dough + tomato + cheese into the oven → bake → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/sushi.mp4" poster="assets/clips/sushi.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Sushi</b> <span class="vtag">cook + chop</span><br>Cook rice, chop raw fish, plate both → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/fish_and_chips.mp4" poster="assets/clips/fish_and_chips.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Fish & Chips</b> <span class="vtag">fry ×2</span><br>Fry the fish, fry the potato, plate both → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/fried_rice.mp4" poster="assets/clips/fried_rice.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Fried Rice</b> <span class="vtag">cook + fry + chop</span><br>Cook rice, fry an egg, chop onion → plate all → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/loaded_fries.mp4" poster="assets/clips/loaded_fries.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Loaded Fries</b> <span class="vtag">fry</span><br>Fry the potato → top with cheese → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/veggie_bake.mp4" poster="assets/clips/veggie_bake.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Veggie Bake</b> <span class="vtag">bake ×3</span><br>Potato + mushroom + cheese in the oven → bake → serve</figcaption></figure>
+
+    </div>
+    <h3 style="margin-top:34px">Full game episodes</h3>
+    <p>And here are entire rounds on the timer: the cook completes a stream of dishes and, when orders pile up faster than one
+       person can cook, misses a few — exactly the pressure the game (and the RL task) is about.</p>
+    <div class="vgrid eps">
+      <figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_bistro.mp4" poster="assets/clips/ep_bistro.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Bistro</b><br>Soups & salads. One cook keeps a steady stream going — a few tickets still slip away.</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_diner.mp4" poster="assets/clips/ep_diner.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Diner</b><br>The full menu. Lots of dishes completed; some missed when the queue piles up.</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_grand.mp4" poster="assets/clips/ep_grand.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Grand Kitchen</b><br>Every station and ingredient — the widest spread of dishes in one round.</figcaption></figure>
+
     </div>
   </div>
 </section>

@@ -29,6 +29,7 @@ class GameSession:
         config: Optional[dict] = None,
         seed: Optional[int] = 0,
         keep_bots: bool = True,
+        order_recipes: Optional[list] = None,
     ):
         if layout_data is not None:
             lay = Layout.from_dict(layout_data)
@@ -42,7 +43,8 @@ class GameSession:
             self.layout_name = name
 
         cfg = GameConfig(**config) if config else GameConfig()
-        self.game = KitchenGame(lay, config=cfg, n_players=n_players, seed=seed)
+        self.game = KitchenGame(lay, config=cfg, n_players=n_players, seed=seed,
+                                order_recipe_ids=order_recipes)
         self.pending = {i: int(Action.STAY) for i in range(self.game.n_players)}
         if not keep_bots:
             self.bots = {}
@@ -54,9 +56,12 @@ class GameSession:
         if 0 <= player < self.game.n_players:
             self.pending[player] = int(action)
 
-    def add_bot(self, player: int, kind: str = "greedy"):
+    def add_bot(self, player: int, kind: str = "greedy", role: str = "any"):
         if 0 <= player < self.game.n_players:
-            self.bots[player] = GreedyChef(seed=player + 1) if kind == "greedy" else RandomAgent(player)
+            self.bots[player] = (
+                GreedyChef(seed=player + 1, role=role) if kind == "greedy"
+                else RandomAgent(player)
+            )
 
     def remove_bot(self, player: int):
         self.bots.pop(player, None)

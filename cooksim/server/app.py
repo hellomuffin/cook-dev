@@ -136,12 +136,13 @@ async def ws(ws: WebSocket):
                     n_players=msg.get("n_players"),
                     config=msg.get("config"),
                     seed=msg.get("seed", 0),
+                    order_recipes=msg.get("order_recipes"),
                 )
                 await ws.send_json({"type": "state", "state": session.state()})
             elif mtype == "set_speed":
                 session.tps = float(msg.get("tps", 7))
             elif mtype == "add_bot":
-                session.add_bot(int(msg["player"]), msg.get("kind", "greedy"))
+                session.add_bot(int(msg["player"]), msg.get("kind", "greedy"), msg.get("role", "any"))
             elif mtype == "remove_bot":
                 session.remove_bot(int(msg["player"]))
             elif mtype == "step":

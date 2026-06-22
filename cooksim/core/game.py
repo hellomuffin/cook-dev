@@ -38,8 +38,10 @@ class KitchenGame:
         recipe_book: Optional[RecipeBook] = None,
         n_players: Optional[int] = None,
         seed: Optional[int] = None,
+        order_recipe_ids: Optional[List[str]] = None,
     ):
         self.layout = layout
+        self._order_recipe_ids = order_recipe_ids
         self.config = config or GameConfig()
         self.book = recipe_book or RecipeBook()
         self.n_players = n_players or max(1, len(layout.start_positions))
@@ -53,6 +55,10 @@ class KitchenGame:
         self.stations: Dict[Pos, object] = {}
         self.counter_items: Dict[Pos, object] = {}
         self.feasible = feasible_recipes(self.book.recipes, layout)
+        order_pool = self.feasible
+        if order_recipe_ids:
+            wanted = set(order_recipe_ids)
+            order_pool = [r for r in self.feasible if r.id in wanted] or self.feasible
         self.orders = OrderManager(
             self.book,
             self.rng,
@@ -61,7 +67,7 @@ class KitchenGame:
             time_per_difficulty=self.config.order_time_per_difficulty,
             expire_penalty=self.config.expire_penalty,
             enabled=self.config.orders_enabled,
-            recipes=self.feasible,
+            recipes=order_pool,
         )
         self._build()
 

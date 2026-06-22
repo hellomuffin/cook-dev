@@ -82,11 +82,19 @@ _MOVES = [Action.NORTH, Action.SOUTH, Action.EAST, Action.WEST]
 
 
 class GreedyChef:
-    def __init__(self, seed: int = 0):
+    def __init__(self, seed: int = 0, role: str = "any"):
         self.rng = random.Random(seed)
         self._last_pos: Optional[Pos] = None
         self._stuck = 0
         self._target: Optional[str] = None   # committed recipe id
+        self._stash: Optional[Pos] = None     # counter holding our in-progress plate
+        self._commit_tick = 0                 # game tick we committed to _target
+        self._commit_deliv = 0                # deliveries at commit time
+        self._avoid: dict = {}                # recipe_id -> tick until which to skip it
+        # "any" = do everything; "cook" = only produce components (man the
+        # stations); "server" = only plate & deliver. Assigning the two roles
+        # to a 2-cook team gives clean Overcooked-style division of labour.
+        self.role = role
 
     def _unstick(self, game: KitchenGame, cook, action: int) -> int:
         """Break deadlocks: if we keep trying to move but never advance, take a
@@ -147,38 +155,94 @@ class GreedyChef:
                 return terrain
         return None
 
+    # If we've been committed this long with no delivery, the recipe is likely
+    # unmakeable in this kitchen (e.g. needs more boards than exist) — give up.
+    ABANDON_TICKS = 220
+    AVOID_TICKS = 500
+
     def _target_order(self, game: KitchenGame, cook_id: int = 0):
         feasible_ids = {r.id for r in game.feasible}
         orders = game.orders.orders
         active = {o.recipe.id for o in orders}
+        deliveries = game.stats.get("deliveries", 0)
+
+        # Abandon a target we can't seem to finish; blacklist it for a while.
+        if self._target is not None:
+            if deliveries > self._commit_deliv:
+                self._commit_deliv = deliveries
+                self._commit_tick = game.tick
+            elif game.tick - self._commit_tick > self.ABANDON_TICKS:
+                self._avoid[self._target] = game.tick + self.AVOID_TICKS
+                self._target = None
+                self._stash = None
+
         # Keep the committed target while it is still on the board.
         if self._target and self._target in active and self._target in feasible_ids:
             cand = [o for o in orders if o.recipe.id == self._target]
             return min(cand, key=lambda o: o.time_left)
-        # Otherwise pick a fresh target. Order feasible orders by time left
-        # (most likely to finish first) and offset by cook id so multiple
-        # cooks naturally split up onto different dishes instead of colliding.
+
+        # Pick a fresh target, skipping recently-blacklisted recipes. Order by
+        # time left and offset by cook id so cooks split onto distinct dishes.
         makeable = sorted(
-            [o for o in orders if o.recipe.id in feasible_ids],
+            [o for o in orders if o.recipe.id in feasible_ids
+             and self._avoid.get(o.recipe.id, 0) <= game.tick],
             key=lambda o: -o.time_left,
         )
+        if not makeable:  # everything blacklisted? fall back to any feasible order
+            makeable = sorted([o for o in orders if o.recipe.id in feasible_ids],
+                              key=lambda o: -o.time_left)
         if not makeable:
             self._target = None
             return None
-        # de-duplicate by recipe so cooks pick distinct dishes when possible
         seen, distinct = set(), []
         for o in makeable:
             if o.recipe.id not in seen:
                 seen.add(o.recipe.id)
                 distinct.append(o)
         choice = distinct[cook_id % len(distinct)]
+        if choice.recipe.id != self._target:
+            self._commit_tick = game.tick
+            self._commit_deliv = deliveries
+            self._stash = None
         self._target = choice.recipe.id
         return choice
+
+    def _park_target(self, game: KitchenGame) -> Optional[Pos]:
+        """A neutral interior floor tile (near the kitchen centre, touching no
+        station) where an idle cook can wait without blocking access tiles."""
+        if getattr(self, "_park_sig", None) != id(game.layout):
+            cx, cy = game.layout.width / 2, game.layout.height / 2
+            floors = [
+                (x, y)
+                for y in range(game.layout.height)
+                for x in range(game.layout.width)
+                if game._walkable(x, y)
+            ]
+            def touches_station(x, y):
+                for d in Direction:
+                    dx, dy = DIRECTION_VECTORS[d]
+                    nx, ny = x + dx, y + dy
+                    if game.layout.in_bounds(nx, ny) and game.layout.grid[ny][nx] != Terrain.FLOOR:
+                        return True
+                return False
+            clear = [p for p in floors if not touches_station(*p)]
+            pool = clear or floors
+            self._park = min(pool, key=lambda p: abs(p[0] - cx) + abs(p[1] - cy)) if pool else None
+            self._park_sig = id(game.layout)
+        return self._park
 
     # -- main policy -----------------------------------------------------
     def __call__(self, game: KitchenGame, cook_id: int) -> int:
         cook = game.cooks[cook_id]
         action = self._plan(game, cook_id)
+        # If idle, step off any station-access tile toward a neutral spot so we
+        # don't block a teammate who needs to reach that station.
+        if action == int(Action.STAY):
+            park = self._park_target(game)
+            if park is not None and cook.pos != park:
+                step = _bfs_first_step(game, cook.pos, {park})
+                if step is not None:
+                    action = int(step)
         return self._unstick(game, cook, action)
 
     def _plan(self, game: KitchenGame, cook_id: int) -> int:
@@ -194,6 +258,25 @@ class GreedyChef:
         cooked_need = _Counter(n for n, st in recipe.contents if st == "cooked")
         chop_need = _Counter(n for n, st in recipe.contents if st == "chopped")
         raw_need = _Counter(n for n, st in recipe.contents if st == "raw")
+        need = _Counter((n, st) for n, st in recipe.contents)
+
+        # Components already secured on our plate (in hand or stashed) so we
+        # don't re-produce them — the key to multi-chop recipes on one board.
+        secured = _Counter()
+        if isinstance(held, Plate):
+            for i in held.contents:
+                secured[(i.name, i.state.value)] += 1
+        elif self._stash is not None:
+            st_it = game.counter_items.get(self._stash)
+            if isinstance(st_it, Plate):
+                for i in st_it.contents:
+                    secured[(i.name, i.state.value)] += 1
+        secured_cooked, secured_chopped = _Counter(), _Counter()
+        for (nm, stt), c in secured.items():
+            if stt == "cooked":
+                secured_cooked[nm] += c
+            elif stt == "chopped":
+                secured_chopped[nm] += c
 
         # --- cook station state ------------------------------------------
         pots = [(c, s) for c, s in game.stations.items() if isinstance(s, CookStation)]
@@ -208,7 +291,7 @@ class GreedyChef:
         in_stations = _Counter(ing.name for _, s in pots for ing in s.contents)
         cooked_short = _Counter()
         for name, k in cooked_need.items():
-            short = k - in_stations.get(name, 0)
+            short = k - in_stations.get(name, 0) - secured_cooked.get(name, 0)
             if short > 0:
                 cooked_short[name] = short
 
@@ -221,7 +304,7 @@ class GreedyChef:
         chop_pipeline = chopped_ready + _Counter(s.item.name for _, s in board_raw)
         chop_short = _Counter()
         for name, k in chop_need.items():
-            short = k - chop_pipeline.get(name, 0)
+            short = k - chop_pipeline.get(name, 0) - secured_chopped.get(name, 0)
             if short > 0:
                 chop_short[name] = short
 
@@ -237,13 +320,38 @@ class GreedyChef:
                 c for c in self._cells(game, Terrain.COUNTER) if c not in game.counter_items
             ])
 
+        def stash_held():
+            """Set the plate down on a counter, remembering where so we can come
+            back to the SAME partial plate after freeing our hands to chop."""
+            cell = empty_counter()
+            if cell is not None and isinstance(held, Plate) and held.contents:
+                self._stash = cell
+            return go(cell)
+
+        def get_plate():
+            """Prefer reclaiming our stashed in-progress plate over a fresh one."""
+            if self._stash is not None:
+                it = game.counter_items.get(self._stash)
+                if isinstance(it, Plate) and not it.dirty:
+                    have = _Counter((i.name, i.state.value) for i in it.contents)
+                    if not (have - need):     # everything on it is still wanted
+                        return self._stash
+                else:
+                    self._stash = None         # stash gone / taken
+            return self._nearest(game, cook, self._cells(game, Terrain.PLATE_SOURCE))
+
         # ================= holding a plate (assembly workspace) ===========
         if isinstance(held, Plate):
+            # we are now carrying our (possibly reclaimed) plate
+            if self._stash is not None and not isinstance(game.counter_items.get(self._stash), Plate):
+                self._stash = None
+            # a dedicated producer never carries a plate — set it down
+            if self.role == "cook" and not held.dirty:
+                return stash_held()
             if held.dirty:
                 sink = self._nearest(game, cook, self._cells(game, Terrain.SINK))
                 return go(sink or self._nearest(game, cook, self._cells(game, Terrain.TRASH)))
             have = _Counter((i.name, i.state.value) for i in held.contents)
-            need = _Counter((n, st) for n, st in recipe.contents)
             matched = game.book.match_plate(held)
             if held.contents and matched is not None:
                 active_ids = {o.recipe.id for o in game.orders.orders}
@@ -268,13 +376,19 @@ class GreedyChef:
             # scoop a cooked component from a ready station
             if any(st == "cooked" for _, st in missing) and cooked_ready:
                 return go(self._nearest(game, cook, cooked_ready))
-            # nothing addable yet: wait if things are cooking/chopping, else
-            # stash the plate and go do production work
-            if cooking or board_raw or raw_started:
+            # nothing addable yet. A server keeps its plate and waits by the
+            # stove (the producer will fill it); others free their hands.
+            if self.role == "server":
                 if cooking:
                     return go(self._nearest(game, cook, cooking))
-                return go(empty_counter())
-            return go(empty_counter())
+                if cooked_short or raw_started or board_raw or chop_short:
+                    return int(Action.STAY)   # hold the plate, let the cook work
+                return int(Action.STAY)
+            # A generalist needs free hands to chop the remaining components, so
+            # it stashes this partial plate (remembering it) and goes to produce.
+            if cooking and not (chop_short or chopped_ready):
+                return go(self._nearest(game, cook, cooking))
+            return stash_held()
 
         # ================= holding an ingredient ==========================
         if isinstance(held, Ingredient):
@@ -288,6 +402,17 @@ class GreedyChef:
             return go(empty_counter())                     # otherwise set it down
 
         # ================= empty handed ===================================
+        # A dedicated server goes straight for a plate and lets the cook produce
+        # (with a fallback to help produce only if nothing is underway at all).
+        if self.role == "server":
+            production_underway = bool(cooked_ready or cooking or chopped_ready
+                                       or raw_started or board_raw)
+            needs_anything = bool(cooked_need or chop_need or raw_need)
+            if production_underway or needs_anything:
+                return go(get_plate())
+            return int(Action.STAY)
+
+        # producer / generalist
         if burnt:
             return go(self._nearest(game, cook, burnt))
         # finish any chopping already in progress (needs active interaction)
@@ -305,7 +430,8 @@ class GreedyChef:
         if chop_short and board_empty:
             name = next(iter(chop_short))
             return go(source_cell(name))
-        # production is underway / done -> fetch a plate and assemble
-        if cooked_ready or cooking or chopped_ready or raw_need or chop_need or cooked_need:
-            return go(self._nearest(game, cook, self._cells(game, Terrain.PLATE_SOURCE)))
+        # a generalist also fetches a plate to assemble; a dedicated cook does not
+        if self.role != "cook" and (cooked_ready or cooking or chopped_ready
+                                     or raw_need or chop_need or cooked_need):
+            return go(get_plate())
         return int(Action.STAY)

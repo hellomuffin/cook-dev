@@ -37,7 +37,7 @@
         renderRecipeBook();
         buildLevelGrid();
         onState(msg.state);
-        if (!maybePlayCustom()) showMenu();
+        if (!maybeAutoStart() && !maybePlayCustom()) showMenu();
       } else if (msg.type === "state") {
         onState(msg.state);
       }
@@ -45,6 +45,36 @@
   }
 
   function send(obj) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj)); }
+
+  // Auto-start a scenario from URL params, e.g.
+  //   ?play=1&layout=pizzeria&players=1&recipe=pizza&bots=1&speed=7&ui=min
+  // Used for reproducible demos and video capture.
+  function maybeAutoStart() {
+    const q = new URLSearchParams(location.search);
+    if (!q.get("play")) return false;
+    const layout = q.get("layout") || "pizzeria";
+    const players = parseInt(q.get("players") || "1", 10);
+    const seed = parseInt(q.get("seed") || "0", 10);
+    const recipe = q.get("recipe");
+    const bots = q.get("bots") === "all" ? players : parseInt(q.get("bots") || "0", 10);
+    const speed = parseFloat(q.get("speed") || "7");
+    curLayout = layout; resultShown = false;
+    sandbox = q.get("sandbox") === "1";
+    controlled = { 0: SCHEME_A, 1: SCHEME_B };
+    const msg = { type: "reset", layout, n_players: players, seed };
+    if (recipe) msg.order_recipes = recipe.split(",");
+    if (sandbox) msg.config = { horizon: 1000000 };
+    send(msg);
+    for (let i = 0; i < bots; i++) { send({ type: "add_bot", player: i, kind: "greedy" }); delete controlled[i]; }
+    send({ type: "set_speed", tps: speed });
+    if (q.get("ui") === "min") {
+      document.querySelectorAll("header, .panel").forEach(e => e.style.display = "none");
+      document.querySelector("main").style.gridTemplateColumns = "1fr";
+      window.dispatchEvent(new Event("resize"));
+    }
+    overlay.classList.add("hidden");
+    return true;
+  }
 
   function maybePlayCustom() {
     const raw = localStorage.getItem("cooksim_play_layout");
