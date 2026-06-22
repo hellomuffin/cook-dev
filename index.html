@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CookSim — How I Built a Better Overcooked, Explained</title>
+<meta name="description" content="A teaching walkthrough of CookSim: a high-fidelity Overcooked-style cooking simulator with multi-step recipes, a real-time 3D (Three.js) renderer, a level editor, and reinforcement-learning environments." />
+<style>
+  :root{
+    --bg:#15121b; --bg2:#1d1825; --card:#241e2e; --card2:#2c2536;
+    --ink:#f4eee7; --muted:#b6abc2; --line:#3a3247;
+    --accent:#ffb454; --accent2:#ff8a4c; --green:#5fcf94; --blue:#5aa9e6; --pink:#e87da8;
+    --code:#1a1622;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
+  a{color:var(--accent)}
+  h1,h2,h3{line-height:1.2;font-weight:800}
+  code,pre{font-family:"SF Mono", Menlo,Consolas,monospace}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:20;background:rgba(21,18,27,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
+  nav .logo{font-weight:800;font-size:18px}
+  nav .logo span{background:linear-gradient(90deg,#ffd27f,#ff8a4c);-webkit-background-clip:text;background-clip:text;color:transparent}
+  nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+  nav a:hover{color:var(--ink)}
+  nav .spacer{flex:1}
+
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  section{padding:64px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:30px;margin:0 0 6px}
+  section .kicker{color:var(--accent);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:12px;margin-bottom:8px}
+  p{color:#e7e0ea}
+  .muted{color:var(--muted)}
+
+  /* hero */
+  header.hero{padding:72px 0 56px;background:
+    radial-gradient(1200px 500px at 70% -10%,rgba(255,138,76,.18),transparent),
+    radial-gradient(900px 500px at 0% 10%,rgba(90,169,230,.14),transparent)}
+  header.hero h1{font-size:54px;margin:0 0 12px;letter-spacing:-1px}
+  header.hero h1 .g{background:linear-gradient(90deg,#ffd27f,#ff8a4c 60%,#e87da8);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header.hero p.lead{font-size:21px;color:var(--muted);max-width:680px}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 30px}
+  .badge{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:7px 15px;font-size:13px;font-weight:600}
+  .badge b{color:var(--accent)}
+
+  figure{margin:26px 0}
+  figure img,figure video{width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45);display:block;background:#15131b}
+  .videowrap{position:relative}
+  .live-badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(224,83,61,.92);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:6px}
+  .live-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.3}}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid2 figure{margin:0}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+
+  .callout{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-left:4px solid var(--accent);border-radius:12px;padding:16px 18px;margin:22px 0}
+  .callout.green{border-left-color:var(--green)}
+  .callout.blue{border-left-color:var(--blue)}
+  .callout b{color:var(--ink)}
+
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:14px;line-height:1.55}
+  pre .c{color:#7d7491}      /* comment */
+  pre .k{color:#ff8a4c}      /* keyword */
+  pre .s{color:#7fd6a0}      /* string */
+  pre .f{color:#6fb6ee}      /* func/name */
+  code.inline{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:14px;color:#ffd9a8}
+
+  table{width:100%;border-collapse:collapse;margin:22px 0;font-size:15px}
+  th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+  td b{color:var(--accent)}
+  .vs td:nth-child(2){color:var(--muted)}
+  .vs td:nth-child(3){color:var(--ink)}
+
+  /* pipeline diagram */
+  .pipe{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0;justify-content:center}
+  .pstep{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:center;min-width:96px}
+  .pstep .emoji{font-size:30px}
+  .pstep .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+  .arrow{color:var(--accent);font-size:22px;font-weight:800}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+  .chip{background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:6px 13px;font-size:13px}
+  .chip .em{margin-right:5px}
+
+  .steps-list{counter-reset:s;list-style:none;padding:0}
+  .steps-list li{position:relative;padding:8px 0 8px 44px;margin:6px 0}
+  .steps-list li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:6px;
+    width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,var(--accent),var(--accent2));
+    color:#3a2410;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+  footer{padding:50px 0 70px;text-align:center;color:var(--muted)}
+  .tag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 3px}
+
+  .vgrid{display:flex;flex-direction:column;gap:30px;margin:18px 0}
+  .vcard{margin:0}
+  .vcard figcaption{text-align:left;font-size:14px;margin-top:12px}
+  .vtag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:1px 9px;font-size:11px;color:var(--accent);font-weight:700;margin-left:4px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">🍳 <span>CookSim</span></div>
+  <a href="#what">What</a>
+  <a href="#watch">▶ See it cook</a>
+  <a href="#kitchen">Kitchen</a>
+  <a href="#recipes">Recipes</a>
+  <a href="#engine">Engine</a>
+  <a href="#rl">RL</a>
+  <a href="#render">Rendering</a>
+  <a href="#ai">AI chef</a>
+  <a href="#editor">Editor</a>
+  <span class="spacer"></span>
+  <a href="#play" style="color:var(--accent)">▶ Run it</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>I built <span class="g">a better Overcooked</span>.<br/>Here's how it works.</h1>
+    <p class="lead">CookSim is a from-scratch cooking-game simulator — richer mechanics, a real-time 3D WebGL kitchen,
+       a level editor, and proper reinforcement-learning environments. This page teaches you the whole thing,
+       piece by piece.</p>
+    <div class="badges">
+      <div class="badge"><b>19</b> multi-step recipes</div>
+      <div class="badge"><b>12</b> ingredients</div>
+      <div class="badge"><b>9</b> station types</div>
+      <div class="badge"><b>Real-time 3D</b> (WebGL)</div>
+      <div class="badge">Gym + <b>PettingZoo</b></div>
+      <div class="badge">Level <b>editor</b></div>
+    </div>
+    <figure class="videowrap">
+      <span class="live-badge">LIVE CAPTURE</span>
+      <video src="assets/hero.mp4" poster="assets/hero-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+      <figcaption>Real gameplay, recorded straight from the running app — two AI chefs cooking in the Pizzeria, rendered live in 3D in your browser. Nothing here is mocked up.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<section id="what">
+  <div class="wrap">
+    <div class="kicker">Lesson 1 · The big picture</div>
+    <h2>What is CookSim, and why build it?</h2>
+    <p>The research community uses a small game called <a href="https://github.com/HumanCompatibleAI/overcooked_ai">overcooked_ai</a>
+       to study how AI agents <em>cooperate</em>. Two cooks share a cramped kitchen and must coordinate to make soup. It's brilliant
+       for research, but it's tiny: one recipe, a handful of tiles, and flat, basic graphics.</p>
+    <p>CookSim keeps everything that made it useful for AI — a clean, deterministic simulation you can train agents on —
+       and makes it into a <b>real game</b>: many ingredients, genuine multi-step cooking, timed customer orders, a kitchen you can
+       design yourself, and a renderer that actually looks like a kitchen.</p>
+
+    <table class="vs">
+      <tr><th>Feature</th><th>overcooked_ai</th><th>CookSim</th></tr>
+      <tr><td>Recipes</td><td>1 (onion soup)</td><td><b>19</b> — soups, salads, burgers, sushi, pizza, fried dishes…</td></tr>
+      <tr><td>Ingredients</td><td>onion, tomato, dish</td><td><b>12</b> ingredients with raw / chopped / cooked / <b>burnt</b> states</td></tr>
+      <tr><td>Stations</td><td>pot, dispenser, serving</td><td>pot, <b>pan</b>, <b>oven</b>, <b>cutting board</b>, <b>sink</b>, dispensers, serving, trash</td></tr>
+      <tr><td>Mechanics</td><td>cook &amp; deliver</td><td>cook, <b>burn</b>, chop, <b>wash dishes</b>, <b>timed orders</b>, multi-step assembly</td></tr>
+      <tr><td>Maps</td><td>fixed text layouts</td><td>text layouts <b>+ procedural generation + a visual editor</b></td></tr>
+      <tr><td>Graphics</td><td>flat 2D tiles</td><td><b>Real-time 3D (WebGL/Three.js)</b>: shadows, reflections, bloom, particles</td></tr>
+      <tr><td>RL API</td><td>custom</td><td>standard <b>Gymnasium</b> &amp; <b>PettingZoo</b> (passes the conformance test)</td></tr>
+    </table>
+
+    <div class="callout">
+      <b>💡 The mental model.</b> A kitchen is a <b>grid of tiles</b>. Cooks walk on floor tiles and <b>interact</b> with the
+      tile they face. Everything — picking up an onion, stirring a pot, plating soup, serving a customer — is the same
+      single action (<code class="inline">INTERACT</code>) applied in different places. That one idea makes the whole game simple to simulate
+      <em>and</em> simple for an AI to learn.
+    </div>
+  </div>
+</section>
+
+
+<section id="watch">
+  <div class="wrap">
+    <div class="kicker">See it actually cook</div>
+    <h2>Real agents, real deliveries</h2>
+    <p>None of this is staged. Below are <b>unedited screen recordings</b> of the built-in AI chef (one cook) playing the
+       real game. Each clip shows a complete multi-step dish — gather, prep, cook, assemble — ending in a delivery at the pass
+       (watch the score climb and the sparkle fire). The order tickets on the left are pinned to one recipe so you can follow
+       the whole pipeline.</p>
+    <div class="vgrid">
+      <figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/onion_soup.mp4" poster="assets/clips/onion_soup.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Onion Soup</b> <span class="vtag">boil</span><br>Gather 3 onions → boil in the pot → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/greek_salad.mp4" poster="assets/clips/greek_salad.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Greek Salad</b> <span class="vtag">chop ×2</span><br>Chop lettuce + tomato on ONE board → add cheese → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/deluxe_burger.mp4" poster="assets/clips/deluxe_burger.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Deluxe Burger</b> <span class="vtag">fry + chop ×2</span><br>Fry a patty, chop lettuce & tomato, stack on a bun — 4 components</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/cheeseburger.mp4" poster="assets/clips/cheeseburger.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Cheeseburger</b> <span class="vtag">fry</span><br>Fry a patty → add bun + cheese → plate → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/pizza.mp4" poster="assets/clips/pizza.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Pizza</b> <span class="vtag">bake</span><br>Dough + tomato + cheese into the oven → bake → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/sushi.mp4" poster="assets/clips/sushi.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Sushi</b> <span class="vtag">cook + chop</span><br>Cook rice, chop raw fish, plate both → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/fish_and_chips.mp4" poster="assets/clips/fish_and_chips.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Fish & Chips</b> <span class="vtag">fry ×2</span><br>Fry the fish, fry the potato, plate both → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/fried_rice.mp4" poster="assets/clips/fried_rice.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Fried Rice</b> <span class="vtag">cook + fry + chop</span><br>Cook rice, fry an egg, chop onion → plate all → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/loaded_fries.mp4" poster="assets/clips/loaded_fries.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Loaded Fries</b> <span class="vtag">fry</span><br>Fry the potato → top with cheese → serve</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/veggie_bake.mp4" poster="assets/clips/veggie_bake.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Veggie Bake</b> <span class="vtag">bake ×3</span><br>Potato + mushroom + cheese in the oven → bake → serve</figcaption></figure>
+
+    </div>
+    <h3 style="margin-top:34px">Full game episodes</h3>
+    <p>And here are entire rounds on the timer: the cook completes a stream of dishes and, when orders pile up faster than one
+       person can cook, misses a few — exactly the pressure the game (and the RL task) is about.</p>
+    <div class="vgrid eps">
+      <figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_bistro.mp4" poster="assets/clips/ep_bistro.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Bistro</b><br>Soups & salads. One cook keeps a steady stream going — a few tickets still slip away.</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_diner.mp4" poster="assets/clips/ep_diner.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Diner</b><br>The full menu. Lots of dishes completed; some missed when the queue piles up.</figcaption></figure>
+<figure class="vcard videowrap"><span class="live-badge">LIVE</span><video src="assets/clips/ep_grand.mp4" poster="assets/clips/ep_grand.jpg" muted loop playsinline preload="none"></video><figcaption><b style="color:var(--ink)">Grand Kitchen</b><br>Every station and ingredient — the widest spread of dishes in one round.</figcaption></figure>
+
+    </div>
+  </div>
+</section>
+
+<section id="kitchen">
+  <div class="wrap">
+    <div class="kicker">Lesson 2 · The world</div>
+    <h2>How a kitchen is built</h2>
+    <p>Every kitchen is a rectangular grid. Each cell is either walkable <b>floor</b> or an impassable <b>feature</b> you use from
+       an adjacent floor tile. Features come in three families:</p>
+    <div class="chips">
+      <span class="chip"><span class="em">📦</span>Sources — infinite onions, tomatoes, dough, plates…</span>
+      <span class="chip"><span class="em">🍲</span>Stations — pot, pan, oven, cutting board, sink</span>
+      <span class="chip"><span class="em">🛎️</span>Terminals — the serving pass and the trash bin</span>
+    </div>
+    <p>Layouts are just text. This compact grammar (one character per tile) is how a kitchen is stored, and it's exactly what
+       the level editor reads and writes:</p>
+<pre><span class="c"># the classic "cramped room" — onions, one pot, plates, a pass</span>
+XXPXX     <span class="c">X = counter   P = pot   D = plates</span>
+O   O     <span class="c">O = onion source</span>
+X1 2X     <span class="c">1,2 = where the two cooks spawn</span>
+XDXSX     <span class="c">S = serving window</span></pre>
+    <div class="grid2">
+      <figure><img src="assets/play-cramped.png" alt="Cramped room kitchen"/><figcaption>That text, rendered & played.</figcaption></figure>
+      <figure><img src="assets/play-bistro.png" alt="Bistro kitchen"/><figcaption>The Bistro — soups <em>and</em> salads.</figcaption></figure>
+    </div>
+    <div class="callout green">
+      <b>✅ Why a grid?</b> Discrete tiles + discrete actions = a clean, reproducible simulation. Give it the same actions and the
+      same random seed and you get the <em>exact</em> same game every time. That determinism is gold for debugging and for training AI.
+    </div>
+  </div>
+</section>
+
+<section id="recipes">
+  <div class="wrap">
+    <div class="kicker">Lesson 3 · Cooking</div>
+    <h2>Ingredients &amp; multi-step recipes</h2>
+    <p>This is the heart of "diverse, multi-step tasks." A dish isn't one action — it's a <b>chain</b> of prep steps that often
+       have to happen in the right order, sometimes in parallel. Here's the deluxe burger:</p>
+    <div class="pipe">
+      <div class="pstep"><div class="emoji">🥩</div><div class="lbl">raw patty</div></div>
+      <div class="arrow">→</div>
+      <div class="pstep"><div class="emoji">🍳</div><div class="lbl">fry in pan</div></div>
+      <div class="arrow">→</div>
+      <div class="pstep"><div class="emoji">🥬🍅</div><div class="lbl">chop veg</div></div>
+      <div class="arrow">→</div>
+      <div class="pstep"><div class="emoji">🍽️</div><div class="lbl">stack on bun</div></div>
+      <div class="arrow">→</div>
+      <div class="pstep"><div class="emoji">🛎️</div><div class="lbl">serve</div></div>
+    </div>
+    <p>An ingredient has a <b>state</b>: raw → chopped (on a board) or → cooked (in a pot, pan, or oven). Leave it on the heat too
+       long and it <b>burns</b> — now it's worthless and you must bin it. A plate is the <b>workspace</b>: you ladle cooked food onto
+       it, drop chopped pieces on it, add raw items, and when the contents exactly match a recipe, the pass accepts it.</p>
+
+    <p>The full menu spans every prep type:</p>
+    <div class="chips">
+      <span class="chip">🥣 Onion / Tomato / Mushroom / Mixed Soup</span>
+      <span class="chip">🥗 Garden / Greek Salad · Caprese</span>
+      <span class="chip">🍔 Burger · Cheeseburger · Deluxe Burger</span>
+      <span class="chip">🍳 Fried Fish · Fried Egg · Loaded Fries · Fish &amp; Chips</span>
+      <span class="chip">🍚 Rice Bowl · Sushi · Fried Rice</span>
+      <span class="chip">🍕 Pizza · Veggie Bake</span>
+    </div>
+
+    <p>Customers order from this menu on a timer. Each order ticket shows the recipe and its steps, and a bar counts down — fill it
+       in time for the reward, or eat a penalty when it expires.</p>
+    <figure class="videowrap">
+      <span class="live-badge">LIVE CAPTURE</span>
+      <video src="assets/diner.mp4" poster="assets/diner-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+      <figcaption>The Diner, recorded live: watch the chefs chop, fry and plate while the order tickets on the left tick down and the
+        score climbs. This is the real simulator running — every dish on screen was actually cooked step by step.</figcaption></figure>
+
+    <div class="callout">
+      <b>💡 One elegant trick.</b> Cooking stations are <b>recipe-blind</b> — a pot just turns whatever is inside from raw to cooked,
+      then to burnt. Nothing in the kitchen "knows" about pizza. A recipe is only checked at the very end, at the serving pass, by
+      comparing the plate's exact contents to the menu. That keeps the simulation tiny while allowing <em>any</em> combination a
+      player can physically assemble.
+    </div>
+  </div>
+</section>
+
+<section id="engine">
+  <div class="wrap">
+    <div class="kicker">Lesson 4 · The simulation</div>
+    <h2>The engine: one tick at a time</h2>
+    <p>The whole world advances in discrete <b>ticks</b>. Each tick, every cook submits one action, and the engine resolves them in
+       a fixed order so the result is always deterministic:</p>
+    <ol class="steps-list">
+      <li><b>Move &amp; face.</b> Movement is resolved together so two cooks can't walk into the same tile or swap places — collisions
+          cancel cleanly.</li>
+      <li><b>Interact.</b> Each cook acting on <code class="inline">INTERACT</code> affects the tile it faces — pick up, put down, add to a pot,
+          chop, wash, or serve. The same action, context-dependent.</li>
+      <li><b>Tick the world.</b> Pots cook a step closer (or burn), and order timers count down. Expired orders apply a penalty.</li>
+    </ol>
+    <p>Driving the simulator directly is just a loop:</p>
+<pre><span class="k">from</span> cooksim <span class="k">import</span> KitchenGame, load_layout
+<span class="k">from</span> cooksim.agents <span class="k">import</span> GreedyChef
+
+game = <span class="f">KitchenGame</span>(<span class="f">load_layout</span>(<span class="s">"pizzeria"</span>), seed=<span class="s">0</span>)
+bots = [<span class="f">GreedyChef</span>(i) <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(game.n_players)]
+
+<span class="k">while not</span> game.done:
+    actions = [bot(game, i) <span class="k">for</span> i, bot <span class="k">in</span> <span class="f">enumerate</span>(bots)]
+    game.<span class="f">step</span>(actions)          <span class="c"># advance one tick</span>
+
+<span class="f">print</span>(game.score, <span class="f">dict</span>(game.stats))   <span class="c"># e.g. 1086.3  {'deliveries': 49}</span></pre>
+    <div class="callout blue">
+      <b>🧩 Separation of concerns.</b> The engine knows <em>nothing</em> about graphics or AI. It just owns the rules and emits a plain
+      data snapshot of the world each tick. The renderer, the network server, and the RL trainers are all thin shells around that one
+      snapshot — so each can change without touching the others.
+    </div>
+  </div>
+</section>
+
+<section id="rl">
+  <div class="wrap">
+    <div class="kicker">Lesson 5 · Teaching machines to cook</div>
+    <h2>Reinforcement-learning environments</h2>
+    <p>Because the engine is clean and deterministic, it makes an excellent <b>training ground</b> for AI. CookSim ships two standard
+       interfaces researchers already use:</p>
+    <ul>
+      <li><b>PettingZoo</b> (<code class="inline">CookSimParallelEnv</code>) — every cook is an agent acting at once. This is the canonical multi-agent,
+          fully-cooperative setting.</li>
+      <li><b>Gymnasium</b> (<code class="inline">CookSim-v0</code>) — control one cook against a fixed partner, the classic single-agent setup.</li>
+    </ul>
+<pre><span class="k">from</span> cooksim.envs <span class="k">import</span> CookSimParallelEnv
+
+env = <span class="f">CookSimParallelEnv</span>(layout=<span class="s">"open_kitchen"</span>, reward_mode=<span class="s">"shared"</span>)
+obs, info = env.<span class="f">reset</span>(seed=<span class="s">0</span>)
+<span class="k">while</span> env.agents:
+    actions = {a: env.<span class="f">action_space</span>(a).<span class="f">sample</span>() <span class="k">for</span> a <span class="k">in</span> env.agents}
+    obs, rewards, term, trunc, info = env.<span class="f">step</span>(actions)</pre>
+    <p>What does an agent actually <em>see</em>? Not pixels — a compact stack of <b>feature planes</b> laid over the grid: where I am,
+       where my teammates are, what's on every counter, how full and how cooked each pot is, plus the order queue and the clock.
+       It's everything you'd need to reason about the kitchen, in a form a neural network can read.</p>
+    <div class="callout green">
+      <b>✅ Reward shaping.</b> Delivering a dish is the real reward, but it's rare — so the env can hand out small bonuses for useful
+      sub-actions (chop something, fill a pot, plate a soup). That dense feedback is what makes a fresh agent start to learn instead
+      of flailing. You can switch it off for pure evaluation.
+    </div>
+  </div>
+</section>
+
+<section id="render">
+  <div class="wrap">
+    <div class="kicker">Lesson 6 · Making it look real</div>
+    <h2>A real-time 3D renderer</h2>
+    <p>This is where CookSim leaves the original far behind. The kitchen is a genuine <b>3D scene</b>, rendered live in your browser
+       with <b>WebGL via Three.js</b>. Counters and walls are real extruded geometry, chefs are 3D characters, and the food are little
+       3D models — all lit by a virtual studio:</p>
+    <div class="chips">
+      <span class="chip">☀️ A key light casting <b>soft real-time shadows</b> (shadow maps)</span>
+      <span class="chip">🪞 <b>Image-based lighting</b> — steel pots &amp; pans reflect the room</span>
+      <span class="chip">🎞️ <b>ACES film tone-mapping</b> for a cinematic colour response</span>
+      <span class="chip">🌟 <b>Bloom</b> post-processing makes the oven &amp; sparks glow</span>
+      <span class="chip">🪵 Procedural wood &amp; tile <b>textures</b></span>
+      <span class="chip">♨️ Steam, fire and sparkle <b>particles</b>; smooth chef motion</span>
+    </div>
+    <p>Remarkably, there are still <b>no downloaded art assets</b>. Every pot, onion, chef and tile is built from primitive shapes and
+       procedural textures in code — so the whole game is self-contained, yet looks like a real kitchen from any angle.</p>
+    <div class="grid2">
+      <figure class="videowrap"><span class="live-badge">LIVE</span>
+        <video src="assets/pizzeria.mp4" poster="assets/pizzeria-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        <figcaption>Pizzeria — glowing ovens, cast shadows, reflective steel.</figcaption></figure>
+      <figure class="videowrap"><span class="live-badge">LIVE</span>
+        <video src="assets/burger.mp4" poster="assets/burger-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        <figcaption>Burger Bar — two chefs at the pans under studio lighting.</figcaption></figure>
+    </div>
+    <div class="callout">
+      <b>💡 Why it suddenly looks real.</b> Three ingredients do most of the work: <b>shadow maps</b> (so objects sit on the floor instead of
+      floating), <b>image-based lighting</b> (so metal reflects something instead of looking like flat grey paint), and <b>tone mapping</b>
+      (which compresses bright highlights the way a real camera does). Add a touch of bloom and the kitchen comes alive.
+    </div>
+  </div>
+</section>
+
+<section id="ai">
+  <div class="wrap">
+    <div class="kicker">Lesson 7 · The built-in chef</div>
+    <h2>How the AI chef thinks</h2>
+    <p>So you're never cooking alone, CookSim includes a hand-written "<b>GreedyChef</b>." It's not a trained network — it's a small,
+       readable decision-maker that plans like a person would:</p>
+    <ol class="steps-list">
+      <li><b>Pick a dish.</b> Choose an order it can actually finish in time, and <em>commit</em> — no flip-flopping mid-cook. When there
+          are several cooks, they deliberately pick <em>different</em> dishes so they don't trip over each other.</li>
+      <li><b>Produce the parts.</b> Carry raw items to the right station — onions to a pot, a patty to a pan, lettuce to a board —
+          and stand and chop where chopping is needed.</li>
+      <li><b>Assemble &amp; serve.</b> Grab a clean plate, ladle on the cooked food, add the chopped and raw bits, and walk it to the pass.</li>
+    </ol>
+    <p>Navigation is a <b>breadth-first search</b> across floor tiles to the nearest spot beside the target station; a small
+       anti-stuck rule breaks the rare deadlock when two cooks want the same tile.</p>
+    <div class="callout blue">
+      <b>🧠 Honest limits.</b> GreedyChef is a baseline, not a genius. Solo, it's strong — dozens of deliveries a round. With several
+      cooks in a tight kitchen it can still bump into itself, and the "Forced Coordination" map is deliberately unsolvable without true
+      teamwork. That gap is exactly the kind of problem the RL environments above exist to study.
+    </div>
+  </div>
+</section>
+
+<section id="editor">
+  <div class="wrap">
+    <div class="kicker">Lesson 8 · Make your own</div>
+    <h2>The visual level editor</h2>
+    <p>You don't have to write that tile-grammar by hand. The browser editor lets you paint a kitchen, drop in spawn points, resize
+       the grid, and validate that it's actually playable (it checks you have a pass, plates, and ingredient sources). It can also
+       <b>procedurally generate</b> a fresh kitchen, and import/export layouts as JSON.</p>
+    <figure><img src="assets/editor.png" alt="The CookSim level editor"/>
+      <figcaption>The editor: a tile palette on the left (sources, stations, terminals), the kitchen canvas, and a live legend.</figcaption></figure>
+    <p>Hit <b>▶ Play this layout</b> and your kitchen loads straight into the game — handed off through the browser's local storage,
+       no save files required.</p>
+  </div>
+</section>
+
+<section id="play">
+  <div class="wrap">
+    <div class="kicker">Lesson 9 · A real game loop</div>
+    <h2>Pick a kitchen, earn your stars</h2>
+    <p>CookSim wraps all of this in an actual game: a level-select screen, a co-op mode (two cooks on one keyboard, or fill empty
+       seats with bots), a countdown round, and a star rating when service ends.</p>
+    <div class="grid2">
+      <figure><img src="assets/menu.png" alt="Level select menu"/><figcaption>Level select — every kitchen, co-op &amp; sandbox toggles.</figcaption></figure>
+      <figure><img src="assets/results.png" alt="Results screen with stars"/><figcaption>End-of-round stars, score, and your best.</figcaption></figure>
+    </div>
+    <p class="muted"><b>Controls.</b> Cook 1: arrow keys to move, Space to use. Cook 2: WASD + F. Hold interact on a board to chop,
+       on a sink to wash. Pots cook automatically when full — scoop with a clean plate, then deliver at the pass.</p>
+    <h3 style="margin-top:30px">Run it yourself</h3>
+<pre><span class="c"># create the environment and install</span>
+conda env create -f environment.yml
+conda activate cooksim
+
+<span class="c"># launch the game + editor server, then open http://127.0.0.1:8000</span>
+cooksim-server
+
+<span class="c"># or just use the simulator for AI research</span>
+python examples/greedy_demo.py
+pytest -q          <span class="c"># 20 tests: mechanics, RL conformance, determinism</span></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Recap</div>
+    <h2>What you just learned</h2>
+    <p>CookSim is one clean idea — a grid where a single <b>interact</b> action does everything — scaled into a complete game:</p>
+    <ul>
+      <li>A deterministic <b>engine</b> with multi-step cooking, burning, washing and timed orders.</li>
+      <li>Two standard <b>RL environments</b> (Gymnasium + PettingZoo) with grid-feature observations and reward shaping.</li>
+      <li>A self-contained <b>real-time 3D renderer</b> (Three.js) with shadows, reflections, bloom and particles — no art assets.</li>
+      <li>A <b>level editor</b>, procedural maps, a planning <b>AI chef</b>, and a menu→play→stars game loop.</li>
+    </ul>
+    <p class="muted">Every screenshot on this page is the real thing, captured straight from the running app.</p>
+  </div>
+</section>
+
+<script>
+  // Play each gameplay clip only while it's on screen (saves CPU/battery).
+  const vids = document.querySelectorAll("video");
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const v = e.target;
+      if (e.isIntersecting) { v.play().catch(() => {}); }
+      else { v.pause(); }
+    }
+  }, { threshold: 0.25 });
+  vids.forEach(v => io.observe(v));
+</script>
+<footer>
+  <div class="wrap">
+    <p>🍳 <b>CookSim</b> — built with Python, FastAPI &amp; PixiJS.
+       <span class="tag">engine</span><span class="tag">gymnasium</span><span class="tag">pettingzoo</span><span class="tag">webgl</span><span class="tag">editor</span></p>
+    <p class="muted">A teaching walkthrough of the project. Thanks for reading to the end.</p>
+  </div>
+</footer>
+</body>
+</html>
