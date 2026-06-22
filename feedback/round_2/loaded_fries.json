@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There are no animations for core interactions like picking up or placing items. The character model is completely static. Items teleport instantly between stations and the character's 'hands', which feels jarring and lacks clarity.",
+      "fix": "Implement a simple, quick 'reach' or 'bob' animation for the character when interacting. The character model needs arms to support this. Tween the item's position from the station to the character's hands over a few frames instead of teleporting it.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient. There are no directional lights, resulting in a lack of defined shadows, highlights, and depth. The scene looks washed out and lacks visual interest.",
+      "fix": "Add at least one key directional light to the scene to cast shadows and create highlights. This will give objects volume and make the 3D space much more readable and appealing. Consider baking lightmaps for better performance and quality.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "While progress bars indicate that a process like chopping is happening, the character remains perfectly still. This makes the action feel passive and visually uninteresting, failing to communicate the 'verb' of the action.",
+      "fix": "Add a looping animation to the character model during processing tasks. For chopping, this could be a simple up-and-down arm movement. This provides constant visual reinforcement of the player's action.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "All materials appear to be simple diffuse colors. Metal pots, wooden counters, and ceramic plates all have the same flat, matte finish, which makes the world feel artificial and plasticky.",
+      "fix": "Implement a basic PBR material workflow. Add specular/metallic and roughness properties to materials. Pots and pans should be metallic and shiny, while countertops could have a slight sheen. This will greatly improve the tactile quality of the visuals.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Realism & Immersion",
+      "problem": "Cooking stations lack secondary visual effects that sell the illusion of cooking. For example, the fryer pan has no bubbling oil or steam when an item is cooking in it.",
+      "fix": "Add context-specific particle effects to stations during use. The fryer should have a bubbling oil effect and emit a sizzle sound. Stoves could have a visible flame. These details are crucial for immersion.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The ingredient models are overly simplistic and can be misidentified. The 'potato' is a simple red sphere that is indistinguishable from a tomato.",
+      "fix": "Create more distinct and recognizable models for each ingredient. A potato should be brownish and ovoid. This is critical for player readability, especially as more complex recipes are introduced.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop with clear UI feedback, but it currently presents as a technical prototype, not a polished game. The primary issues are a complete lack of character animation for core interactions and flat, uninspired rendering, which make the gameplay feel static and visually dull. It does not yet approach the 'game feel' or visual quality of its target, Overcooked 2. Addressing the high-severity animation and lighting issues is the critical next step.",
+  "clip": "loaded_fries"
+}

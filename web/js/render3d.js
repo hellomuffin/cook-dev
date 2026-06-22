@@ -42,12 +42,9 @@ function mat(color, opts = {}) {
   return new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.72, metalness: 0.0 }, opts));
 }
 function tintFor(state, base) {
-  if (state === "burnt") return 0x2c2824;
+  if (state === "burnt") return 0x33302c;
   if (state === "cooked") {
-    // clearly browner & darker so cooked reads at a glance (round-1 critique)
-    const c = new THREE.Color(base);
-    c.lerp(new THREE.Color(0x7a3d1a), 0.5);
-    return c.getHex();
+    const c = new THREE.Color(base); c.offsetHSL(0, 0.05, -0.06); return c.getHex();
   }
   return base;
 }
@@ -55,11 +52,11 @@ function tintFor(state, base) {
 class KitchenRenderer3D {
   constructor(view) {
     const r = new THREE.WebGLRenderer({ canvas: view, antialias: true, powerPreference: "high-performance" });
-    r.shadowMap.enabled = true;
+    r.shadowMap.enabled = !window.__noshadow;   // disabled for GPU (ANGLE/Vulkan) headless recording
     r.shadowMap.type = THREE.PCFSoftShadowMap;
     r.outputColorSpace = THREE.SRGBColorSpace;
     r.toneMapping = THREE.ACESFilmicToneMapping;
-    r.toneMappingExposure = 0.98;
+    r.toneMappingExposure = 0.86;
     this.renderer = r;
 
     const scene = new THREE.Scene();
@@ -73,27 +70,25 @@ class KitchenRenderer3D {
 
     this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 
-    // lighting: a strong angled key for clear cast shadows, modest fill, low
-    // ambient so the shadows actually read (the round-1 critique: too flat).
-    const hemi = new THREE.HemisphereLight(0xfff4e2, 0x3a3340, 0.16);
+    // lighting (IBL provides ambient, so direct lights stay modest)
+    const hemi = new THREE.HemisphereLight(0xfff4e2, 0x2a2230, 0.28);
     scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xfff2dc, 2.6);
-    key.position.set(7, 11, 4);
+    const key = new THREE.DirectionalLight(0xfff0d6, 1.7);
+    key.position.set(6, 12, 5);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
-    key.shadow.bias = -0.0005;
-    key.shadow.normalBias = 0.025;
-    key.shadow.radius = 3;
+    key.shadow.bias = -0.0006;
+    key.shadow.normalBias = 0.02;
     const sc = key.shadow.camera;
     sc.near = 1; sc.far = 50; sc.left = -14; sc.right = 14; sc.top = 14; sc.bottom = -14;
     this.key = key; scene.add(key); scene.add(key.target);
-    const fill = new THREE.DirectionalLight(0x9fb6e0, 0.25);
-    fill.position.set(-7, 5, -4); scene.add(fill);
+    const fill = new THREE.DirectionalLight(0x9fb6e0, 0.22);
+    fill.position.set(-7, 6, -4); scene.add(fill);
 
-    // postprocessing — gentle bloom, only on truly bright emissive bits
+    // postprocessing — bloom only on genuinely bright (emissive) things
     this.composer = new EffectComposer(r);
     this.composer.addPass(new RenderPass(scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.5, 0.92);
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.6, 0.95);
     this.composer.addPass(this.bloom);
 
     this.staticGroup = new THREE.Group(); scene.add(this.staticGroup);
@@ -239,14 +234,9 @@ class KitchenRenderer3D {
       const left = new THREE.Mesh(this.box(0.12, 0.78, 0.5), frameMat); left.position.set(-0.42, 0.39, -0.1); left.castShadow = true; grp.add(left);
       const right = new THREE.Mesh(this.box(0.12, 0.78, 0.5), frameMat); right.position.set(0.42, 0.39, -0.1); right.castShadow = true; grp.add(right);
       const lintel = new THREE.Mesh(this.box(0.96, 0.16, 0.5), frameMat); lintel.position.set(0, 0.86, -0.1); lintel.castShadow = true; grp.add(lintel);
-      // warm-lit "kitchen behind" the pass (not a black void)
-      const opening = new THREE.Mesh(this.box(0.74, 0.6, 0.05),
-        new THREE.MeshStandardMaterial({ color: 0x6b4a30, emissive: 0xffaa55, emissiveIntensity: 0.5, roughness: 0.9 }));
+      // dark "kitchen behind" opening
+      const opening = new THREE.Mesh(this.box(0.74, 0.6, 0.05), mat(0x14161b, { roughness: 0.9 }));
       opening.position.set(0, 0.5, -0.28); grp.add(opening);
-      // a heat-lamp bar glowing over the pass
-      const lamp = new THREE.Mesh(this.cyl(0.04, 0.04, 0.72, 10),
-        new THREE.MeshStandardMaterial({ color: 0xff7a2a, emissive: 0xff6a1e, emissiveIntensity: 1.4 }));
-      lamp.rotation.z = Math.PI / 2; lamp.position.set(0, 0.72, -0.05); grp.add(lamp);
       // glowing hand-off shelf at the front edge — where the plate goes
       const shelf = new THREE.Mesh(this.box(0.84, 0.06, 0.34),
         new THREE.MeshStandardMaterial({ color: 0x8be0b0, emissive: 0x36c07e, emissiveIntensity: 0.9, roughness: 0.4 }));
@@ -362,35 +352,20 @@ class KitchenRenderer3D {
     hatB.position.y = 1.04; grp.add(hatB);
     const puff = new THREE.Mesh(this.sph(0.16), mat(0xffffff, { roughness: 0.5 }));
     puff.position.y = 1.16; grp.add(puff);
-    // arms — bigger, reaching forward with little hands, so it's clear the
-    // cook physically grabs / chops / places (round-1: "armless, no animation")
-    const armMat = mat(col, { roughness: 0.6 });
-    const handMat = mat(0xf2c9a0, { roughness: 0.6 });
-    const arm = (sx) => {
-      const a = new THREE.Group();
-      const upper = new THREE.Mesh(this.g("arm2", () => new THREE.CapsuleGeometry(0.075, 0.26, 5, 10)), armMat);
-      upper.position.set(0, -0.13, 0.04); upper.rotation.x = 0.4; upper.castShadow = true; a.add(upper);
-      const hand = new THREE.Mesh(this.sph(0.075), handMat); hand.position.set(0, -0.26, 0.16); a.add(hand);
-      a.position.set(sx * 0.24, 0.62, 0.12);   // shoulder
-      grp.add(a); return a;
-    };
+    // arms
+    const arm = (sx) => { const a = new THREE.Mesh(this.g("arm", () => new THREE.CapsuleGeometry(0.07, 0.22, 4, 8)), mat(col, { roughness: 0.6 })); a.position.set(sx * 0.3, 0.5, 0.16); a.rotation.x = -0.7; grp.add(a); return a; };
     const aL = arm(-1), aR = arm(1);
     // legs
     const leg = (sx) => { const l = new THREE.Mesh(this.g("leg", () => new THREE.CapsuleGeometry(0.09, 0.18, 4, 8)), mat(0x33343c, { roughness: 0.7 })); l.position.set(sx * 0.12, 0.18, 0); grp.add(l); return l; };
     const lL = leg(-1), lR = leg(1);
-    // eyes (on the front, so facing direction is legible)
-    const eye = (sx) => { const e = new THREE.Mesh(this.sph(0.028, 8), mat(0x222228)); e.position.set(sx * 0.07, 0.93, 0.17); grp.add(e); };
+    // eyes
+    const eye = (sx) => { const e = new THREE.Mesh(this.sph(0.025, 8), mat(0x222228)); e.position.set(sx * 0.07, 0.93, 0.16); grp.add(e); };
     eye(-1); eye(1);
-    // a hands anchor where carried items sit (chest height, out front)
-    const hands = new THREE.Object3D(); hands.position.set(0, 0.5, 0.34); grp.add(hands);
-    // soft contact shadow so the cook is always grounded
-    const blob = new THREE.Mesh(this.g("blob", () => new THREE.CircleGeometry(0.4, 24)),
-      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }));
-    blob.rotation.x = -Math.PI / 2; blob.position.y = 0.02; grp.add(blob);
     // number label sprite
     const spr = this._textSprite(String(p.id + 1), col);
-    spr.position.y = 1.5; spr.scale.set(0.42, 0.42, 1); grp.add(spr);
-    grp.userData = { legs: [lL, lR], arms: [aL, aR], torso: body, head, hands, heldSig: "0", held: null, reach: 0, pop: 0 };
+    spr.position.y = 1.45; spr.scale.set(0.4, 0.4, 1); grp.add(spr);
+    // an upper-body pivot so the cook can visibly lean in to interact
+    grp.userData = { legs: [lL, lR], arms: [aL, aR], torso: body, head, heldSig: "0", held: null, reach: 0, pop: 0 };
     this.dynGroup.add(grp);
     return grp;
   }
@@ -404,23 +379,21 @@ class KitchenRenderer3D {
 
     // cooks
     const seenCooks = new Set();
-    const interp = Math.min(1, dt * 6.5);   // slower catch-up -> visible sliding, not snapping
+    const interp = Math.min(1, dt * 12);
     for (const p of st.players) {
       seenCooks.add(p.id);
       let c = this.cooks[p.id];
       if (!c) { c = this.cooks[p.id] = { grp: this._buildCook(p), x: p.x, y: p.y, phase: Math.random() * 6 }; }
       c.x = lerp(c.x, p.x, interp); c.y = lerp(c.y, p.y, interp);
-      const moving = Math.abs(c.x - p.x) > 0.03 || Math.abs(c.y - p.y) > 0.03;
-      c.phase += dt * (moving ? 10 : 2.5);
-      const bob = moving ? Math.abs(Math.sin(c.phase)) * 0.07 : Math.sin(c.phase) * 0.012;
+      const moving = Math.abs(c.x - p.x) > 0.02 || Math.abs(c.y - p.y) > 0.02;
+      c.phase += dt * (moving ? 11 : 2.5);
+      const bob = moving ? Math.abs(Math.sin(c.phase)) * 0.06 : Math.sin(c.phase) * 0.015;
       const wp = this.toWorld(c.x, c.y);
-      c.grp.rotation.y = THREE.MathUtils.lerp(c.grp.rotation.y, DIR_YAW[p.dir_name] || 0, 0.22);
-      const sw = moving ? Math.sin(c.phase) * 0.6 : 0;
+      c.grp.position.set(wp.x, bob, wp.z);
+      c.grp.rotation.y = THREE.MathUtils.lerp(c.grp.rotation.y, DIR_YAW[p.dir_name] || 0, 0.3);
+      const sw = moving ? Math.sin(c.phase) * 0.5 : 0;
       const ud = c.grp.userData;
       ud.legs[0].rotation.x = sw; ud.legs[1].rotation.x = -sw;
-      // arms swing opposite to legs while walking (idle = relaxed down)
-      const walkArm = moving ? -Math.sin(c.phase) * 0.5 : 0;
-      ud.arms[0].rotation.x = walkArm; ud.arms[1].rotation.x = -walkArm;
 
       // --- interaction animation: a strong, timed "work" pulse -------
       // Triggered once per state where the cook interacts (so even a single
@@ -439,35 +412,30 @@ class KitchenRenderer3D {
       const pump = Math.abs(Math.sin(a * Math.PI * 2));          // two strokes
       const act = env * (0.55 + 0.45 * pump);                    // strong overall
 
-      if (act > 0.01) {
-        ud.torso.rotation.x = act * 0.5;                          // lean toward station
-        ud.head.position.z = 0.02 + act * 0.12;
-        // both arms chop/reach down-forward toward the station
-        const armAng = -act * 1.6;
-        ud.arms[0].rotation.x = armAng; ud.arms[1].rotation.x = armAng;
-        // a short lunge toward the faced tile, then settle
-        c.grp.position.set(wp.x + facing[0] * act * 0.18, bob, wp.z + facing[1] * act * 0.18);
-      } else {
-        ud.torso.rotation.x = 0; ud.head.position.z = 0.02;
-        c.grp.position.set(wp.x, bob, wp.z);
-      }
+      ud.torso.rotation.x = act * 0.6;                           // big lean toward station
+      ud.head.position.z = 0.02 + act * 0.14;
+      // arms swing out and down toward the station (clear reaching/chopping)
+      const armAng = -0.7 - act * 1.5;
+      ud.arms[0].rotation.x = armAng; ud.arms[1].rotation.x = armAng;
+      // the whole cook lunges toward the tile it faces, then settles back
+      c.grp.position.set(wp.x + facing[0] * act * 0.22, bob, wp.z + facing[1] * act * 0.22);
 
-      // held item — carried in the HANDS (out front), not stacked on the head
+      // held item
       const sig = this._itemSig(p.holding);
       if (sig !== ud.heldSig) {
-        if (ud.held) ud.hands.remove(ud.held);
+        if (ud.held) c.grp.remove(ud.held);
         ud.held = null;
         if (p.holding) {
           const m = this._itemMesh(p.holding);
-          ud.hands.add(m); ud.held = m;
+          c.grp.add(m); ud.held = m;
           ud.pop = 1;                                  // pop-in when just acquired
         }
         ud.heldSig = sig;
       }
       if (ud.held) {
         ud.pop = lerp(ud.pop, 0, Math.min(1, dt * 8));
-        ud.hands.position.set(0, 0.5 + act * 0.1, 0.34 + act * 0.22);   // thrust toward station while working
-        ud.held.scale.setScalar(0.78 * (1 - 0.5 * ud.pop));
+        ud.held.position.set(0, 0.5 + act * 0.12, 0.4 + act * 0.28);   // thrust toward station
+        ud.held.scale.setScalar(0.9 * (1 - 0.55 * ud.pop));
       }
     }
     for (const id in this.cooks) if (!seenCooks.has(+id)) { this.dynGroup.remove(this.cooks[id].grp); delete this.cooks[id]; }
@@ -509,26 +477,9 @@ class KitchenRenderer3D {
 
   _stationContent(grp, s) {
     if ((s.type === "pot" || s.type === "oven") && s.contents && s.contents.length) {
-      const baseY = s.type === "oven" ? 0.16 : 0.28;
-      // show the actual ingredient pieces sitting in the pot/oven so the
-      // contents & count are legible (round-1: "can't tell how many onions")
-      const n = s.contents.length;
-      s.contents.forEach((ing, i) => {
-        const m = this._ingredient(ing.name, ing.state);
-        const ang = n > 1 ? i / n * 6.28 : 0;
-        const r = n > 1 ? 0.1 : 0;
-        m.scale.setScalar(0.5);
-        m.position.set(Math.cos(ang) * r, baseY, Math.sin(ang) * r);
-        grp.add(m);
-      });
-      // plus a little broth/sheen pooled around them once cooking
-      if (s.status === "cooking" || s.status === "cooked" || s.status === "burnt") {
-        const col = this._mix(s.contents, s.status);
-        const liq = new THREE.Mesh(this.cyl(0.27, 0.25, 0.05, 20),
-          new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, transparent: true, opacity: 0.85,
-            emissive: new THREE.Color(col).multiplyScalar(s.status === "burnt" ? 0 : 0.12) }));
-        liq.position.y = baseY - 0.02; grp.add(liq);
-      }
+      const col = this._mix(s.contents, s.status);
+      const liq = new THREE.Mesh(this.cyl(0.28, 0.26, 0.1, 20), new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, emissive: new THREE.Color(col).multiplyScalar(s.status === "burnt" ? 0 : 0.15) }));
+      liq.position.y = s.type === "oven" ? 0.16 : 0.28; grp.add(liq);
     } else if (s.type === "pan" && s.contents && s.contents.length) {
       const m = this._ingredient(s.contents[0].name, s.contents[0].state); m.position.y = 0.08; m.scale.setScalar(0.85); grp.add(m);
     } else if (s.type === "cutting_board" && s.item) {
@@ -585,17 +536,17 @@ class KitchenRenderer3D {
       }
     }
   }
-  // A small, brief, neutral puff at the worked tile — a subtle "contact" cue,
-  // not a flashy magic sparkle (round-1 critique). The real signal is the
-  // cook's lunge/chop animation; this just punctuates it.
+  // A bright expanding ring + sparks at a station to mark "an action happened here".
   _useBurst(x, z) {
-    const top = CH + 0.28;
-    for (let i = 0; i < 3; i++) {
-      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._steamTex, transparent: true, depthWrite: false, blending: THREE.NormalBlending, color: 0xfff4dd }));
-      s.position.set(x + (Math.random() - .5) * 0.2, top, z + (Math.random() - .5) * 0.2);
-      s.scale.setScalar(0.16); s.material.opacity = 0.5; this.scene.add(s);
-      const a = Math.random() * 6.28;
-      this.particles.push({ spr: s, life: 0.6, vx: Math.cos(a) * 0.5, vz: Math.sin(a) * 0.5, vy: 0.7, kind: "puff" });
+    const top = CH + 0.5;
+    const ring = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._ringTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffe07a }));
+    ring.position.set(x, top, z); this.scene.add(ring);
+    this.particles.push({ spr: ring, life: 1, vy: 0, kind: "ring" });
+    for (let i = 0; i < 7; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      s.position.set(x, top, z); s.scale.setScalar(0.12); this.scene.add(s);
+      const a = i / 7 * 6.28;
+      this.particles.push({ spr: s, life: 1, vx: Math.cos(a) * 1.1, vz: Math.sin(a) * 1.1, vy: 1.0, kind: "spark", grav: -3 });
     }
   }
   _updateParticles(dt) {

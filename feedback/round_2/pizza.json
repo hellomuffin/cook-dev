@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook does not turn to face stations when interacting, nor does it have any pick-up, put-down, or 'use' animations. Items simply appear or disappear from its hands, making actions feel inert and difficult to read without watching the order list.",
+      "fix": "Implement logic for the cook to rotate towards the target station before an interaction. Add simple, quick animations for reaching to pick up/put down items and a generic 'working' animation at stations.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient, resulting in no shadows. This makes the 3D scene lack depth, objects appear to float, and it fails to leverage the benefits of a real-time 3D engine.",
+      "fix": "Add a primary directional light to the scene to cast soft, real-time shadows from the cook and kitchen fixtures. Implement Screen Space Ambient Occlusion (SSAO) to create contact shadows and improve the sense of volume.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are overly simplistic and uniform. Metal objects like the sink and ovens do not look metallic, and all surfaces have the same matte, plastic-like quality, which breaks the kitchen illusion.",
+      "fix": "Implement a basic PBR (Physically Based Rendering) material model. Differentiate surfaces with specular, roughness, and metallic properties to make metal look reflective, floors have a slight sheen, and other materials appear more believable.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The process of combining ingredients (e.g., adding tomato to dough) is an instant model swap with no feedback. It's not clear that an action has successfully occurred without looking closely at the item in the cook's hands.",
+      "fix": "Add particle effects and sound cues for successful interactions. For example, when adding tomato, show a small red 'splash' particle effect and play a sound to confirm the ingredient was added.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is instantaneous, snapping from one grid tile to the next. This feels jarring and robotic, lacking the fluid motion seen in reference titles like Overcooked.",
+      "fix": "Instead of instantly setting the character's position, smoothly interpolate (lerp) their position from the current tile to the next over a short duration (e.g., 0.1-0.2 seconds) to create a fluid sliding motion.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop and clean, readable models, but it critically lacks the polish needed to feel like a finished game. The two highest-priority issues are the complete absence of interaction animations and the flat, shadowless lighting. These omissions make the gameplay difficult to follow visually and fail to create a convincing 3D space. Addressing these two areas would dramatically improve the game's look and feel.",
+  "clip": "pizza"
+}

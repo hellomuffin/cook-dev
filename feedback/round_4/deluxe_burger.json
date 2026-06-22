@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The chef character lacks any action animations. For chopping, cooking, or plating, the character model remains static, which makes actions feel disconnected and lifeless. The core 'verb' of the game isn't visually represented.",
+      "fix": "Implement short, distinct character animations for key actions: a chopping motion with the arms, a 'place' motion for putting items down, and a 'pick up' motion. These don't need to be complex, but they are essential for game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering / Asset Clarity",
+      "problem": "The burger patty asset is visually confusing; it strongly resembles a fried egg. Furthermore, its appearance does not change after being cooked in the pan. The final assembled dish does not look like a burger.",
+      "fix": "Redesign the patty asset to look like a raw, round, red/brown meat patty. Create a separate 'cooked' texture/model that is browned. Ensure the final plated stack includes a visible top and bottom bun to be clearly identifiable as a burger.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility / Feedback",
+      "problem": "A successful delivery at the serving pass provides no satisfying feedback. The completed dish simply transfers from the chef's hands to the counter instantly and silently, making the loop's climax feel weak and unrewarding.",
+      "fix": "Add multi-sensory feedback for a successful delivery. This should include a positive sound effect (e.g., a 'ding' or 'swoosh'), a simple particle effect, and ideally a score indicator that briefly appears.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The overall lighting is flat, with minimal shadowing. This causes the character and objects to feel disconnected from the environment and removes a significant amount of depth from the scene.",
+      "fix": "Implement real-time shadows. At a minimum, add a simple projected 'blob' shadow under the character and any held items. For better results, use a directional light to cast shadows from the environment and character, which will ground them in the scene.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Design / Realism",
+      "problem": "The process for making a 'Deluxe Burger' is missing a key ingredient: the bun. Ingredients are placed directly onto a plate, which breaks the cooking illusion and mismatches the recipe description.",
+      "fix": "Introduce a 'Bun' ingredient station. The recipe logic should be updated to require placing ingredients onto a bottom bun, which is fetched from this new station. This makes the task more intuitive and the result more recognizable.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering / State Change",
+      "problem": "While ingredients change from raw to chopped, the cooking process lacks visual transformation. The patty in the pan looks the same before, during, and after cooking.",
+      "fix": "Update the material or model of the food item as it cooks. For example, the patty should gradually change color from red to brown in the pan, synchronized with the cooking timer.",
+      "severity": "Low"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement and rotation are instantaneous and robotic. The chef snaps to face interaction points and moves at a perfectly constant speed.",
+      "fix": "Add subtle interpolation (lerping) to character rotation so they turn smoothly towards stations. Apply a small amount of acceleration and deceleration to the start and end of their movement to make it feel more organic.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but falls far short of the target quality due to critical issues in game feel, asset clarity, and rendering. The lack of character animations, confusing food models, and missing feedback make the experience feel like a technical prototype, not a game. The highest priorities are implementing basic action animations and redesigning the food assets to be immediately recognizable.",
+  "clip": "deluxe_burger"
+}

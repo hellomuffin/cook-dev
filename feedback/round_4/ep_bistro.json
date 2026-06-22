@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Core player actions (pickup, place, chop, serve) are instantaneous state changes with no animation. The character simply stands still while a progress bar fills for chopping, and items pop in and out of existence. This makes interactions feel lifeless and unsatisfying.",
+      "fix": "Implement short, punchy animations for all key interactions. Add a 'reach' for pickup/place, a rapid chopping motion for cutting, and a slight 'push forward' motion for serving. These don't need to be complex, but they are critical for game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene's lighting is extremely flat and uniform, and shadows are simple, hard-edged blobs. This removes all sense of depth and material quality, making objects feel like they are floating in a void rather than grounded in a kitchen.",
+      "fix": "Implement a basic lighting model with a key light and a fill light to create more dynamic shading. Use soft shadow maps instead of hard ones. Most importantly, add Screen Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, which will immediately ground them in the scene.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "During a 'chop' action, the ingredient model on the cutting board does not change until the action is complete. The only feedback is the UI progress bar, which disconnects the player's action from the in-world object.",
+      "fix": "Visually represent the chopping progress on the ingredient model itself. This can be done by swapping to an intermediate model (e.g., 'half-chopped') halfway through, or by using a shader to reveal the 'chopped' texture. Pair this with small particle effects of vegetable bits flying off.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is rigid and robotic. The character snaps between grid squares and instantly changes direction without any transition, lacking any sense of weight or momentum.",
+      "fix": "Smooth the movement between grid squares using interpolation (lerping) instead of snapping. Add a quick rotation animation when the character changes direction. A subtle bob or squash-and-stretch on the character model during movement would also add significant personality.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass area is a generic black rectangle that fails to communicate its purpose visually. It's a critical interaction point but is the least detailed object in the scene.",
+      "fix": "Model the pass as a proper serving window with a countertop, a frame, and perhaps a heat lamp. When a dish is served, have it briefly appear on the pass counter before sliding away, providing much clearer feedback for a successful delivery.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials lack definition. Metal pots, wooden counters, and plastic ingredient bins all have a similar matte, diffuse appearance. The pots in particular do not read as metallic.",
+      "fix": "Introduce a simple PBR material workflow. Use roughness and metallic maps to differentiate surfaces. Give the pots a high metallic and low roughness value to create specular reflections, which will make them read as steel.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The game has a functional core loop that is clearly readable, which is a great start. However, it currently feels like a technical prototype, not a game. It critically lacks the animation, rendering polish, and tactile feedback ('juice') that make games like Overcooked 2 feel responsive and engaging. The highest priorities are to add basic interaction animations and implement a more robust lighting/shadow model to give the world depth and physicality.",
+  "clip": "ep_bistro"
+}

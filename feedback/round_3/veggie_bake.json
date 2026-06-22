@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "The 'chopping' action is completely missing. The character stands at the cutting board, but there is no animation, no change to the ingredient's model, and a confusing 'i' icon appears instead of a progress indicator.",
+      "fix": "Implement a distinct 'chopped' 3D model for each ingredient. Create a character animation for chopping. Add a visual progress bar over the cutting board during the action. Replace the 'i' icon with something intuitive, like a knife icon.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is robotic and lacks weight. The character slides across the grid at a constant velocity with no walk cycle, easing, or secondary motion.",
+      "fix": "Implement a proper walk cycle animation. Add acceleration and deceleration (easing) to the start and end of movements to make them feel more natural and less stiff.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are visually flat, uniform, and unconvincing. Metal pans look like grey plastic, and wood counters look like brown plastic, which detracts from the kitchen environment.",
+      "fix": "Use a physically-based rendering (PBR) shader. Create material maps (e.g., roughness, metallic) to differentiate surfaces. Metal should have high metallic and low roughness values; wood should be non-metallic with higher roughness.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering / Level Design",
+      "problem": "Kitchen stations are abstract and not easily identifiable. The ingredient dispensers are all identical brown boxes, and the ovens are simple black cubes, forcing the player to memorize the layout rather than recognize objects.",
+      "fix": "Model unique, recognizable meshes for each station type. An oven should have a door and handle, a cutting board should be a distinct board, and ingredient dispensers should visually indicate their contents (e.g., a potato model on the potato box).",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (picking up, placing items) are instantaneous, happening in a single frame. This makes the actions feel weak and unsatisfying.",
+      "fix": "Add short, non-blocking 'tween' animations for interactions. For example, a quick arm-reach animation for pickup/place. Augment these with small particle effects or sound cues to give them impact.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is harsh, with a single directional light creating sharp, aliased (jagged) shadows. This makes the scene feel sterile and lacks depth.",
+      "fix": "Soften the shadows using a technique like Percentage-Closer Filtering (PCF). Introduce a subtle ambient light or baked ambient occlusion to fill in the shadows and ground objects in the scene, giving them more volume.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The baking process in the oven is unclear. The oven door doesn't open, the item just teleports inside, and there is no progress indicator to show how long the cooking will take.",
+      "fix": "Animate the oven door opening and closing when an item is placed or removed. Display a UI timer or progress bar over the oven while it is active to clearly communicate the cooking state and duration.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional proof-of-concept, but it falls far short of the target quality. Core gameplay actions like chopping are not implemented visually, which is a critical failure of legibility. The overall presentation suffers from stiff animation, flat rendering, and a lack of satisfying feedback, making it feel more like a technical prototype than a game. The highest priorities should be implementing feedback for all core actions (especially chopping) and overhauling the animation and material systems to inject life and 'juice' into the experience.",
+  "clip": "veggie_bake"
+}

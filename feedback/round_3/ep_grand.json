@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook avatar has no walk or run animation. It slides across the floor like a robot, which feels unnatural and lacks character.",
+      "fix": "Implement a simple, looping walk cycle animation that plays whenever the character is moving. This is the highest priority for making the character feel alive.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The process of cooking and chopping lacks any visual state change. Ingredients on the cutting board or in a pan do not change appearance until the action is complete, at which point they are instantly swapped. The player cannot visually gauge progress.",
+      "fix": "Implement visual changes during processing. For cooking, use a shader or texture swap to gradually change the food's color (e.g., raw patty to brown). For chopping, show the ingredient model being progressively sliced. Add particle effects like steam from pots and small chips from chopping.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The delivery/serve action is completely unclear. The cook stands at the pass, the held item vanishes, and the score updates. This is the climax of the gameplay loop and it has no impact or feedback.",
+      "fix": "Create a dedicated 'serve' animation where the cook pushes the plate forward. Make the plate visibly slide away on the pass. Add a rewarding particle effect (e.g., stars or a flash) and a prominent score popup at the delivery point to confirm success.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat, and objects don't feel grounded in the scene. Shadows are simple projected blobs that don't correspond to a light source, making the scene look cheap and disconnected.",
+      "fix": "Implement a better lighting model with a directional key light that casts soft, real-time shadows from the cook and key objects. Add Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, which will dramatically improve visual depth.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There are no interaction animations. The cook remains static while progress bars fill for chopping, cooking, etc. This makes the actions feel weightless and disconnected from the character.",
+      "fix": "Add short, non-blocking animations for interactions. For example, a quick 'pickup' motion, a looping 'chopping' animation with the arms, and a 'place' motion. These are critical for game 'juice'.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "All materials look like simple, diffuse plastic. There is no variation in surface properties like shininess or texture, which makes the scene look monotonous.",
+      "fix": "Introduce specular and roughness properties to materials. Make metal pots and pans metallic and reflective, countertops have a slight sheen, and food items look appropriately moist or dry. This will add significant visual interest.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Gameplay Mechanics",
+      "problem": "The cook cannot place an ingredient onto a held plate. The workflow requires placing processed ingredients on a counter, then picking up a plate, then picking up the ingredient again to combine. This feels clunky and deviates from the Overcooked 2 feel.",
+      "fix": "Rework the inventory logic to allow the cook to add ingredients directly to a plate they are already holding. The plate should act as a container.",
+      "severity": "Low"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "When the cook interacts with a station, their rotation change is instantaneous. This is jarring and contributes to the robotic feel.",
+      "fix": "When an interaction starts, smoothly interpolate (lerp) the character's rotation over a very short duration (e.g., 0.1 seconds) to face the station. This is a small change that adds a lot of polish.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game functions as a complex task simulator, but it currently fails to deliver the 'game feel' and visual legibility of Overcooked 2. The core issues are a complete lack of character animation and insufficient visual feedback for key actions like chopping, cooking, and serving. The rendering is too basic, resulting in a flat, lifeless look. To improve, the highest priorities should be adding a walk cycle, creating visual state changes for food during processing, and designing a satisfying and clear delivery sequence.",
+  "clip": "ep_grand"
+}

@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The chef character has no animations. It glides across the floor without a walk cycle and items instantly appear/disappear from its hands without any pickup, drop, or use animations.",
+      "fix": "Implement a basic walk cycle animation for movement. Add short, distinct animations for picking up an item, placing an item on a counter/station, and interacting with a station (e.g., a quick chopping motion). This will add weight, personality, and make actions much clearer.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The 'Serve' or 'Deliver' action, the final step of the core gameplay loop, is not visually represented. A completed dish is placed on the serving pass, but there is no subsequent action or feedback to confirm a successful delivery to the customer.",
+      "fix": "Implement a dedicated 'Serve' action. When the player interacts with a completed, correct order on the serving pass, the dish should disappear, accompanied by a rewarding sound effect and visual effect (e.g., a 'poof' or slide-off animation). Score/UI feedback should immediately follow.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Ingredient dispensers are abstract boxes with a 2D icon. This breaks the kitchen theme and lacks the charm of competitors like Overcooked, which use thematic models like vegetable crates or flour sacks.",
+      "fix": "Replace the generic boxes with 3D models that represent the ingredient source. For example, a stack of buns in a basket, a refrigerated container for patties, and a block of cheese on a stand. This will significantly improve immersion.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Plates are sourced from an undefined location. The chef moves to the sink area and a plate magically appears in its hands, but there is no visible stack of plates to indicate their origin.",
+      "fix": "Add a stack of clean plate models to the counter, likely near the sink. The chef's pickup action should visibly remove a plate from this stack. This clarifies the game's rules and makes the kitchen feel more like a real, functional space.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is very flat, consisting of a simple ambient and directional light. This results in a lack of depth and makes the scene feel less dynamic and visually engaging. Objects don't feel grounded in the scene.",
+      "fix": "Implement Screen Space Ambient Occlusion (SSAO) to create soft contact shadows and add depth. Consider adding subtle point lights near heat sources like the pans or oven to create more color variation and visual interest. Bake lightmaps for static geometry for higher quality results.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "There is no feedback for incorrect actions. The AI is able to place an incomplete dish (a bun on a plate) on the serving pass with no error sound, visual indicator, or gameplay consequence.",
+      "fix": "Implement clear failure feedback. If a player attempts an invalid action (e.g., serving an incomplete dish, combining incompatible ingredients), play a negative sound effect and show a visual cue like a red 'X' or a head-shake animation. The action should be blocked.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project is a functional but barebones prototype that successfully demonstrates the basic ingredient combination and cooking mechanics. However, it currently falls far short of the target quality due to critical, high-severity issues: a complete lack of character animation makes the game feel static and robotic, and the absence of a 'Serve' action leaves the core gameplay loop incomplete. The visual presentation is clean but overly simplistic, requiring more detailed models and advanced lighting to create an immersive and charming kitchen environment. The immediate priorities should be implementing animations for all character actions and adding clear feedback for a successful delivery.",
+  "clip": "cheeseburger"
+}

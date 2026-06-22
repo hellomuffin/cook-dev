@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Player interactions (pickup/place) are instantaneous and lack animation. The character doesn't turn to face stations, making actions feel weightless, robotic, and difficult to parse, especially when actions happen in quick succession.",
+      "fix": "Implement a short, non-interruptible 'interact' animation (~0.1-0.2s) where the character turns to face the station and briefly extends its arms. This creates a clear visual 'beat' for each action, greatly improving legibility and game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and uniform. There are no shadows cast by the character or any of the kitchen equipment, which makes the scene lack depth, volume, and visual appeal. Objects don't feel grounded in the environment.",
+      "fix": "Implement real-time shadows. A single directional light source casting dynamic shadows from the character would be a huge improvement. Additionally, bake ambient occlusion into the environment assets to create soft contact shadows where objects meet.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The visual state change for some ingredients is missing. For example, the rice model looks identical before and after being cooked in the pot, removing a key piece of visual information for the player.",
+      "fix": "Create distinct 3D models or textures for different ingredient states (e.g., raw vs. cooked rice, raw vs. fried egg). The cooked state should be clearly distinguishable at a glance.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character's movement is rigid. It slides between grid squares with no secondary motion, making it feel like a static object being translated rather than a living character.",
+      "fix": "Add a simple run cycle animation with a subtle head bob or body sway. Incorporate small 'anticipation' and 'overshoot' tweens when starting and stopping movement to give it more weight and personality.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials lack definition and all look like diffuse plastic. Metal pans, wooden counters, and tiled floors have no variation in shininess or texture, making the scene look cheap and monotonous.",
+      "fix": "Switch to a PBR (Physically-Based Rendering) material workflow. Use roughness and metallic maps to define surfaces. For example, pans should have low roughness and high metallic values, while wood counters should have high roughness.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "The delivery action at the serving pass is anticlimactic. The plate simply vanishes with a generic particle puff, which doesn't provide a satisfying reward for completing an order.",
+      "fix": "Enhance the delivery feedback. Animate the plate sliding quickly off-screen through the pass. Accompany this with a more impactful, unique visual effect (e.g., a green checkmark, a shower of stars) and a rewarding sound effect.",
+      "severity": "medium"
+    },
+    {
+      "area": "Level Design",
+      "problem": "The kitchen layout is a large, empty, sterile box. It lacks the character, clutter, and spatial constraints that make the kitchens in Overcooked feel dynamic and challenging.",
+      "fix": "Break up the open space with counter islands, half-walls, or other obstacles. Add non-functional decorative props like shelves, ingredient sacks, or wall decorations to make the environment feel more like a real, chaotic kitchen.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The game has a functional core loop, but it critically lacks the visual polish and 'game feel' that define the genre. The highest priorities are to add basic interaction animations and implement real-time shadows. These two changes alone will dramatically improve action legibility and visual quality, moving the project from a technical prototype to something that feels like a game.",
+  "clip": "fried_rice"
+}

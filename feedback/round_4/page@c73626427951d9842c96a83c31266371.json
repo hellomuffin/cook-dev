@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character slides rigidly on the grid without a walk animation. This makes movement feel robotic and lacks the charm and life of the reference game.",
+      "fix": "Implement a simple, procedural walk cycle. Even a two-frame 'waddle' or 'bob' synchronized with movement speed would be a massive improvement over static sliding.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook does not rotate to face the station they are interacting with (e.g., cutting board, stove, ingredient bin). They remain facing forward while a progress bar appears, which looks disconnected and unnatural.",
+      "fix": "Before an interaction begins, snap or smoothly rotate the character model to face the target station. This is a fundamental requirement for conveying intent and action.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & VFX",
+      "problem": "Process-based actions like cooking and chopping lack dynamic visual feedback. A static progress bar is the only indicator until the state change happens instantly at the end.",
+      "fix": "Add continuous particle effects and animations during processes. For cooking, add steam from pots and bubbling textures. For chopping, add a knife model that animates up and down with small 'slice' particle effects.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The 'serve' action at the pass is visually indistinct from other interactions. The completed dish simply vanishes, providing no satisfying feedback for completing an order.",
+      "fix": "Create a unique visual effect for a successful delivery. The plate could slide off-screen across the pass, or a rewarding particle burst and sound effect could play. This reinforces the core gameplay loop.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is flat, uniform, and lacks directionality. This removes depth from the scene and makes the simple models look even more basic. Shadows are simple, unlit blobs.",
+      "fix": "Introduce a primary directional light to create highlights and cast real-time shadows from dynamic objects (cooks). For the static environment, bake ambient occlusion into the lightmaps to add contact shadows and depth.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Item transfers (picking up, placing down) are instantaneous. Objects teleport to and from the cook's possession, which feels abrupt and lacks weight.",
+      "fix": "Add micro-animations ('tweens') for item transfers. When picking up an item, have it quickly arc from the counter to the cook's hands over 0.1-0.2 seconds. This small change greatly improves game feel.",
+      "severity": "Low"
+    },
+    {
+      "area": "Rendering & Modeling",
+      "problem": "The ingredient dispensers are just generic counter slots with a floating icon. It's not immediately obvious what they are without looking closely, and it breaks the kitchen illusion.",
+      "fix": "Replace the generic slots with thematic models. Use a stack of plates for the plate dispenser, a crate of tomatoes for the tomato bin, a block of cheese on a platter, etc. This improves at-a-glance readability.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project is a solid functional prototype that successfully simulates the core mechanics of the genre. However, it currently lacks the essential animation, rendering, and VFX polish that define the look and feel of a commercial game like Overcooked 2. The highest priorities are adding basic character animation and ensuring the cook faces their interaction target, as these are critical for action legibility and breaking the 'robotic simulation' feel.",
+  "clip": "page@c73626427951d9842c96a83c31266371"
+}

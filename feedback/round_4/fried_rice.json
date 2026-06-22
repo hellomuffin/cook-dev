@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The scene's lighting is completely flat and ambient. There are no cast shadows from the character or any objects, which makes everything feel disconnected from the ground and removes all sense of depth.",
+      "fix": "Implement a primary directional light to cast real-time shadows. Use soft shadows (PCF) for a more stylized look. Add Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, grounding them in the scene.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility / Asset Design",
+      "problem": "Ingredients are represented by abstract geometric primitives (e.g., a yellow triangle for an egg/onion). This makes it impossible for a new player to understand what they are grabbing without memorization, breaking the cooking theme.",
+      "fix": "Replace all ingredient primitives with simple, stylized 3D models that are clearly identifiable (e.g., a cracked egg, an onion, a head of rice). The state changes (raw, chopped, cooked) should also be visually distinct models.",
+      "severity": "High"
+    },
+    {
+      "area": "Game Feel / Feedback",
+      "problem": "A successful delivery at the serving pass provides zero feedback. The plate and dish simply vanish. This is a critical failure of the core gameplay loop, as the player receives no confirmation or reward for completing their primary objective.",
+      "fix": "On successful delivery, trigger multiple layers of feedback: a visual effect (particle burst, plate sliding away), an audio cue, and a UI update (score number pops up and animates near the pass).",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Pick-up and put-down interactions are instantaneous. The object teleports between the station and the character's hands, which feels jarring, robotic, and lacks polish.",
+      "fix": "Add very brief (e.g., 100-200ms) 'reach' and 'place' animations. The character's model can slightly lean and extend its arms. This small addition will significantly improve the feel of interaction.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering / Environment",
+      "problem": "The kitchen stations are overly simplistic boxes that don't clearly communicate their function visually. The frying pan is a black circle, the pots are simple cylinders. They lack character and detail.",
+      "fix": "Model more distinct stations. The stove should have burners that glow when in use. The cutting board should have a knife model appear during the chopping action. Use textures and material properties like metallic shaders for pots and pans.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation / Movement",
+      "problem": "Character movement is rigid, linear, and snaps directly to grid positions. It feels robotic and lacks the lively, slightly bouncy feel of characters in Overcooked.",
+      "fix": "Apply easing (e.g., ease-in-out) to the movement interpolation between grid squares. Add a subtle procedural bob or squash-and-stretch to the character model during movement to give it more life.",
+      "severity": "Low"
+    },
+    {
+      "area": "Gameplay Logic",
+      "problem": "The recipe logic for 'Fried Rice' appears to involve chopping a raw egg before frying it. This is counter-intuitive and breaks the real-world logic that makes cooking games understandable.",
+      "fix": "Revise the recipe steps to be more intuitive. An egg should go directly to the pan to be fried. An onion should be chopped at the cutting board, then moved to the pan.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The core mechanics of a cooking game are functional, but the current implementation feels like a technical prototype, not a polished game. Critical issues in lighting, asset legibility, and player feedback prevent it from achieving the look and feel of its target inspiration. The highest priorities should be implementing shadows, creating recognizable food models, and adding satisfying feedback for serving a dish.",
+  "clip": "fried_rice"
+}

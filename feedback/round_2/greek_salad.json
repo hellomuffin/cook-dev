@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Gameplay Logic",
+      "problem": "The game accepts and awards full points for incomplete orders. A Greek Salad order, which requires three ingredients, was fulfilled multiple times with only a single ingredient (e.g., just chopped lettuce). This is a critical, game-breaking logic flaw.",
+      "fix": "Implement a validation check at the serving pass. The game should compare the ingredients on the submitted plate against the active order's recipe. Only award points and clear the order if the plate's contents are a perfect match.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks fundamental animations for interaction. Picking up, placing, and chopping actions are instantaneous events without any corresponding character movement. The cook slides instead of walking. This makes actions feel weightless, hard to follow, and devoid of personality.",
+      "fix": "Implement distinct, short animations for all key interactions: a walk/run cycle, a 'reach and grab' for pickups, a 'place' animation for putting items down, and a looping 'chopping' motion for the character model while the progress bar is active.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat, uniform, and lacks shadows. The absence of cast shadows from the cook and kitchen geometry makes the 3D scene look 2D, removing all sense of depth and making objects feel like they are floating.",
+      "fix": "Introduce a primary directional light source to the scene that casts real-time dynamic shadows. This will ground the character and objects in the environment. Augment this with baked or screen-space ambient occlusion (SSAO) to create soft contact shadows where objects meet.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The visual distinction between raw and processed ingredients is too subtle. For example, the raw lettuce (green sphere) and chopped lettuce look very similar, making it difficult to ascertain the state of an ingredient at a glance.",
+      "fix": "Create more distinct models for each ingredient state. A raw lettuce head should be a sphere, but chopped lettuce should be a small pile of green pieces. This visual clarity is essential for quick decision-making in a fast-paced game.",
+      "severity": "med"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Models and materials are overly simplistic, resembling placeholder assets. Ingredients are basic primitives (spheres, cubes) and surfaces like counters and floors are untextured, flat colors. This fails to match the stylized but detailed aesthetic of Overcooked 2.",
+      "fix": "Create higher fidelity models with more characteristic shapes. Apply simple, stylized textures and material properties (e.g., specular maps for metallic pots, roughness maps for wood) to add visual interest and differentiate surfaces.",
+      "severity": "med"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Successful actions, particularly serving a dish, lack satisfying feedback. The score simply updates numerically in the UI, which feels disconnected from the player's action in the 3D space.",
+      "fix": "Add 'juice' to the delivery action. When a correct order is served, trigger a visual effect at the pass (e.g., a particle burst, a score number popping up), animate the order ticket flying off the list, and play a positive confirmation sound effect.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project is a functional prototype but is not yet a playable game. It is critically hampered by a game logic bug that allows incomplete orders, and it lacks the fundamental animation and rendering polish (especially shadows) required for action legibility and player engagement. The top priorities must be fixing the order validation logic, adding core interaction animations, and implementing a basic lighting/shadow model.",
+  "clip": "greek_salad"
+}

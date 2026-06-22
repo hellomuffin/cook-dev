@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "A completed dish at 00:21 is served instantly without the cook physically carrying it to the serving pass. The dish teleports from the counter to the pass and the score updates immediately.",
+      "fix": "The cook must pick up the final plated dish, carry it to the serving pass, and perform a final 'serve' interaction. The score should only be awarded after this physical delivery action is completed.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations. It slides across the floor without a walk cycle and remains completely static when performing actions like chopping.",
+      "fix": "Implement a basic walk/run animation cycle for movement. Add short, distinct animations for interacting with stations (picking up, placing, chopping). Add a subtle idle animation.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chopping action lacks visual feedback. The cook is static and the only indicator is a progress bar. The ingredient model only changes state at the very end of the process.",
+      "fix": "While the progress bar fills, play a looping 'chop' animation on the cook model. Spawn small particle effects (e.g., food bits) to represent the chopping action. This will make the action feel impactful and legible.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The 3D scene is lit very flatly and lacks shadows. Objects, especially the cook, feel like they are floating and disconnected from the environment.",
+      "fix": "Add a real-time light source that casts shadows. At a minimum, implement a soft blob shadow decal under the cook to ground them. For better results, enable cascaded shadow maps for the whole scene and consider adding SSAO for contact shadows.",
+      "severity": "med"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are visually uniform and lack definition. The metal pot, wooden counters, and tile floor all have the same matte, plastic-like appearance.",
+      "fix": "Implement a PBR material workflow. Assign different roughness/metallic values to surfaces. For example, make the pot metallic and reflective, give the floor tiles a slight specular sheen, and keep the wood counters more diffuse.",
+      "severity": "med"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cooking process in the pot is visually static, only indicated by a progress bar. There is no visual effect to show that an active process is happening.",
+      "fix": "Add particle effects to the pot during cooking, such as rising steam and/or bubbling effects. This provides continuous feedback that the station is active.",
+      "severity": "low"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Interactions like picking up items, placing them on counters, or completing a recipe lack satisfying feedback. Events happen instantly without any visual flourish.",
+      "fix": "Add small, quick particle 'poof' effects for item pickups and placements. When a dish is served, make the score number briefly scale up and pop to add emphasis and positive reinforcement.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The simulation is a functional proof-of-concept, but it currently lacks the essential animation, rendering polish, and interaction feedback that define the target 'Overcooked 2' experience. The core gameplay loop is critically broken by an automatic delivery mechanic. Addressing the high-severity issues related to delivery, character animation, and action feedback is necessary to make it feel like a game.",
+  "clip": "sushi"
+}

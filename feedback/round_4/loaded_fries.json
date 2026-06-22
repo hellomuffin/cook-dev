@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Rendering",
+      "problem": "The scene completely lacks shadows. All objects, including the character, float without being grounded, which makes the 3D space look flat, unconvincing, and visually confusing.",
+      "fix": "Implement a real-time shadow solution. Start with simple projected blob shadows under the character and dynamic items. For higher quality, implement shadow mapping from a key light source (e.g., a directional light).",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character has no movement animation. It slides rigidly across the floor, which looks robotic and lacks personality. This significantly detracts from the 'game feel'.",
+      "fix": "Implement a basic walk cycle. Even a simple two-frame 'waddle' or a procedural up-and-down bob synchronized with movement speed would be a massive improvement over static sliding.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The plating action is unclear. When the cook holds a plate and picks up an ingredient, the ingredient floats separately above the plate. It's not clear that the ingredient is 'on' the plate until a later step.",
+      "fix": "When adding an ingredient to a held plate, the ingredient model should immediately snap to a logical position *on* the plate model. The character should be holding one composite object (the plated dish), not two separate ones.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and ambient, with no discernible light source. Materials lack physical properties (e.g., metal pans aren't shiny, countertops have no sheen), making the scene look dull.",
+      "fix": "Introduce a key light source to create highlights and define forms. Update materials to a PBR (Physically Based Rendering) workflow, adding specular and roughness properties to differentiate surfaces like wood, metal, and ceramic.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pickup, drop, use station) are instantaneous and lack any animation. The character just stops, and the object teleports. This feels abrupt and unsatisfying.",
+      "fix": "Add short, 'punchy' animations for interactions. For example, a quick dip-and-lift motion for pickup/drop, or a simple repeated vertical motion to signify 'using' a station. These don't need to be complex.",
+      "severity": "medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state change for cooked ingredients is not distinct enough. The raw potato and the fried potato are different models, but they lack the texture and color cues to be immediately readable as 'raw' vs 'cooked'.",
+      "fix": "Improve the food models and textures. The raw potato should look like a potato. The fried item should be a distinct golden-brown color with a sizzling texture to clearly communicate its 'cooked' state.",
+      "severity": "medium"
+    },
+    {
+      "area": "VFX",
+      "problem": "Visual feedback for actions is minimal. The small white puff particle effect is used for everything and is barely noticeable.",
+      "fix": "Create distinct and more impactful VFX for different actions. Use a sizzle/steam effect for cooking, a 'poof' of flour for chopping, and a satisfying sparkle/shine effect for a successful delivery.",
+      "severity": "low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass station is a visually uninteresting black box. It doesn't read as a window to serve food through.",
+      "fix": "Model the serving pass with more detail. Add a countertop surface, a heat lamp model above it, and perhaps a subtle texture or reflection on the 'window' to give it depth and context.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but suffers from critical issues in presentation that prevent it from feeling like a polished game. The lack of shadows, character animation, and clear plating mechanics are high-priority problems that severely impact legibility and game feel. It's a solid technical prototype but is not yet 'good enough' to be compared to its inspiration.",
+  "clip": "loaded_fries"
+}

@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations for core actions like walking, chopping, or interacting. The character slides rigidly across the floor and stands completely still during timed actions like chopping, which makes the game feel static and robotic.",
+      "fix": "Implement a basic walk/run cycle animation instead of sliding. Create distinct, short animations for interactions: a chopping motion with the arms, a reaching motion for picking up/placing items, and a scooping motion for plating soup. These are critical for game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient, with no shadows. This removes all sense of depth from the 3D scene, making objects feel like they are floating and giving the game a dated, low-fidelity look.",
+      "fix": "Implement a primary directional light to act as a key light, creating highlights and casting real-time shadows from dynamic objects like the cook. Even simple, hard-edged shadows would dramatically improve the visual quality and ground the objects in the scene.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "There is zero feedback for a failed delivery. At 0:34, the cook places an incorrect dish on the serving pass, and it just sits there. The game does not communicate why the order wasn't accepted, which is confusing and breaks the core gameplay loop.",
+      "fix": "Implement immediate and clear feedback for incorrect orders. This should include a visual effect (e.g., a red 'X' appears over the dish), an audio cue (a 'buzz' or 'fail' sound), and the dish should be rejected from the pass.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Ingredients and plates held by the cook are often too small and clip into the character's body, making it difficult to quickly identify what the character is holding.",
+      "fix": "Slightly increase the scale of held items. Define a specific attachment point on the character's 'hands' that holds the object slightly forward and away from the body to guarantee visibility and prevent clipping.",
+      "severity": "medium"
+    },
+    {
+      "area": "Realism & Illusion",
+      "problem": "Stations lack clear 'ready' or 'finished' states. For example, a pot of soup steams identically whether it's cooking or finished, forcing the player to look away from the action and at the UI ticket to know its status.",
+      "fix": "Add distinct visual cues to the world objects themselves. When a soup is finished cooking, the pot could stop steaming and emit a brief 'ding!' particle effect. This provides crucial in-world feedback and reduces UI dependency.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass is a featureless black rectangle. It's visually uninteresting and doesn't read as a 'pass' in a kitchen environment, breaking the illusion.",
+      "fix": "Model the serving pass with more detail. Give it a metallic or countertop texture, add a frame, and consider adding non-functional props like a heat lamp model above it or a small service bell to sell the concept.",
+      "severity": "low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The particle effect for chopping is a generic white puff, which looks more like steam or dust and does not visually communicate the action of 'chopping'.",
+      "fix": "Replace the puff with a more thematic particle effect. For example, quick, sharp 'slice' lines, or tiny, colored bits of the ingredient being chopped flying out briefly. Pair this with a chopping sound effect.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The simulation has a functional core logic for recipes and delivery, but it critically fails to meet the 'Overcooked 2' quality bar. The complete lack of character animation, shadows, and essential gameplay feedback (especially for failures) makes it feel like an early technical prototype, not a polished game. The highest priorities should be adding animations and real-time shadows, as these will provide the biggest improvements to game feel and visual quality.",
+  "clip": "ep_bistro"
+}

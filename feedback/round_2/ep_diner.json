@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character is completely static during timed actions like chopping or frying. There is no visual indication of the action being performed beyond a UI progress ring.",
+      "fix": "Implement looping character animations for timed actions. For chopping, animate the arms moving up and down with a knife. For cooking, have the character peer into the pot or pan. This is critical for legibility and game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and ambient, with no cast shadows from the cook or objects on the counters. This makes the 3D scene lack depth and feel disconnected, like sprites on a 2D background.",
+      "fix": "Implement a single directional light source that casts real-time shadows for dynamic objects like the cook and held items. For static geometry, bake ambient occlusion into the textures to ground the counters and stations.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The plating mechanic is illogical and hard to read. The cook, while already holding a plate, moves near a pan and the cooked food instantly teleports onto the plate.",
+      "fix": "Revise the interaction logic to match convention. The cook must pick up an empty plate, take it to the pan/pot, and interact. This action should then transfer the food item from the pan onto the plate.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Pick-up and put-down interactions are instantaneous. Objects pop into and out of existence in the cook's hands, which feels weightless and unsatisfying.",
+      "fix": "Add small, quick 'tween' animations for these interactions. For example, an item can quickly scale and arc from the counter to the cook's hand. Accompany this with a subtle particle effect or sound to add 'juice'.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "There is no feedback for a failed order when its timer expires. The order ticket simply vanishes from the list, which is anticlimactic and lacks impact.",
+      "fix": "Add clear failure feedback. When an order expires, play a distinct negative sound effect, add a red 'X' or 'Fail' stamp visual to the ticket before it disappears, and perhaps a small score penalty.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Object materials are too simplistic. Metal pots, wooden cutting boards, and plastic counters all have the same flat, diffuse material, making them visually indistinct and cheap-looking.",
+      "fix": "Introduce basic material properties using shaders. Use a metallic/roughness workflow to make pots and pans look metallic and shiny, and apply a subtle wood grain texture to cutting boards.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state change for ingredients (e.g., whole tomato to chopped tomato) is an abrupt and jarring model swap upon completion of the chopping action.",
+      "fix": "Mask the transition with a simple particle effect. A quick 'poof' of smoke or a stylized flash of light at the moment of the state change would make the transition feel more intentional and polished.",
+      "severity": "Low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass area is visually identical to a standard countertop, making its unique and critical function as the delivery point less immediately obvious.",
+      "fix": "Differentiate the serving pass visually. Change its countertop color/texture, or add a prop like a service bell, a heat lamp, or a small sign to clearly mark it as the destination for finished dishes.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project has a solid functional foundation as a simulation, but it currently lacks the essential animation, rendering, and feedback that define the 'game feel' of its inspiration, Overcooked 2. The experience is static and lacks impact. The highest priority issues to address are the lack of character animations for core actions (chopping), the flat lighting and absence of shadows, and the unintuitive plating mechanic. Addressing these high-severity items will be transformative for the player experience.",
+  "clip": "ep_diner"
+}

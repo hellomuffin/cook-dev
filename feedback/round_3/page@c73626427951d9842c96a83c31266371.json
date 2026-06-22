@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is instantaneous, snapping between grid tiles. This feels jarring and robotic, completely lacking the 'feel' of controlling a character.",
+      "fix": "Implement smooth tweening (e.g., linear interpolation or 'lerp') for movement between grid cells over a short duration. Even a simple, non-animated slide would be a massive improvement over teleporting.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character is static and has zero animations for any action (walking, idling, chopping, picking up, placing). Actions are conveyed only by progress bars and items appearing/disappearing.",
+      "fix": "Create and trigger simple, stylized animations for key interactions. A basic walk cycle, an up-and-down 'chopping' motion, and a 'reach' motion for pickup/putdown are essential to make the character feel alive and the actions intentional.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and uniform. There are no shadows cast by the character or any objects, which removes all sense of depth and makes the scene look like a 2D diagram.",
+      "fix": "Implement a directional light source to create depth and cast soft, real-time shadows from the cooks and dynamic objects. Add screen-space ambient occlusion (SSAO) to create contact shadows where objects meet, grounding them in the scene.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook does not rotate to face the station it is interacting with. It slides up to a counter and an item appears, making it unclear what the precise target of the interaction was.",
+      "fix": "Before an interaction begins, smoothly rotate the character model to face the target object (e.g., the specific ingredient bin, the cutting board). This small change drastically improves the clarity of the player's intent.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The character model is a primitive shape that carries items on its head. This breaks the kitchen illusion and lacks the charm of comparable games.",
+      "fix": "Redesign the character model to have a more distinct silhouette and, crucially, simple arms. Animations should show the character holding items in its hands/arms, not balancing them on its head.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "All materials are simple, diffuse colors. Metal pots, wooden counters, and ceramic plates all have the same flat, matte surface quality, making the world look plasticky and cheap.",
+      "fix": "Introduce basic material properties. Use a shader that allows for roughness/specular control to make metallic objects like pots and pans shiny, and plates have a slight sheen, while keeping counters matte.",
+      "severity": "Low"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "A successful delivery at the serving pass is anticlimactic. The completed dish simply vanishes from the cook's possession.",
+      "fix": "Add satisfying feedback for delivery. When the dish is placed on the pass, have it slide off-screen, and spawn a small particle effect and a floating score number to confirm the success.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The simulation's core logic is functional, with clear ingredient state changes and UI feedback. However, it currently fails as a 'game' experience due to a critical lack of animation, rendering polish, and game feel. The instantaneous movement and static character models make it feel like a technical demo rather than an engaging kitchen environment. The highest priorities are to implement smooth character movement and basic interaction animations, which will form the foundation for a playable and visually appealing game.",
+  "clip": "page@c73626427951d9842c96a83c31266371"
+}

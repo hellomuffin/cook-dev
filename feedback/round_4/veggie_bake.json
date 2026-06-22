@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility / Core Mechanics",
+      "problem": "The cook can hold multiple, separate items at once (e.g., a chopped potato, a raw mushroom, and a plate simultaneously at 00:11). This makes the character's state extremely difficult to parse and breaks the established rules of the genre.",
+      "fix": "Strictly enforce a 'one item held at a time' rule. To combine ingredients, the player must first pick up a plate and then add other ingredients to that plate one by one.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There are no pick-up or put-down animations. Items instantly snap to a position above the cook's head or onto a station. This makes interactions feel robotic and lacks the tactile feedback present in 'Overcooked 2'.",
+      "fix": "Implement short, non-blocking 'reach' animations for picking up and placing items. The character's arms should visibly interact with the target object/station to sell the action.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering & Lighting",
+      "problem": "The scene lighting is flat and ambient, resulting in a lack of depth. There are no dynamic shadows cast by the character or objects, making them appear to float and disconnected from the environment.",
+      "fix": "Introduce a primary directional light to the scene to cast soft, real-time shadows from the character onto the floor. Enhance ambient occlusion or add contact shadows beneath all counters and props to ground them in the scene.",
+      "severity": "medium"
+    },
+    {
+      "area": "Action Legibility / Visual Feedback",
+      "problem": "The visual state change between uncooked and cooked food on the plate is not distinct enough. It's difficult to tell at a glance if the dish taken from the oven is ready to serve.",
+      "fix": "Apply a distinct visual treatment to cooked food. For example, add a browned/toasted texture, a subtle emissive glow, or a persistent gentle steam particle effect to clearly signify the 'cooked' state.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Interactivity",
+      "problem": "Interactions with appliances like the oven are not visualized. The plate simply teleports into the static oven model, which provides no feedback other than a progress bar.",
+      "fix": "Animate the oven door opening when the player interacts with it to place an item, and closing afterwards. The item should appear to slide inside rather than vanishing.",
+      "severity": "low"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is linear and lacks weight. The cook starts and stops moving instantly, without any acceleration or deceleration, which feels unnatural.",
+      "fix": "Add easing (ease-in/ease-out) to the character's movement logic. A subtle 'squash' on stopping and 'stretch' on starting can also add significant personality and game feel.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "This is a strong functional prototype that successfully emulates the basic cooking game loop. However, it currently falls short of the 'Overcooked 2' quality bar due to a critical flaw in its core mechanic (multi-item carrying) that harms legibility. The visuals are clean but lack the necessary polish in lighting, animation, and feedback to create a convincing and satisfying game feel. The foundation is solid, but addressing the high-severity mechanical issue and layering in the suggested visual/animation polish is essential for the next iteration.",
+  "clip": "veggie_bake"
+}

@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The player character has no animations for interacting with the world. When picking up, placing, chopping, or plating items, the model remains completely static. It doesn't turn to face the station it's using, making actions feel disconnected and lifeless.",
+      "fix": "Implement a generic, short 'use' animation where the character leans forward slightly and their arms move. This single animation can be triggered for all interactions (pickup, place, chop start) to provide immediate feedback and make the character feel more alive. Also, ensure the character model smoothly rotates to face the object of interaction.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The feedback for delivering a finished dish is completely missing. The player moves to the serving pass and the plate simply vanishes. There is no score update, sound effect, or visual effect to confirm the successful completion of the core gameplay loop.",
+      "fix": "Add clear and satisfying feedback for delivery. This should include: 1) A visual effect at the pass-through (e.g., a 'whoosh' or sparkle). 2) The score visibly ticking up on the UI. 3) A temporary text pop-up over the pass-through (e.g., '+150'). This is critical for player motivation.",
+      "severity": "high"
+    },
+    {
+      "area": "Game Logic",
+      "problem": "The ingredient processing and plating logic is unclear and appears buggy. An egg is placed on a plate and instantly becomes a fried egg without being cooked on a pan. Later, a cooked patty is dropped on the floor instead of being added to the plate.",
+      "fix": "Strictly enforce the core cooking game logic: ingredients must be processed at the correct station (chopped on board, cooked on pan) *before* they can be placed on a plate. Combining items should only be possible on a plate or in a pot/pan, not by placing raw items on a plate to transform them.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is flat and lacks depth. There are no real-time shadows cast by the character or dynamic objects. This makes the 3D scene feel like a 2D drawing and disconnects the character from the environment.",
+      "fix": "Implement real-time dynamic shadows. Even a simple, hard-edged shadow projector under the character and any held items would dramatically improve the scene's depth and ground the objects in the space. Add a key directional light to create more defined highlights and shadows on the environment geometry.",
+      "severity": "medium"
+    },
+    {
+      "area": "Modeling & Rendering",
+      "problem": "The kitchen stations (pan, cutting board, serving pass) are extremely simplistic, often just being textured cubes or flat circles. They lack the visual identity and charm of the target game, making the kitchen feel generic and sterile.",
+      "fix": "Remodel the stations to have more distinct silhouettes and detail. The pan should be in a 3D pan model, not a flat circle. The cutting board could have a knife model appear during chopping. The serving pass should be modeled as a window or counter, not a black box. Use materials to differentiate surfaces (e.g., metallic pans, slightly glossy counters).",
+      "severity": "medium"
+    },
+    {
+      "area": "VFX",
+      "problem": "Visual effects for key actions like chopping are missing, and the cooking effect is minimal. The state change from raw to chopped happens instantly upon the timer's completion with no flourish.",
+      "fix": "Add simple, stylized VFX to punctuate actions. When chopping, spawn small 'slice' line effects and/or tiny vegetable particles. For cooking, enhance the smoke and consider adding a subtle sizzle effect. When a process finishes, add a small 'pop' or sparkle effect to draw the player's attention.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional skeleton for a cooking simulator, but it currently lacks the essential animation, feedback, and visual polish that make this genre compelling. The highest priorities are to fix the static character animations and the non-existent feedback on dish delivery. These issues fundamentally impact game feel and legibility. Following that, a pass on lighting, shadows, and station modeling is needed to approach the target aesthetic.",
+  "clip": "deluxe_burger"
+}

@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "The core cooking process is missing a key step. The recipe is 'Onion Soup', but the cook takes raw onions and puts them directly into the pot without chopping. This breaks the established 'gather -> chop -> cook' loop from Overcooked and makes the process feel incomplete and illogical.",
+      "fix": "Introduce a cutting board station. Require the player to take the raw ingredient to the cutting board and perform a 'chop' action, which changes the ingredient's visual state from 'raw' to 'chopped', before it can be placed in the pot.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There is no visual feedback for the cooking process. Onions are added to the pot and simply float on top. There is no indication that the pot is on, that cooking has started, or of its progress.",
+      "fix": "Implement a cooking timer/progress bar over the active pot. Add visual effects (VFX) like steam particles rising from the pot and bubbling liquid inside. Upon completion, change the pot's contents to a 'soup' model/texture.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "All interactions (picking up items, placing them in the pot, getting plates) are instantaneous. The character stops at a station, and the item teleports to/from their hands. This makes actions hard to read and feel weightless.",
+      "fix": "Add short, non-blocking 'use' animations for all interactions. For example, a quick arm-reach animation for picking up/placing, and a short 'tipping' motion when adding ingredients to a pot. This provides critical visual confirmation of the action.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and lacks depth. There is a single overhead light source creating soft, indistinct shadows. There is no ambient occlusion, causing objects to look like they are floating on surfaces.",
+      "fix": "Implement Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet. Introduce a secondary, less intense fill light to soften the harsh shadows and add more volume to the scene.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is floaty and disconnected from the ground. The character model glides or slides across the floor with a simple waddle animation that doesn't sync with the movement speed.",
+      "fix": "Implement a proper walk/run animation cycle where the character's feet appear to contact the ground (foot-planting). The animation speed should be tied directly to the character's velocity for a more grounded and responsive feel.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The kitchen stations are abstract and don't clearly communicate their function. The ingredient source is a generic brown block, and the serving pass is a plain black arch. This makes the kitchen layout difficult to parse at a glance.",
+      "fix": "Redesign the station models to have more distinct, function-driven silhouettes, similar to Overcooked. The onion source could be a crate of onions; the pot station should be a stovetop with burners; the serving pass should look like a service window.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "When ingredients are placed in the pot, their individual models are just piled on top, floating in a physically incorrect way. This will become visually cluttered and confusing with more complex recipes.",
+      "fix": "When an ingredient is added to the pot, its model should disappear, and the contents of the pot should change visually to represent the new mixture (e.g., the liquid level rises, the color/texture changes).",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 2,
+  "good_enough": false,
+  "summary": "The simulation is a very early prototype that demonstrates basic agent movement and object interaction. However, it critically fails on action legibility and game feel by omitting core gameplay mechanics like chopping and lacking essential visual feedback for cooking. The rendering and animation are placeholder-level, resulting in a flat, sterile presentation that is far from the target quality of Overcooked 2. The foundation is there, but the high-severity issues must be addressed for it to be a legible or engaging experience.",
+  "clip": "onion_soup"
+}

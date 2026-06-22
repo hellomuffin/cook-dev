@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The player character has no walk animation. It slides rigidly across the grid, which feels robotic and lacks the charm and life of the reference game.",
+      "fix": "Implement a basic walk cycle animation for the character. Even a simple up-and-down bob or a waddle synchronized with movement speed would be a massive improvement to game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Action Legibility",
+      "problem": "The character is static when performing actions like chopping or cooking. The only feedback is a UI progress bar, so the character's action is not visually represented.",
+      "fix": "Create distinct, simple animations for core interactions: a chopping motion at the cutting board, a 'placing' motion for putting items in pots/pans, and a 'reaching/grabbing' motion for pickups.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering & Lighting",
+      "problem": "The scene's lighting is very flat, ambient, and lacks direction. There are no strong highlights or defined shadows, making the scene look dull and objects appear to float.",
+      "fix": "Introduce a primary directional light (a 'key light') to create stronger, crisper shadows and specular highlights. Implement Screen-Space Ambient Occlusion (SSAO) to add contact shadows and ground objects in the scene.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering & Materials",
+      "problem": "Materials are visually indistinct. Metal pans, wooden counters, and ceramic plates all have a similar matte, diffuse appearance, which makes the scene less readable and visually uninteresting.",
+      "fix": "Update the shaders and material properties to differentiate surfaces. Add specular reflections to metallic and ceramic objects and a rougher, more diffuse look for wood.",
+      "severity": "Medium"
+    },
+    {
+      "area": "VFX & Game Feel",
+      "problem": "State changes and actions lack visual effects (VFX). Frying, plating, and serving are silent, instantaneous events with no particle effects to provide feedback.",
+      "fix": "Add particle effects for key actions: steam/bubbles from cooking stations, a small 'poof' or sparkle for successful plating and delivery, and chopping debris from cutting boards.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The final delivery action at the serving pass is weak. The completed dish instantly appears on the counter with no animation or effect, making a successful serve anticlimactic and easy to miss.",
+      "fix": "Animate the plate sliding into place on the serving pass, accompanied by a rewarding sound effect and a small visual flourish (e.g., stars, score text appearing).",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering & World Design",
+      "problem": "The serving pass is just a generic counter. This breaks the illusion that the kitchen is serving customers somewhere, as there is no visual connection to a dining area.",
+      "fix": "Model the serving pass as a distinct window or opening, which implies a space beyond the kitchen and reinforces the game's core objective.",
+      "severity": "Low"
+    },
+    {
+      "area": "Art Style & Scale",
+      "problem": "The scale of the cook character relative to the kitchen counters feels slightly off. The cook appears small and the counters seem too high, diminishing the character's presence.",
+      "fix": "Slightly increase the character model's scale or slightly decrease the height of the counter models to achieve a more balanced and believable proportion, similar to Overcooked.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop and excellent state clarity through its UI icons, making it a solid foundation for an AI simulation. However, it currently falls far short of the 'look and feel of Overcooked 2' goal. The complete absence of character animation and impactful VFX results in a static, weightless experience. The rendering is basic, with flat lighting and materials that fail to create a vibrant or believable kitchen space. The project is not yet 'good enough' as a game, but the logical framework is sound.",
+  "clip": "fish_and_chips"
+}

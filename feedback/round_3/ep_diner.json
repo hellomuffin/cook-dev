@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations for actions like chopping or cooking. They remain completely static, which makes the actions feel lifeless and less legible.",
+      "fix": "Implement simple, distinct character animations for core interactions. For chopping, a two-frame up/down arm motion. For cooking, a stirring or pan-shaking motion. This is critical for game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient. There are no cast shadows, which makes the scene lack depth and feel disconnected. The character and objects don't feel grounded in the environment.",
+      "fix": "Add a primary directional light to the scene to create highlights and cast soft real-time shadows from the character and dynamic objects. This is a fundamental step to improve visual quality.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is not animated; the character model instantly snaps from one grid tile to the next. This looks jarring and robotic.",
+      "fix": "Implement a smooth tween or linear interpolation (lerp) for movement between tiles instead of snapping. Accompany this with a simple walk/run animation cycle to make movement feel fluid.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Held items float awkwardly in front of the character's torso, not in their hands. It breaks the illusion that the character is carrying the object.",
+      "fix": "Attach the held object to a 'hand' node on the character's skeleton. Create a simple 'carry' pose animation where the character's arms are held forward to visually support the object.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "State changes and actions lack secondary visual feedback. A progress ring is the only indicator for cooking or chopping, which is purely UI.",
+      "fix": "Add simple particle effects to reinforce actions. For example, emit small 'chip' particles from the cutting board, steam from a boiling pot, and a sizzle/smoke effect from the frying pan.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Object materials are too simple and lack physical properties. Metal pots and pans look like flat grey plastic, and surfaces have no specular highlights.",
+      "fix": "Introduce a basic PBR (Physically-Based Rendering) material workflow. Use metallic and roughness maps to make metal surfaces look shiny and reflective, distinguishing them from other materials like wood or food.",
+      "severity": "medium"
+    },
+    {
+      "area": "Realism / Illusion",
+      "problem": "The delivery action at the serving pass is abrupt. The completed dish simply vanishes instantly.",
+      "fix": "Add a small visual flourish for a successful delivery. The plate could slide quickly off-screen, or a 'swoosh' particle effect could play as the score pops up, making the delivery feel more satisfying.",
+      "severity": "low"
+    },
+    {
+      "area": "UI/UX",
+      "problem": "The visual representation of ingredients on a plate is not always clear. When multiple chopped items are on a plate, they can be hard to distinguish.",
+      "fix": "Improve the visual representation of plated items. Ensure chopped ingredients have distinct shapes and colors, and consider arranging them on the plate in a consistent, non-overlapping way if possible.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The simulation is functionally sound, with clear UI and state progression. However, it critically fails to meet the 'Overcooked 2' quality bar due to a complete lack of character animation, dynamic lighting, and satisfying game feel. The experience is static and robotic. Addressing the high-severity issues of character animation and real-time lighting/shadows is essential to move this from a technical demo to feeling like a game.",
+  "clip": "ep_diner"
+}

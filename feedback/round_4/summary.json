@@ -1,0 +1,698 @@
+{
+  "round": 4,
+  "model": "gemini-2.5-pro",
+  "n_clips": 14,
+  "avg_rating": 3.21,
+  "ratings": {
+    "cheeseburger": 4,
+    "deluxe_burger": 3,
+    "ep_bistro": 4,
+    "ep_diner": 4,
+    "ep_grand": 3,
+    "fish_and_chips": 3,
+    "fried_rice": 3,
+    "greek_salad": 3,
+    "loaded_fries": 3,
+    "onion_soup": 2,
+    "page@c73626427951d9842c96a83c31266371": 3,
+    "pizza": 3,
+    "sushi": 3,
+    "veggie_bake": 4
+  },
+  "all_good_enough": false,
+  "n_high": 36,
+  "issues_by_severity": [
+    {
+      "area": "UI/UX / Action Legibility",
+      "problem": "Serving a completed dish provides zero feedback. The plated item simply vanishes from the cook's hands, with no corresponding change in score, UI, or any visual/audio confirmation.",
+      "fix": "Implement immediate and clear feedback for a successful delivery. This should include a particle effect at the serving pass, an audible confirmation sound, and the corresponding order ticket being marked as complete or disappearing.",
+      "severity": "High",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Game Feel / Action Legibility",
+      "problem": "The plating mechanic is convoluted and inefficient. The cook places a clean plate on the counter, picks up the cooked food, places it on the plate, and then picks the plated dish back up. This is unintuitive and slows down gameplay.",
+      "fix": "Adopt the standard mechanic from 'Overcooked'. If the player character is holding a plate, interacting with a finished food item (like a cooked patty on the pan) should transfer that item directly onto the plate the character is holding.",
+      "severity": "High",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The lighting is completely flat and uniform, and there are no shadows. This makes the 3D scene look 2D, removes depth, and makes it difficult to judge spatial relationships. The character feels like it's floating.",
+      "fix": "Introduce a primary directional light source to create depth and cast real-time soft shadows from the cook and key objects onto the floor and counters. Implementing Ambient Occlusion (SSAO) would also significantly improve the visual quality.",
+      "severity": "High",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The chef character lacks any action animations. For chopping, cooking, or plating, the character model remains static, which makes actions feel disconnected and lifeless. The core 'verb' of the game isn't visually represented.",
+      "fix": "Implement short, distinct character animations for key actions: a chopping motion with the arms, a 'place' motion for putting items down, and a 'pick up' motion. These don't need to be complex, but they are essential for game feel.",
+      "severity": "High",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Rendering / Asset Clarity",
+      "problem": "The burger patty asset is visually confusing; it strongly resembles a fried egg. Furthermore, its appearance does not change after being cooked in the pan. The final assembled dish does not look like a burger.",
+      "fix": "Redesign the patty asset to look like a raw, round, red/brown meat patty. Create a separate 'cooked' texture/model that is browned. Ensure the final plated stack includes a visible top and bottom bun to be clearly identifiable as a burger.",
+      "severity": "High",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Action Legibility / Feedback",
+      "problem": "A successful delivery at the serving pass provides no satisfying feedback. The completed dish simply transfers from the chef's hands to the counter instantly and silently, making the loop's climax feel weak and unrewarding.",
+      "fix": "Add multi-sensory feedback for a successful delivery. This should include a positive sound effect (e.g., a 'ding' or 'swoosh'), a simple particle effect, and ideally a score indicator that briefly appears.",
+      "severity": "High",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Core player actions (pickup, place, chop, serve) are instantaneous state changes with no animation. The character simply stands still while a progress bar fills for chopping, and items pop in and out of existence. This makes interactions feel lifeless and unsatisfying.",
+      "fix": "Implement short, punchy animations for all key interactions. Add a 'reach' for pickup/place, a rapid chopping motion for cutting, and a slight 'push forward' motion for serving. These don't need to be complex, but they are critical for game feel.",
+      "severity": "high",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene's lighting is extremely flat and uniform, and shadows are simple, hard-edged blobs. This removes all sense of depth and material quality, making objects feel like they are floating in a void rather than grounded in a kitchen.",
+      "fix": "Implement a basic lighting model with a key light and a fill light to create more dynamic shading. Use soft shadow maps instead of hard ones. Most importantly, add Screen Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, which will immediately ground them in the scene.",
+      "severity": "high",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks any interaction animations. For actions like chopping, picking up, or placing items, the model remains static. This makes the gameplay feel lifeless and disconnected from the 3D world.",
+      "fix": "Implement distinct, simple animations for core interactions. Add a 'reach' animation for picking up/placing, and a repetitive 'chopping' motion when at the cutting board. The character should also turn to face the station they are interacting with.",
+      "severity": "high",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient. There are no cast shadows from objects or the character, which makes the scene lack depth and feel like objects are floating. The overall look is very dated.",
+      "fix": "Introduce a primary directional light to the scene. This will create highlights and allow for real-time cast shadows from the cook and major props onto the floor and counters. This single change will dramatically improve visual quality and grounding.",
+      "severity": "high",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations. It slides across the floor instead of walking and stands perfectly still when performing actions like chopping or waiting. This makes the character feel lifeless and the actions weightless.",
+      "fix": "Implement a basic walk/run cycle animation for movement. Add a subtle idle animation. Create simple, expressive animations for interacting with stations (e.g., a chopping motion with arms, a 'placing' motion). These don't need to be complex, but they are essential for game feel.",
+      "severity": "high",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat, consisting of uniform ambient light. There are no discernible key light sources, leading to a lack of highlights, shading, and depth. The environment and objects do not cast shadows, making everything feel like it's floating in a non-physical space.",
+      "fix": "Introduce a primary directional light (like a sun or overhead kitchen light) to create highlights and cast shadows. Implement real-time shadows (or baked lightmaps with shadow blobs for performance) for the cook, counters, and objects. Add screen-space ambient occlusion (SSAO) to create contact shadows and give the scene depth.",
+      "severity": "high",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Game Feel / Visual Feedback",
+      "problem": "The cook does not visually hold ingredients. When an item is picked up (e.g., fish at 00:01), a particle effect appears, but the item itself is not visible with the character, making it impossible to know what they are carrying.",
+      "fix": "When the cook picks up an ingredient, its model should appear in their hands or hover above their head, similar to how the plate is shown at 00:21. This provides immediate, crucial feedback about the character's state.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "UI / VFX",
+      "problem": "Cooking processes lack clear visual indicators. When an item is placed in the fryer (00:17), the station glows orange, but there is no progress bar or timer to indicate how long the cooking will take or when it will be finished.",
+      "fix": "Implement a diegetic UI element, such as a circular progress meter, that appears over any active cooking station. The color of the meter can change from green to yellow to red to warn of overcooking.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Visual Feedback / Animation",
+      "problem": "Plating ingredients is not visualized. The cook holds an empty plate, interacts with cooking stations, but the ingredients never appear on the plate model. The player has no confirmation of what has been successfully plated.",
+      "fix": "When a cooked ingredient is combined with a plate the cook is holding, the ingredient's model must be added to the plate model that is hovering over the cook's head. The plate should visually accumulate all correct ingredients.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The scene's lighting is completely flat and ambient. There are no cast shadows from the character or any objects, which makes everything feel disconnected from the ground and removes all sense of depth.",
+      "fix": "Implement a primary directional light to cast real-time shadows. Use soft shadows (PCF) for a more stylized look. Add Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, grounding them in the scene.",
+      "severity": "High",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Action Legibility / Asset Design",
+      "problem": "Ingredients are represented by abstract geometric primitives (e.g., a yellow triangle for an egg/onion). This makes it impossible for a new player to understand what they are grabbing without memorization, breaking the cooking theme.",
+      "fix": "Replace all ingredient primitives with simple, stylized 3D models that are clearly identifiable (e.g., a cracked egg, an onion, a head of rice). The state changes (raw, chopped, cooked) should also be visually distinct models.",
+      "severity": "High",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Game Feel / Feedback",
+      "problem": "A successful delivery at the serving pass provides zero feedback. The plate and dish simply vanish. This is a critical failure of the core gameplay loop, as the player receives no confirmation or reward for completing their primary objective.",
+      "fix": "On successful delivery, trigger multiple layers of feedback: a visual effect (particle burst, plate sliding away), an audio cue, and a UI update (score number pops up and animates near the pass).",
+      "severity": "High",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pick up, place, serve) are instantaneous, happening in a single frame. The chef model does not have any animation for using its hands, making actions feel weightless and disconnected from the character.",
+      "fix": "Implement short, non-blocking 'interaction' animations for picking up, placing, and chopping. For example, a quick 'reach and grab' for pickup, and a 'place down' motion. These small delays add weight and provide crucial visual feedback.",
+      "severity": "High",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Core Gameplay",
+      "problem": "The chef can pick up a new item (e.g., a plate at 00:16) while already holding an ingredient (lettuce). When this happens, the originally held item simply vanishes. This is a critical logic bug.",
+      "fix": "Implement proper inventory logic. The chef should not be able to pick up a second item while their hands are full. Either block the action or implement a 'drop item' action first.",
+      "severity": "High",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chef does not turn to face the object or station they are interacting with. For example, at 00:06, the chef places cheese on a plate while facing away from the ingredient dispenser they just used. This breaks the illusion of interaction.",
+      "fix": "Before executing an interaction, the character controller must rotate the chef model to face the target object (counter, station, plate, etc.). This is fundamental for action legibility.",
+      "severity": "High",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene completely lacks shadows. All objects, including the character, float without being grounded, which makes the 3D space look flat, unconvincing, and visually confusing.",
+      "fix": "Implement a real-time shadow solution. Start with simple projected blob shadows under the character and dynamic items. For higher quality, implement shadow mapping from a key light source (e.g., a directional light).",
+      "severity": "high",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character has no movement animation. It slides rigidly across the floor, which looks robotic and lacks personality. This significantly detracts from the 'game feel'.",
+      "fix": "Implement a basic walk cycle. Even a simple two-frame 'waddle' or a procedural up-and-down bob synchronized with movement speed would be a massive improvement over static sliding.",
+      "severity": "high",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The plating action is unclear. When the cook holds a plate and picks up an ingredient, the ingredient floats separately above the plate. It's not clear that the ingredient is 'on' the plate until a later step.",
+      "fix": "When adding an ingredient to a held plate, the ingredient model should immediately snap to a logical position *on* the plate model. The character should be holding one composite object (the plated dish), not two separate ones.",
+      "severity": "high",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The core cooking process is missing a key step. The recipe is 'Onion Soup', but the cook takes raw onions and puts them directly into the pot without chopping. This breaks the established 'gather -> chop -> cook' loop from Overcooked and makes the process feel incomplete and illogical.",
+      "fix": "Introduce a cutting board station. Require the player to take the raw ingredient to the cutting board and perform a 'chop' action, which changes the ingredient's visual state from 'raw' to 'chopped', before it can be placed in the pot.",
+      "severity": "High",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There is no visual feedback for the cooking process. Onions are added to the pot and simply float on top. There is no indication that the pot is on, that cooking has started, or of its progress.",
+      "fix": "Implement a cooking timer/progress bar over the active pot. Add visual effects (VFX) like steam particles rising from the pot and bubbling liquid inside. Upon completion, change the pot's contents to a 'soup' model/texture.",
+      "severity": "High",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "All interactions (picking up items, placing them in the pot, getting plates) are instantaneous. The character stops at a station, and the item teleports to/from their hands. This makes actions hard to read and feel weightless.",
+      "fix": "Add short, non-blocking 'use' animations for all interactions. For example, a quick arm-reach animation for picking up/placing, and a short 'tipping' motion when adding ingredients to a pot. This provides critical visual confirmation of the action.",
+      "severity": "High",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character slides rigidly on the grid without a walk animation. This makes movement feel robotic and lacks the charm and life of the reference game.",
+      "fix": "Implement a simple, procedural walk cycle. Even a two-frame 'waddle' or 'bob' synchronized with movement speed would be a massive improvement over static sliding.",
+      "severity": "High",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook does not rotate to face the station they are interacting with (e.g., cutting board, stove, ingredient bin). They remain facing forward while a progress bar appears, which looks disconnected and unnatural.",
+      "fix": "Before an interaction begins, snap or smoothly rotate the character model to face the target station. This is a fundamental requirement for conveying intent and action.",
+      "severity": "High",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character has no walk/run animation and instead slides across the floor. This makes movement feel floaty, weightless, and disconnected from the environment.",
+      "fix": "Implement a basic walk cycle animation that plays when the character is moving. This will visually ground the character and add significant personality and game feel.",
+      "severity": "High",
+      "clip": "pizza"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "All interactions (pick up, put down, place in oven) are instantaneous 'snaps' with no animation. The character often doesn't even turn to face the station it's using.",
+      "fix": "Create a short, generic 'interact' animation (e.g., a small reach or dip). Trigger this and have the character model rotate to face the target station for any interaction. This will make actions deliberate and readable.",
+      "severity": "High",
+      "clip": "pizza"
+    },
+    {
+      "area": "Game Design",
+      "problem": "The character is able to carry multiple raw ingredients at once without a container. This is confusing, breaks the 'one action at a time' mental model of the genre, and leads to unclear game states.",
+      "fix": "Enforce a 'one item' carry limit. Raw ingredients must be combined on a plate or cutting board, which then becomes the single carried item. This aligns with genre conventions and improves clarity.",
+      "severity": "High",
+      "clip": "pizza"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "There is no visual feedback for a successful delivery. The plated dish simply vanishes at the serving pass, making the core success state of the gameplay loop completely invisible and unsatisfying.",
+      "fix": "Implement a clear visual and audio cue for successful delivery. For example, a green checkmark icon, a particle burst effect, and a positive 'ding' or 'order up' sound effect should occur at the serving pass.",
+      "severity": "High",
+      "clip": "sushi"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks any interaction animations. For chopping, cooking, and plating, the character model is completely static, merely standing next to the station. This makes it hard to tell what action is being performed and for how long.",
+      "fix": "Create and trigger distinct, short animations for each core interaction: a chopping motion with the arms, a stirring/placing motion for cooking, and a reaching motion for picking up or plating items. These are critical for game feel.",
+      "severity": "High",
+      "clip": "sushi"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Ingredient models are abstract, unrecognizable, and do not change state. It's impossible to tell a raw ingredient from a processed one (e.g., uncooked vs. cooked rice, whole vs. chopped fish). They appear as simple colored cylinders.",
+      "fix": "Create distinct 3D models for each ingredient and each of its states. A fish should look like a fish, and when chopped, it should become slices. Cooked rice should appear different from uncooked. This is fundamental to player understanding.",
+      "severity": "High",
+      "clip": "sushi"
+    },
+    {
+      "area": "Action Legibility / Core Mechanics",
+      "problem": "The cook can hold multiple, separate items at once (e.g., a chopped potato, a raw mushroom, and a plate simultaneously at 00:11). This makes the character's state extremely difficult to parse and breaks the established rules of the genre.",
+      "fix": "Strictly enforce a 'one item held at a time' rule. To combine ingredients, the player must first pick up a plate and then add other ingredients to that plate one by one.",
+      "severity": "high",
+      "clip": "veggie_bake"
+    },
+    {
+      "area": "Animation",
+      "problem": "The cook character lacks fundamental animations. It slides across the floor without a walk/run cycle and its arms are static during interactions, making actions like picking up and placing items feel disconnected and lifeless.",
+      "fix": "Implement a basic walk/run animation cycle. Create simple, quick 'reach' and 'place' animations for the arms that trigger when interacting with stations and ingredients. This will drastically improve action legibility and game feel.",
+      "severity": "Medium",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Rendering / Materials",
+      "problem": "Object materials lack definition. Metal surfaces like the frying pans and sink have no specular highlights and look like matte grey plastic. Countertops are a flat, uniform color.",
+      "fix": "Utilize PBR materials. Define metallic and roughness properties for surfaces. Pans should be metallic and somewhat reflective. Add a subtle texture or procedural noise to the countertops to break up the uniformity and add realism.",
+      "severity": "Medium",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Art / Environment Design",
+      "problem": "The serving pass is represented by a generic black box, which is not immediately identifiable as a place to serve food. Its function is not clear from its form.",
+      "fix": "Redesign the serving station to look like a kitchen pass-through window or an open counter. This is a universally understood visual metaphor for serving and would better fit the kitchen theme.",
+      "severity": "Medium",
+      "clip": "cheeseburger"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The overall lighting is flat, with minimal shadowing. This causes the character and objects to feel disconnected from the environment and removes a significant amount of depth from the scene.",
+      "fix": "Implement real-time shadows. At a minimum, add a simple projected 'blob' shadow under the character and any held items. For better results, use a directional light to cast shadows from the environment and character, which will ground them in the scene.",
+      "severity": "Medium",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Game Design / Realism",
+      "problem": "The process for making a 'Deluxe Burger' is missing a key ingredient: the bun. Ingredients are placed directly onto a plate, which breaks the cooking illusion and mismatches the recipe description.",
+      "fix": "Introduce a 'Bun' ingredient station. The recipe logic should be updated to require placing ingredients onto a bottom bun, which is fetched from this new station. This makes the task more intuitive and the result more recognizable.",
+      "severity": "Medium",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "During a 'chop' action, the ingredient model on the cutting board does not change until the action is complete. The only feedback is the UI progress bar, which disconnects the player's action from the in-world object.",
+      "fix": "Visually represent the chopping progress on the ingredient model itself. This can be done by swapping to an intermediate model (e.g., 'half-chopped') halfway through, or by using a shader to reveal the 'chopped' texture. Pair this with small particle effects of vegetable bits flying off.",
+      "severity": "medium",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is rigid and robotic. The character snaps between grid squares and instantly changes direction without any transition, lacking any sense of weight or momentum.",
+      "fix": "Smooth the movement between grid squares using interpolation (lerping) instead of snapping. Add a quick rotation animation when the character changes direction. A subtle bob or squash-and-stretch on the character model during movement would also add significant personality.",
+      "severity": "medium",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass area is a generic black rectangle that fails to communicate its purpose visually. It's a critical interaction point but is the least detailed object in the scene.",
+      "fix": "Model the pass as a proper serving window with a countertop, a frame, and perhaps a heat lamp. When a dish is served, have it briefly appear on the pass counter before sliding away, providing much clearer feedback for a successful delivery.",
+      "severity": "medium",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chopping action itself is not clearly visualized in the 3D space. The only indicator is a UI progress ring above the cook's head, which disconnects the action from the object being acted upon.",
+      "fix": "In addition to a character chopping animation, add particle effects at the cutting board during the action, such as small 'slice' effects. This provides direct visual feedback that the food item is being physically altered.",
+      "severity": "medium",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are too simple and lack physical properties. Metal pots look like dull grey plastic, and countertops are a single flat color. This reduces the visual appeal and clarity of different station types.",
+      "fix": "Introduce specular highlights by defining material properties like roughness and metallicness. Pots and pans should be shiny (low roughness, high metallic), while countertops could have a subtle texture and a slight sheen.",
+      "severity": "medium",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "A successful delivery, a key moment of accomplishment, has very little feedback. The plate simply disappears and the score updates. It feels anticlimactic.",
+      "fix": "Make the delivery more satisfying by adding a 'poof' or starburst particle effect, a score number that pops up from the serving pass, and a positive confirmation sound effect. This reinforces the player's success.",
+      "severity": "medium",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "While state changes are visible (raw vs. cooked), the actions themselves lack impact and clear feedback. There are no particle effects or other visual flourishes to confirm interactions.",
+      "fix": "Add visual effects (VFX) for key events. For example: a small 'poof' or sparkle when picking up/placing items, steam rising from cooking pots, sizzle lines from frying pans, and a celebratory particle burst at the serving pass upon successful delivery.",
+      "severity": "medium",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The models for food ingredients are overly simplistic, often just colored cubes (e.g., a red cube for a tomato, a blue cube for fish). This hurts the cooking theme and makes recipes harder to identify at a glance compared to Overcooked's more recognizable, stylized food models.",
+      "fix": "Remodel the food items to be more representative, while keeping the low-poly style. A tomato should be spherical, lettuce should be a leafy bunch, cheese a wedge. This will greatly improve the game's charm and visual clarity.",
+      "severity": "medium",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Player interactions (picking up, placing items) are instantaneous. The item simply teleports into the cook's hands. This feels robotic and lacks any sense of weight or physical interaction.",
+      "fix": "Add a very brief 'use' animation or tween for interactions. For example, when picking up an item, have it quickly move from the counter to the cook's hands over a few frames instead of instantly appearing. This small delay and visual motion adds a sense of physicality.",
+      "severity": "medium",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Animation / Game Feel",
+      "problem": "The character's interaction animations are missing. The cook does not turn to face the station they are using (e.g., at 00:17, they use the fryer while facing the floor). This looks unnatural and makes the interaction unclear.",
+      "fix": "The character model must rotate to face the object of interaction (counter, stove, sink) before the interaction logic is triggered. Add a small 'use' animation, even a simple lean-in, to signify an action is taking place.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The scene's lighting is flat, with no shadows or ambient occlusion. This removes all sense of depth, making objects look like they are floating and the overall image appear cheap and unfinished.",
+      "fix": "Add a primary directional light source to cast soft, real-time shadows. Implement Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, giving them weight and grounding them in the scene.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Rendering / Materials",
+      "problem": "All surfaces share a similar, diffuse, non-reflective material. Metal pots don't look metallic, and wood counters look like plain colored blocks. This makes the environment visually uninteresting and bland.",
+      "fix": "Utilize physically-based rendering (PBR) materials. Create distinct materials with appropriate metallic and roughness values for wood, metal, and ceramic surfaces to add visual variety and realism.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Art Direction / Modeling",
+      "problem": "The ingredient models are overly simplistic and difficult to identify. The 'fish' is a generic red shape and the 'potato' is a white one. This hurts the cooking theme and game clarity.",
+      "fix": "Remodel the ingredients to have more recognizable, albeit stylized, silhouettes. The fish should have a tail fin shape, the potato an ovoid shape, etc., to be instantly identifiable at a glance.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Pick-up and put-down interactions are instantaneous. The object teleports between the station and the character's hands, which feels jarring, robotic, and lacks polish.",
+      "fix": "Add very brief (e.g., 100-200ms) 'reach' and 'place' animations. The character's model can slightly lean and extend its arms. This small addition will significantly improve the feel of interaction.",
+      "severity": "Medium",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Rendering / Environment",
+      "problem": "The kitchen stations are overly simplistic boxes that don't clearly communicate their function visually. The frying pan is a black circle, the pots are simple cylinders. They lack character and detail.",
+      "fix": "Model more distinct stations. The stove should have burners that glow when in use. The cutting board should have a knife model appear during the chopping action. Use textures and material properties like metallic shaders for pots and pans.",
+      "severity": "Medium",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat and ambient, with no clear key light source. Shadows are simple, faint blobs under objects. This removes all sense of depth and makes the materials look dull.",
+      "fix": "Introduce a primary directional light to the scene to create highlights and cast sharper, more defined shadows. This will immediately add depth, volume, and visual interest to the models and environment.",
+      "severity": "Medium",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The design of the kitchen stations is too abstract and minimalist. The cutting board is just a grey square, and the serving pass is an undifferentiated part of the counter. Their function is not immediately obvious from their appearance.",
+      "fix": "Add simple, iconic details to each station. Place a static knife model on the cutting board. Frame the serving pass tile to look like a window. Add a tap to the sink. These cues help players instantly recognize station functions.",
+      "severity": "Medium",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "There is a complete lack of secondary feedback (VFX, UI pops, etc.) for actions. When an ingredient is plated or a dish is served, the state change is silent and lacks impact, making success feel unrewarding.",
+      "fix": "Add simple particle effects for key moments: a 'poof' on pickup/placement, chopping lines for cutting, and a sparkle/chime for a successful delivery. This is a low-cost way to make the game feel much more responsive and alive.",
+      "severity": "Medium",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and ambient, with no discernible light source. Materials lack physical properties (e.g., metal pans aren't shiny, countertops have no sheen), making the scene look dull.",
+      "fix": "Introduce a key light source to create highlights and define forms. Update materials to a PBR (Physically Based Rendering) workflow, adding specular and roughness properties to differentiate surfaces like wood, metal, and ceramic.",
+      "severity": "medium",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pickup, drop, use station) are instantaneous and lack any animation. The character just stops, and the object teleports. This feels abrupt and unsatisfying.",
+      "fix": "Add short, 'punchy' animations for interactions. For example, a quick dip-and-lift motion for pickup/drop, or a simple repeated vertical motion to signify 'using' a station. These don't need to be complex.",
+      "severity": "medium",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state change for cooked ingredients is not distinct enough. The raw potato and the fried potato are different models, but they lack the texture and color cues to be immediately readable as 'raw' vs 'cooked'.",
+      "fix": "Improve the food models and textures. The raw potato should look like a potato. The fried item should be a distinct golden-brown color with a sizzling texture to clearly communicate its 'cooked' state.",
+      "severity": "medium",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and lacks depth. There is a single overhead light source creating soft, indistinct shadows. There is no ambient occlusion, causing objects to look like they are floating on surfaces.",
+      "fix": "Implement Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet. Introduce a secondary, less intense fill light to soften the harsh shadows and add more volume to the scene.",
+      "severity": "Medium",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is floaty and disconnected from the ground. The character model glides or slides across the floor with a simple waddle animation that doesn't sync with the movement speed.",
+      "fix": "Implement a proper walk/run animation cycle where the character's feet appear to contact the ground (foot-planting). The animation speed should be tied directly to the character's velocity for a more grounded and responsive feel.",
+      "severity": "Medium",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The kitchen stations are abstract and don't clearly communicate their function. The ingredient source is a generic brown block, and the serving pass is a plain black arch. This makes the kitchen layout difficult to parse at a glance.",
+      "fix": "Redesign the station models to have more distinct, function-driven silhouettes, similar to Overcooked. The onion source could be a crate of onions; the pot station should be a stovetop with burners; the serving pass should look like a service window.",
+      "severity": "Medium",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Rendering & VFX",
+      "problem": "Process-based actions like cooking and chopping lack dynamic visual feedback. A static progress bar is the only indicator until the state change happens instantly at the end.",
+      "fix": "Add continuous particle effects and animations during processes. For cooking, add steam from pots and bubbling textures. For chopping, add a knife model that animates up and down with small 'slice' particle effects.",
+      "severity": "Medium",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The 'serve' action at the pass is visually indistinct from other interactions. The completed dish simply vanishes, providing no satisfying feedback for completing an order.",
+      "fix": "Create a unique visual effect for a successful delivery. The plate could slide off-screen across the pass, or a rewarding particle burst and sound effect could play. This reinforces the core gameplay loop.",
+      "severity": "Medium",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is flat, uniform, and lacks directionality. This removes depth from the scene and makes the simple models look even more basic. Shadows are simple, unlit blobs.",
+      "fix": "Introduce a primary directional light to create highlights and cast real-time shadows from dynamic objects (cooks). For the static environment, bake ambient occlusion into the lightmaps to add contact shadows and depth.",
+      "severity": "Medium",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is very flat and ambient, with faint shadows. There is no material definition (e.g., specular highlights), making the scene look dull and plasticky.",
+      "fix": "Improve the lighting model. Add a stronger key light to create more defined shadows, introduce subtle specular highlights on materials like the sink, and consider adding screen-space ambient occlusion (SSAO) for contact shadows to give the scene depth.",
+      "severity": "Medium",
+      "clip": "pizza"
+    },
+    {
+      "area": "Feedback",
+      "problem": "Station interactions lack satisfying feedback. The oven door doesn't open, placing the final dish on the pass has no effect, and trashing items is silent and invisible.",
+      "fix": "Add secondary animations and effects. Make the oven door open/close. When a dish is served, add a 'poof' or 'shine' particle effect and a score indicator. Add a small particle effect when items are thrown in the trash.",
+      "severity": "Medium",
+      "clip": "pizza"
+    },
+    {
+      "area": "Environment Art",
+      "problem": "The serving pass is just a colored block and is not visually distinct from a preparation counter. Its critical function as the delivery point is not immediately obvious.",
+      "fix": "Redesign the serving pass to look like a kitchen window or pass-through counter. This provides a clear visual affordance that this is where food 'leaves' the kitchen.",
+      "severity": "Medium",
+      "clip": "pizza"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene's lighting is flat, lacking depth and definition. There are no strong cast shadows or ambient occlusion, making the environment feel disconnected and less tangible than the reference, Overcooked 2.",
+      "fix": "Implement a more advanced lighting model. At a minimum, bake ambient occlusion into lightmaps to create soft contact shadows where objects meet. Enable real-time shadows from a key light source to ground the character and dynamic objects.",
+      "severity": "Medium",
+      "clip": "sushi"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character moves by sliding without a walk/run animation. This makes the movement feel robotic and weightless.",
+      "fix": "Implement a looping walk/run animation that plays whenever the character is moving. This is a baseline requirement for character-based games.",
+      "severity": "Medium",
+      "clip": "sushi"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Station models are too generic and lack signposting. The ingredient dispensers are plain boxes, and the serving pass is a black rectangle. They don't visually communicate their function.",
+      "fix": "Redesign the station models to better represent their real-world counterparts. Ingredient bins should show the ingredient inside (e.g., a crate of fish). The serving pass should look like a kitchen window, possibly with a heat lamp or bell.",
+      "severity": "Medium",
+      "clip": "sushi"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There are no pick-up or put-down animations. Items instantly snap to a position above the cook's head or onto a station. This makes interactions feel robotic and lacks the tactile feedback present in 'Overcooked 2'.",
+      "fix": "Implement short, non-blocking 'reach' animations for picking up and placing items. The character's arms should visibly interact with the target object/station to sell the action.",
+      "severity": "medium",
+      "clip": "veggie_bake"
+    },
+    {
+      "area": "Rendering & Lighting",
+      "problem": "The scene lighting is flat and ambient, resulting in a lack of depth. There are no dynamic shadows cast by the character or objects, making them appear to float and disconnected from the environment.",
+      "fix": "Introduce a primary directional light to the scene to cast soft, real-time shadows from the character onto the floor. Enhance ambient occlusion or add contact shadows beneath all counters and props to ground them in the scene.",
+      "severity": "medium",
+      "clip": "veggie_bake"
+    },
+    {
+      "area": "Action Legibility / Visual Feedback",
+      "problem": "The visual state change between uncooked and cooked food on the plate is not distinct enough. It's difficult to tell at a glance if the dish taken from the oven is ready to serve.",
+      "fix": "Apply a distinct visual treatment to cooked food. For example, add a browned/toasted texture, a subtle emissive glow, or a persistent gentle steam particle effect to clearly signify the 'cooked' state.",
+      "severity": "medium",
+      "clip": "veggie_bake"
+    },
+    {
+      "area": "Rendering / State Change",
+      "problem": "While ingredients change from raw to chopped, the cooking process lacks visual transformation. The patty in the pan looks the same before, during, and after cooking.",
+      "fix": "Update the material or model of the food item as it cooks. For example, the patty should gradually change color from red to brown in the pan, synchronized with the cooking timer.",
+      "severity": "Low",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement and rotation are instantaneous and robotic. The chef snaps to face interaction points and moves at a perfectly constant speed.",
+      "fix": "Add subtle interpolation (lerping) to character rotation so they turn smoothly towards stations. Apply a small amount of acceleration and deceleration to the start and end of their movement to make it feel more organic.",
+      "severity": "Low",
+      "clip": "deluxe_burger"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials lack definition. Metal pots, wooden counters, and plastic ingredient bins all have a similar matte, diffuse appearance. The pots in particular do not read as metallic.",
+      "fix": "Introduce a simple PBR material workflow. Use roughness and metallic maps to differentiate surfaces. Give the pots a high metallic and low roughness value to create specular reflections, which will make them read as steel.",
+      "severity": "low",
+      "clip": "ep_bistro"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is rigid and robotic. The cook starts and stops moving instantly, which lacks a sense of weight and fluidity.",
+      "fix": "Add a small amount of easing (acceleration and deceleration) to the character's movement. This is a minor code change that will make navigation feel significantly smoother and more organic without impacting responsiveness.",
+      "severity": "low",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The food models and plates are visually indistinct on the counter. When a chopped tomato is placed on a plate, it's hard to see against the white plate and light-colored counter.",
+      "fix": "Add a subtle drop shadow or an outline effect to items that can be picked up, especially when they are on plates or counters. This will improve their visual separation from the background and enhance legibility.",
+      "severity": "low",
+      "clip": "ep_diner"
+    },
+    {
+      "area": "UI/UX",
+      "problem": "The progress bars for actions like cooking and chopping are functional but visually plain. They don't provide any anticipatory or completion feedback.",
+      "fix": "Enhance the progress bars. Add a subtle screen shake or a 'flash' to the bar when an action is completed. Consider making the bar wiggle or pulse slightly as it nears completion to build tension.",
+      "severity": "low",
+      "clip": "ep_grand"
+    },
+    {
+      "area": "Animation",
+      "problem": "Character movement is stiff and robotic. The cook moves at a constant speed and snaps to new directions instantly, lacking the organic feel of the reference game.",
+      "fix": "Add animation blending and smoothing to the character's movement. Implement subtle acceleration/deceleration curves for starting and stopping, and smoothly interpolate the character's rotation when changing direction.",
+      "severity": "low",
+      "clip": "fish_and_chips"
+    },
+    {
+      "area": "Animation / Movement",
+      "problem": "Character movement is rigid, linear, and snaps directly to grid positions. It feels robotic and lacks the lively, slightly bouncy feel of characters in Overcooked.",
+      "fix": "Apply easing (e.g., ease-in-out) to the movement interpolation between grid squares. Add a subtle procedural bob or squash-and-stretch to the character model during movement to give it more life.",
+      "severity": "Low",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Gameplay Logic",
+      "problem": "The recipe logic for 'Fried Rice' appears to involve chopping a raw egg before frying it. This is counter-intuitive and breaks the real-world logic that makes cooking games understandable.",
+      "fix": "Revise the recipe steps to be more intuitive. An egg should go directly to the pan to be fried. An onion should be chopped at the cutting board, then moved to the pan.",
+      "severity": "Low",
+      "clip": "fried_rice"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character's walk cycle is a simple waddle that is disconnected from its movement. The feet slide across the ground, and the movement starts and stops instantly, which feels robotic.",
+      "fix": "Adjust the animation speed to better match the movement speed to reduce foot-sliding. Add very brief acceleration and deceleration curves to the character's movement to make it feel less rigid.",
+      "severity": "Low",
+      "clip": "greek_salad"
+    },
+    {
+      "area": "VFX",
+      "problem": "Visual feedback for actions is minimal. The small white puff particle effect is used for everything and is barely noticeable.",
+      "fix": "Create distinct and more impactful VFX for different actions. Use a sizzle/steam effect for cooking, a 'poof' of flour for chopping, and a satisfying sparkle/shine effect for a successful delivery.",
+      "severity": "low",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass station is a visually uninteresting black box. It doesn't read as a window to serve food through.",
+      "fix": "Model the serving pass with more detail. Add a countertop surface, a heat lamp model above it, and perhaps a subtle texture or reflection on the 'window' to give it depth and context.",
+      "severity": "low",
+      "clip": "loaded_fries"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "When ingredients are placed in the pot, their individual models are just piled on top, floating in a physically incorrect way. This will become visually cluttered and confusing with more complex recipes.",
+      "fix": "When an ingredient is added to the pot, its model should disappear, and the contents of the pot should change visually to represent the new mixture (e.g., the liquid level rises, the color/texture changes).",
+      "severity": "Low",
+      "clip": "onion_soup"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Item transfers (picking up, placing down) are instantaneous. Objects teleport to and from the cook's possession, which feels abrupt and lacks weight.",
+      "fix": "Add micro-animations ('tweens') for item transfers. When picking up an item, have it quickly arc from the counter to the cook's hands over 0.1-0.2 seconds. This small change greatly improves game feel.",
+      "severity": "Low",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Rendering & Modeling",
+      "problem": "The ingredient dispensers are just generic counter slots with a floating icon. It's not immediately obvious what they are without looking closely, and it breaks the kitchen illusion.",
+      "fix": "Replace the generic slots with thematic models. Use a stack of plates for the plate dispenser, a crate of tomatoes for the tomato bin, a block of cheese on a platter, etc. This improves at-a-glance readability.",
+      "severity": "Low",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The ingredient models are too similar when combined on the plate before cooking. The raw dough, tomato, and cheese blend into a single reddish blob.",
+      "fix": "Adjust the models or their placement on the plate so that the individual raw ingredients remain visually distinct before being cooked. For example, make the cheese a separate mesh on top rather than just a texture change.",
+      "severity": "Low",
+      "clip": "pizza"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Interaction VFX are minimal or non-existent. The pot has a very faint, repetitive steam effect, and there are no effects for chopping, which feels inert.",
+      "fix": "Add satisfying particle effects to stations during use. For chopping, add small food particles that fly out and quick 'slash' line effects. For cooking, make the steam/boiling effect more dynamic and responsive to the cooking state.",
+      "severity": "Low",
+      "clip": "sushi"
+    },
+    {
+      "area": "Animation & Interactivity",
+      "problem": "Interactions with appliances like the oven are not visualized. The plate simply teleports into the static oven model, which provides no feedback other than a progress bar.",
+      "fix": "Animate the oven door opening when the player interacts with it to place an item, and closing afterwards. The item should appear to slide inside rather than vanishing.",
+      "severity": "low",
+      "clip": "veggie_bake"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is linear and lacks weight. The cook starts and stops moving instantly, without any acceleration or deceleration, which feels unnatural.",
+      "fix": "Add easing (ease-in/ease-out) to the character's movement logic. A subtle 'squash' on stopping and 'stretch' on starting can also add significant personality and game feel.",
+      "severity": "low",
+      "clip": "veggie_bake"
+    }
+  ]
+}

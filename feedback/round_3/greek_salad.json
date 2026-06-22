@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility / Rendering",
+      "problem": "Key kitchen stations are not visually identifiable. The cutting board looks like a plate, and the serving pass looks like a coffee machine. This makes the core gameplay loop difficult to understand without prior explanation.",
+      "fix": "Remodel the stations to resemble their real-world counterparts in a stylized way. The cutting board should be a distinct rectangular board. The serving pass should be a clear counter or window.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "There is a complete lack of visual feedback ('juice') for player actions. Chopping, plating, and delivering are silent, static events that make the game feel unresponsive and unsatisfying.",
+      "fix": "Add particle effects for key actions: small vegetable bits that fly out during chopping, a subtle sparkle when an ingredient is successfully placed on a plate, and a rewarding visual flourish (e.g., a 'swoosh' or a green checkmark) when a dish is served.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting and materials are extremely flat, making the scene lack depth and visual appeal. Objects don't feel grounded in the environment due to the simple lighting and hard, uniform shadows.",
+      "fix": "Implement a more dynamic lighting setup. Add Screen Space Ambient Occlusion (SSAO) to create contact shadows. Use materials with specular properties for metallic or wet surfaces. Add a soft fill light to reduce the harshness of the main directional light.",
+      "severity": "Med"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The state change for ingredients (e.g., raw lettuce to chopped lettuce) is not distinct enough. The models are simple low-poly blobs that are hard to differentiate, especially when combined on a plate.",
+      "fix": "Create more distinct and recognizable models for each ingredient and its different states. A whole tomato should look different from a chopped tomato beyond just being a slightly smaller pile of red polygons.",
+      "severity": "Med"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character's pickup and placement actions are instantaneous. The object teleports into the chef's hands without any transition, which looks robotic and lacks a sense of physical interaction.",
+      "fix": "Add a brief, non-blocking 'reach' or 'use' animation. The chef's hands could quickly extend toward the target object or station, making the interaction feel more deliberate and connected to the world.",
+      "severity": "Low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The ingredient source stations are visually ambiguous. They are represented as plain brown boxes, which doesn't communicate their function as an infinite supply of a specific ingredient.",
+      "fix": "Model the ingredient sources to look like crates or bins filled with the corresponding food item. This makes their purpose immediately obvious and adds visual texture to the kitchen.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The core mechanics are implemented, but the simulation fails to create a believable or engaging kitchen environment. The highest priority issues are the lack of clear visual signifiers for stations and the absence of any feedback or 'juice' for player actions, which severely impacts legibility and game feel. The rendering is currently at a 'placeholder art' level and needs significant work to match the target style of Overcooked 2.",
+  "clip": "greek_salad"
+}

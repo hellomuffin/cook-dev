@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility / Rendering",
+      "problem": "Ingredients do not visually change state after being processed. For example, the 'fried egg' at 00:12 is still a sphere, the 'cooked rice' at 00:09 is still a raw cylinder, and the 'chopped onion' at 00:18 is still a whole sphere. This makes it impossible to visually confirm the state of an ingredient.",
+      "fix": "Create distinct 3D models for each ingredient's key states (e.g., raw, chopped, cooked, burned). The model should be swapped out when the process (chopping, cooking) completes. A fried egg should be flat, cooked rice should look fluffy, a chopped onion should be a pile of dice.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations for movement or interaction. It slides rigidly across the floor and items teleport into/out of its hands. This makes the game feel static, robotic, and lacks the charm of its inspiration.",
+      "fix": "Implement a basic walk/run cycle for character movement. Add short, non-blocking 'interaction' animations for picking up, placing, and using stations. Even simple 'pop and squish' procedural animations would be a huge improvement over nothing.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene lighting is completely flat and there are no shadows. This removes all sense of depth, making objects look like they are floating on a 2D plane. The character and objects don't feel grounded in the environment.",
+      "fix": "Add a real-time shadow casting light source. Even a single directional light would suffice. For performance, baked lightmaps for the static environment with dynamic shadows for the characters/items, or simple 'blob shadows' (dark circles) under dynamic objects, would ground them in the scene.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Successful delivery of an order provides good UI feedback (score update, ticket disappears), but the moment-to-moment actions of picking up, placing, and completing a cooking step have zero feedback. There are no sounds or visual effects.",
+      "fix": "Add small, satisfying particle effects and sound cues for key actions: a 'pop' for picking up, a 'thud' for placing, a 'ding' for a completed cooking process. This 'juice' is critical for making the core loop feel rewarding.",
+      "severity": "medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook character does not visually orient or 'reach' towards the station it is interacting with. It just has to be in proximity, which can sometimes look ambiguous, especially with adjacent stations.",
+      "fix": "When the interact button is pressed, have the character model quickly rotate to face the target station. This small change confirms the player's intent and makes the interaction clearer.",
+      "severity": "low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "All materials are simple diffuse colors. Metal pots, wooden counters, and tile floors all have the same flat, plastic-like material quality, which makes the scene look cheap and unrealistic for the style.",
+      "fix": "Introduce basic material properties. Use a physically-based rendering (PBR) workflow with specular/roughness maps to differentiate surfaces. Make metals look metallic, add some gloss to the floor, and keep wood matte. This will dramatically improve visual fidelity.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core logic loop, but it currently feels more like a proof-of-concept simulation than a game. It critically lacks the visual feedback, animation, and rendering polish necessary for good game feel and action legibility. The highest priorities are implementing visual state changes for ingredients and adding basic character animations, as their absence makes the gameplay difficult to read and unsatisfying to play.",
+  "clip": "fried_rice"
+}

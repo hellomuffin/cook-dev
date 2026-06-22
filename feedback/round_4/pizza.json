@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character has no walk/run animation and instead slides across the floor. This makes movement feel floaty, weightless, and disconnected from the environment.",
+      "fix": "Implement a basic walk cycle animation that plays when the character is moving. This will visually ground the character and add significant personality and game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "All interactions (pick up, put down, place in oven) are instantaneous 'snaps' with no animation. The character often doesn't even turn to face the station it's using.",
+      "fix": "Create a short, generic 'interact' animation (e.g., a small reach or dip). Trigger this and have the character model rotate to face the target station for any interaction. This will make actions deliberate and readable.",
+      "severity": "High"
+    },
+    {
+      "area": "Game Design",
+      "problem": "The character is able to carry multiple raw ingredients at once without a container. This is confusing, breaks the 'one action at a time' mental model of the genre, and leads to unclear game states.",
+      "fix": "Enforce a 'one item' carry limit. Raw ingredients must be combined on a plate or cutting board, which then becomes the single carried item. This aligns with genre conventions and improves clarity.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is very flat and ambient, with faint shadows. There is no material definition (e.g., specular highlights), making the scene look dull and plasticky.",
+      "fix": "Improve the lighting model. Add a stronger key light to create more defined shadows, introduce subtle specular highlights on materials like the sink, and consider adding screen-space ambient occlusion (SSAO) for contact shadows to give the scene depth.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Feedback",
+      "problem": "Station interactions lack satisfying feedback. The oven door doesn't open, placing the final dish on the pass has no effect, and trashing items is silent and invisible.",
+      "fix": "Add secondary animations and effects. Make the oven door open/close. When a dish is served, add a 'poof' or 'shine' particle effect and a score indicator. Add a small particle effect when items are thrown in the trash.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Environment Art",
+      "problem": "The serving pass is just a colored block and is not visually distinct from a preparation counter. Its critical function as the delivery point is not immediately obvious.",
+      "fix": "Redesign the serving pass to look like a kitchen window or pass-through counter. This provides a clear visual affordance that this is where food 'leaves' the kitchen.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The ingredient models are too similar when combined on the plate before cooking. The raw dough, tomato, and cheese blend into a single reddish blob.",
+      "fix": "Adjust the models or their placement on the plate so that the individual raw ingredients remain visually distinct before being cooked. For example, make the cheese a separate mesh on top rather than just a texture change.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop but is critically lacking in 'game feel' and visual feedback. The absence of basic animations for movement and interaction makes the gameplay feel sterile and hard to read. The rendering is flat, and key game mechanics deviate from genre norms in a confusing way. The foundation is present, but it needs significant polish in animation, rendering, and feedback to approach the quality of its inspiration.",
+  "clip": "pizza"
+}

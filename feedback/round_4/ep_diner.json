@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks any interaction animations. For actions like chopping, picking up, or placing items, the model remains static. This makes the gameplay feel lifeless and disconnected from the 3D world.",
+      "fix": "Implement distinct, simple animations for core interactions. Add a 'reach' animation for picking up/placing, and a repetitive 'chopping' motion when at the cutting board. The character should also turn to face the station they are interacting with.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is completely flat and ambient. There are no cast shadows from objects or the character, which makes the scene lack depth and feel like objects are floating. The overall look is very dated.",
+      "fix": "Introduce a primary directional light to the scene. This will create highlights and allow for real-time cast shadows from the cook and major props onto the floor and counters. This single change will dramatically improve visual quality and grounding.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chopping action itself is not clearly visualized in the 3D space. The only indicator is a UI progress ring above the cook's head, which disconnects the action from the object being acted upon.",
+      "fix": "In addition to a character chopping animation, add particle effects at the cutting board during the action, such as small 'slice' effects. This provides direct visual feedback that the food item is being physically altered.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Materials are too simple and lack physical properties. Metal pots look like dull grey plastic, and countertops are a single flat color. This reduces the visual appeal and clarity of different station types.",
+      "fix": "Introduce specular highlights by defining material properties like roughness and metallicness. Pots and pans should be shiny (low roughness, high metallic), while countertops could have a subtle texture and a slight sheen.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "A successful delivery, a key moment of accomplishment, has very little feedback. The plate simply disappears and the score updates. It feels anticlimactic.",
+      "fix": "Make the delivery more satisfying by adding a 'poof' or starburst particle effect, a score number that pops up from the serving pass, and a positive confirmation sound effect. This reinforces the player's success.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is rigid and robotic. The cook starts and stops moving instantly, which lacks a sense of weight and fluidity.",
+      "fix": "Add a small amount of easing (acceleration and deceleration) to the character's movement. This is a minor code change that will make navigation feel significantly smoother and more organic without impacting responsiveness.",
+      "severity": "low"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The food models and plates are visually indistinct on the counter. When a chopped tomato is placed on a plate, it's hard to see against the white plate and light-colored counter.",
+      "fix": "Add a subtle drop shadow or an outline effect to items that can be picked up, especially when they are on plates or counters. This will improve their visual separation from the background and enhance legibility.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The game is a strong proof-of-concept with a functional core loop and clear ingredient state changes. However, it currently lacks the essential polish that makes this genre feel alive and satisfying. The highest priorities for improvement are the complete lack of character interaction animations and the flat, shadowless lighting, which together make the game feel static and visually unappealing. It is not yet 'good enough' to be compared to its inspiration.",
+  "clip": "ep_diner"
+}

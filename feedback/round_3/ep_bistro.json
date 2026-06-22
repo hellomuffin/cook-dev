@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks any animation. It slides across the floor instead of walking/running and remains static when performing actions like chopping. This makes the character feel robotic and lifeless, and detracts significantly from the game feel.",
+      "fix": "Implement a basic walk/run animation cycle that plays during movement. Create short, distinct, non-looping animations for interactions: a chopping motion, a bend-and-place motion, etc. These are critical for personality and player feedback.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and uniform, and shadows are simple, faint blobs under dynamic objects. This causes the scene to lack depth, making objects appear to float and the overall visual quality look dated and simplistic.",
+      "fix": "Switch from blob shadows to real-time shadow mapping from a primary directional light source. This will ground all objects in the scene. Additionally, implement a screen-space ambient occlusion (SSAO) pass to create contact shadows and add richness.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cook does not rotate to face the station they are interacting with. They can be facing away from the cutting board while the chopping progress bar fills, which breaks immersion and looks like a bug.",
+      "fix": "Before an interaction begins, smoothly rotate the character model to face the target object (e.g., the counter, the pot, the serving pass). This is a simple change that will make actions feel more intentional and physically grounded.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "3D models and materials are very basic, resembling untextured placeholder assets. Pots are simple cylinders, food items are basic primitives, and surfaces have no texture or material definition (e.g., metallic, wood, ceramic).",
+      "fix": "Create more detailed models for key interactive elements like the pots, cutting boards, and the serving pass. Apply textures and PBR materials to differentiate surfaces\u2014make metal look metallic, wood look like wood, and add grout lines to the floor tiles.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Key gameplay events, particularly successful deliveries, lack satisfying feedback. The score changes and the ticket disappears, but the moment feels quiet and lacks impact.",
+      "fix": "Add audio-visual feedback. A successful delivery should trigger a positive sound effect (a bell, a chime, 'cha-ching') and a small particle effect at the serving pass. This reinforces the player's success and makes the loop more rewarding.",
+      "severity": "medium"
+    },
+    {
+      "area": "Realism/Illusion",
+      "problem": "Cooking stations lack associated hardware. For example, pots are placed directly on the countertop and begin cooking, with no visible stove, heating element, or flame.",
+      "fix": "Model a stovetop range underneath the pot stations. When a pot is actively cooking, add a visual effect to the burner below it (e.g., a glowing red coil or a gas flame particle effect) to sell the illusion of cooking.",
+      "severity": "low"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "When chopping, the ingredient being chopped remains in the cook's hands, not on the cutting board where the action is taking place. This creates a visual disconnect.",
+      "fix": "When the chopping action starts, parent the ingredient object to the cutting board station instead of the cook's hand. When the action is complete, the cook picks up the new, chopped version from the board.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 4,
+  "good_enough": false,
+  "summary": "The project is a strong functional prototype that successfully implements the core gameplay loop. However, it currently feels more like a technical simulation than a polished game. The highest-priority issues are the complete lack of character animation and the flat, uninteresting lighting model. Addressing these two areas will provide the most significant improvement in game feel and visual quality, moving it closer to the target aesthetic of Overcooked 2.",
+  "clip": "ep_bistro"
+}

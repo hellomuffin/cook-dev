@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Game Feel / Action Legibility",
+      "problem": "The final, most important action\u2014delivering the dish\u2014has zero feedback. The plated dish simply vanishes at the serving pass. This is anticlimactic and provides no sense of accomplishment or closure to the gameplay loop.",
+      "fix": "Implement clear success feedback for delivery. Add a 'whoosh' sound effect, a particle effect (e.g., stars, poof), and a brief visual confirmation like the score popping up near the pass. The dish should animate off-screen, not just disappear.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting and materials are extremely basic, resulting in a flat, sterile, and visually unappealing scene. Shadows are harsh and completely black, and objects lack volume and material definition (e.g., metallic pots, wet sinks).",
+      "fix": "Improve the lighting model. Implement Screen Space Ambient Occlusion (SSAO) for contact shadows and depth. Use soft shadow maps (e.g., PCF) instead of hard-edged ones. Introduce a simple PBR material workflow with roughness/metallic maps to differentiate surfaces. Add a subtle global ambient light to lift the shadows from pure black.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All 'pick up' and 'put down' actions are instantaneous. Items pop in and out of the cook's hands and onto surfaces. This feels jarring, robotic, and lacks any sense of physical interaction or weight.",
+      "fix": "Add brief (0.1-0.2s) 'reach and grab' and 'place' animations for all item interactions. The character should quickly turn and extend its arms. This small addition will significantly improve game feel without harming responsiveness.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation",
+      "problem": "The character has no walk animation. It slides rigidly across the grid, which looks unnatural and lacks personality. The character also doesn't rotate to face the direction of movement or interaction.",
+      "fix": "Implement a simple walk/waddle cycle animation that plays when the character is moving. The character model should smoothly rotate to face its current direction of velocity. This is fundamental for character presence.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Design / Action Legibility",
+      "problem": "The function of the sink station is ambiguous. The cook interacts with it to get a clean plate, but its visual design screams 'sink for washing'. This is confusing and inconsistent with the established genre conventions of Overcooked.",
+      "fix": "Clearly separate the functions. If the station provides clean plates, model it as a stack of plates. If it's a sink, it should be used for washing dirty plates, which would be a separate mechanic.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering / Art",
+      "problem": "The environment models for stations like the cutting board, serving pass, and stove are overly simplistic, often just being colored cubes. They don't effectively communicate their function at a glance.",
+      "fix": "Add more geometric and textural detail to the stations. The cutting board should have a knife model on it when idle. The serving pass needs to look like a window or counter, not a black box. The stove could have burners. These details help build the kitchen illusion.",
+      "severity": "Low"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chopping process is legible thanks to the progress bar, but the cooking process is not. An item (rice) is simply available for pickup from the pot with no indication of when it started cooking or how long it took.",
+      "fix": "Show the full cooking loop. The player should place a raw ingredient (e.g., uncooked rice) into the pot, which then triggers a progress bar/timer on the station itself. This makes the process an active task rather than just a dispenser of cooked goods.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game has a functional core loop for item collection, processing, and assembly, but it fails on presentation and feedback. The rendering is flat, animations are non-existent for key interactions, and the critical 'delivery' action provides no player satisfaction. It currently feels more like a technical prototype or a robotics simulator than an engaging cooking game. The high-severity issues with rendering, animation, and feedback must be addressed to approach the quality of the target inspiration.",
+  "clip": "sushi"
+}

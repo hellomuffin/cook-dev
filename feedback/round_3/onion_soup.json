@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no walk/run animation. It slides rigidly across the floor, which looks robotic and breaks player immersion.",
+      "fix": "Implement a procedural or keyframed walk cycle for the character. The animation speed should be synchronized with the character's movement speed. Add subtle head bobs or arm swings to make it feel more alive.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat, uniform, and lacks directionality. This results in a scene with no depth, no highlights, and muddy, overly soft shadows. Materials look like simple diffuse colors.",
+      "fix": "Implement a more robust lighting model. Use a directional key light to create distinct highlights and shadows, a soft ambient/fill light for bounced lighting, and consider adding screen-space ambient occlusion (SSAO) for contact shadows. Use PBR materials to give surfaces like the metal pot and wooden counters appropriate specular reflections.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Core interactions like picking up items and plating soup are instantaneous. The character doesn't turn to face the station or perform any animation, making the actions feel disconnected and lacking impact.",
+      "fix": "Add short, non-interruptible interaction animations. For pickups, make the character turn towards the object and perform a quick 'reach' motion. For plating, add a 'scoop' animation. These small delays add rhythm and make actions feel more deliberate.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "A core gameplay mechanic from Overcooked, chopping, is missing. Raw ingredients go directly into the pot, which simplifies the gameplay loop excessively and misrepresents the cooking process for soup.",
+      "fix": "Introduce a cutting board station. Require ingredients like onions to be taken to the cutting board and chopped (via a timed interaction) before they can be cooked. This involves creating a new 'chopped' state and model for the ingredient.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The kitchen stations (ingredient dispensers, plate dispenser, serving pass) are abstract geometric shapes that are not immediately identifiable.",
+      "fix": "Remodel the stations to better resemble their real-world counterparts within the game's style. The onion source could be a wooden crate, the plates a stack of plates, and the serving pass a clear window or counter.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "There is a lack of satisfying audio-visual feedback. Actions like picking up an item or successfully delivering a dish are silent and have minimal particle effects, reducing player satisfaction.",
+      "fix": "Add unique sound effects and more distinct particle effects for all key player actions: a 'pop' for pickup, a 'thud' for placing ingredients, a 'swoosh' for plating, and a rewarding 'cha-ching' or sparkle for a successful delivery.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The cooking process in the pot is legible due to the timer and checkmark, but the visual transformation of the ingredients into soup is too subtle.",
+      "fix": "Make the state change of the food in the pot more obvious. For example, the raw onions could visibly break down and dissolve into a liquid soup with a distinct color change upon completion.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 2,
+  "good_enough": false,
+  "summary": "The prototype has a functional core loop for item collection and processing, with clear feedback on the cooking timer. However, it currently fails to meet the goal of feeling like Overcooked 2. It critically lacks fundamental character animation (walking, interacting), a modern rendering pipeline for lighting and materials, and key gameplay mechanics like chopping. The overall feel is that of a technical pre-alpha, not a polished game. The highest priority should be implementing character animation and improving the lighting and materials.",
+  "clip": "onion_soup"
+}

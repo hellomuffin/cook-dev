@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Gameplay Logic",
+      "problem": "A critical bug completes the first order and awards points immediately after dropping only one of three required onions into the pot at 00:05. The core cooking loop is bypassed.",
+      "fix": "The game state must validate that all recipe steps are complete (3 onions in pot, then cooked) before the dish can be plated and considered complete.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Action Legibility",
+      "problem": "The cook has no arms or interaction animations. Items instantly appear/disappear in front of the character, making pickup and placement actions unclear and unsatisfying.",
+      "fix": "Implement simple, quick animations for picking up and placing objects. Even a simple 'reach' or 'bob down' motion would significantly improve legibility and game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Gameplay Logic",
+      "problem": "Score is awarded and orders are completed when the soup is plated, not when it is delivered to the serving pass. The act of delivering the dish has no effect.",
+      "fix": "Change the scoring event to trigger only upon successful delivery of a correct dish to the serving pass. This aligns with player expectation for the genre.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat, ambient, and lacks shadows. This causes the characters and objects to look like they are floating and makes the scene lack depth and visual appeal.",
+      "fix": "Add a primary directional light source (a 'key light') to the scene to cast soft, real-time shadows from the cook and dynamic objects. This will ground them in the environment.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The serving pass is a generic black block with minimal visual feedback. A successful delivery is unceremonious and easy to miss because the plate simply vanishes.",
+      "fix": "Redesign the serving pass to look like a service window. Add clear visual feedback for a successful delivery, such as the plate sliding away, a brief particle effect, or a color flash.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character moves by sliding rigidly across the floor. This looks robotic and lacks the personality and energy expected from this style of game.",
+      "fix": "Implement a basic walk/run animation cycle. Alternatively, add procedural animation like a subtle bob or squash-and-stretch during movement to make the character feel more alive.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Visual Clarity",
+      "problem": "When ingredients are placed in the pot, they just appear as floating spheres identical to their raw state. It's not clear they are 'in' the pot and being cooked.",
+      "fix": "When an ingredient is added to the pot, have it visually sink slightly and perhaps create a small splash particle effect. The contents of the pot should look like they are in a liquid, not just floating in air.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project has a functional base but is not yet a playable game due to critical logic bugs and a severe lack of feedback. The core gameplay loop is broken by incorrect scoring and recipe completion triggers. The highest priorities are fixing this logic and adding fundamental interaction animations (pickup/place) and visual feedback to make actions legible and satisfying. The current state feels more like a technical prototype than a game.",
+  "clip": "onion_soup"
+}

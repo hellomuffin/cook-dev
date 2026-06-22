@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The player character has no animations for movement or interaction. It slides rigidly across the floor (no walk cycle) and items instantly teleport into and out of its hands when picked up or placed.",
+      "fix": "Implement a basic walk/run animation cycle for movement. For interactions, add short (0.1-0.2s) 'reach' or 'use' animations where the character visibly interacts with the station or item. This will connect the character to the world and improve game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is flat and harsh, consisting of a single directional light source that creates sharp, aliased shadows. There is no ambient light or occlusion, which makes objects feel like they are floating and removes depth from the scene.",
+      "fix": "Implement Screen Space Ambient Occlusion (SSAO) to create soft contact shadows that ground objects. Use a shadow filtering technique like PCF to soften the main shadow edges. Add a global ambient light or an environment map to simulate bounced light and make the scene feel more cohesive.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "Ingredient dispensers are generic, colored boxes. It is impossible to identify what ingredient they provide without prior knowledge, which harms readability for new players or when introducing new recipes.",
+      "fix": "Redesign the ingredient dispensers to visually represent their contents. For example, the patty dispenser could be a stack of patties, the bun dispenser a bread rack, and the cheese dispenser a large block of cheese. This makes the kitchen layout instantly understandable.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "The delivery action at the serving pass is anticlimactic. The completed dish instantly vanishes from the cook's hands. This lacks the satisfying feedback that should accompany completing a primary objective.",
+      "fix": "Create a 'place on counter' animation for the delivery. The plate should appear on the pass for a brief moment before sliding off-screen, accompanied by a more impactful sound effect and possibly a small particle effect to celebrate the successful order.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The 3D models are overly simplistic and blocky, and the materials are uniformly diffuse. This gives the game a placeholder or prototype look rather than a stylized one. For example, the pans have no metallic sheen and the food looks like colored plastic.",
+      "fix": "Add bevels to the edges of models (counters, stations) to catch light and soften them. Introduce material property variations: make metal pans slightly reflective, countertops matte, and food items have a subtle specular sheen to differentiate surfaces.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The project successfully simulates the core gameplay loop with clear ingredient state changes, but it currently lacks the essential polish that makes a game feel alive. The highest priorities are to address the complete lack of character animation for movement and interaction, and to overhaul the sterile lighting model. These two areas are the biggest factors breaking the 'kitchen illusion' and making it feel more like a robotics simulation than a game.",
+  "clip": "cheeseburger"
+}

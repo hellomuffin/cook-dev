@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character has no walk cycle. It glides across the floor, which looks robotic and completely breaks the illusion of a living cook. This is the most jarring visual issue.",
+      "fix": "Implement a basic walk or run animation that is triggered by character movement. Even a simple 2-4 frame waddle would be a significant improvement to ground the character in the world.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "There are no animations for picking up or placing items. Objects snap into and out of a 'held' position in front of the character instantly. This makes interactions feel abrupt and lacks clarity.",
+      "fix": "Create simple 'reach and grab' and 'put down' animations. Attach held items to a hand socket on the character model so they move more naturally with the character.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The materials are uniformly diffuse and flat, making the scene look plasticky. Metal objects like pots and pans have no specular highlights and do not look metallic.",
+      "fix": "Switch to a Physically Based Rendering (PBR) material workflow. Add metallic and roughness maps to surfaces. Even simple values will make metal look like metal and differentiate surfaces, dramatically improving visual quality.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Shadows are faint, circular blobs that do not conform to the character's shape. This makes the character and objects feel disconnected from the ground, as if they are floating slightly.",
+      "fix": "Increase the opacity of the blob shadows to better ground the characters. For a higher quality fix, implement real-time shadow mapping from a key light source.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "When ingredients are stacked on a plate, they are perfectly centered. This looks unnatural and rigid, reinforcing the 'simulation' feel over a 'game' feel.",
+      "fix": "When an item is added to a stack, apply a very small, randomized positional and rotational offset. This will make the final dish look more organic and less perfect.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The visual feedback for which station is being interacted with is a very thin, faint green circle that is easy to miss. It doesn't clearly communicate the target of the player's action.",
+      "fix": "Make the interaction highlight more prominent. Use a larger, more opaque effect, make the base of the station glow, or add a downward-pointing arrow above the station, similar to Overcooked.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional prototype that successfully simulates the core cooking loop. However, it critically lacks fundamental animations (walking, interacting) and modern rendering features (PBR materials, robust shadows), which are essential for achieving the target look and feel of Overcooked 2. The current state feels lifeless and visually flat. Addressing the high-severity animation and rendering issues is the top priority.",
+  "clip": "deluxe_burger"
+}

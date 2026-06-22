@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "The core cooking logic is not represented. The character puts an empty plate in the oven and a fully-formed pizza comes out. The essential step of combining ingredients (dough, tomato, cheese) is missing entirely.",
+      "fix": "Implement a multi-stage recipe system. The player must first pick up a base ingredient (dough), place it on a counter or plate, and then add the other ingredients to it. The visual model of the dish-in-progress must update with each added ingredient before it can be cooked.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pickup, place, serve) are instantaneous. Objects snap in and out of the character's hands without any animation, and station doors (like the oven) don't open. This makes actions feel weightless and unclear.",
+      "fix": "Add short, non-blocking animations for all interactions. The character should perform a quick 'put down' or 'pick up' motion. Animate station components, such as the oven door opening and closing. Add particle effects (e.g., a small puff of smoke or sparkle) on successful actions.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is a stiff, linear glide. There is no walk cycle or easing, which makes the character feel robotic and unresponsive.",
+      "fix": "Implement a basic walk/run animation cycle. Even a simple two-frame waddle would be a major improvement. Apply easing (acceleration/deceleration) to the start and end of movement.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "A successful delivery at the serving pass provides zero feedback. The plate simply vanishes, leaving the player to guess if the action was successful.",
+      "fix": "Add clear success feedback for delivery. This should include a sound effect, a visual effect (like a green checkmark or sparkle), and a score number popping up from the serving station.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Shadows are hard-edged and heavily aliased (jagged), which cheapens the overall look of the scene.",
+      "fix": "Enable soft shadows. In Three.js, switch the shadow map type to PCFSoftShadowMap. You may also need to increase the shadow map resolution and tune the light's shadow camera frustum to improve quality.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The serving pass station is an unidentifiable black box. It does not read as a place to serve food and breaks the kitchen theme.",
+      "fix": "Redesign the model to look like a kitchen pass-through window or a serving counter. Add thematic details like a heat lamp, a counter surface, or a bell.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "All materials are flat and diffuse. Metal, wood, and food all have the same non-reflective surface property, making the scene look plastic and unrealistic.",
+      "fix": "Switch to PBR materials (like MeshStandardMaterial in Three.js). Assign appropriate roughness and metalness values to different surfaces. For example, make the sink metallic, give the countertops a slight sheen, and add specular highlights to the food.",
+      "severity": "Medium"
+    }
+  ],
+  "realism_rating": 2,
+  "good_enough": false,
+  "summary": "The project is not yet good enough. While it has a basic 3D environment, it fails on the most critical aspects of a cooking game: the core gameplay loop is logically incorrect, and it lacks the essential animation and feedback (or 'juice') that makes actions legible and satisfying. The visual presentation also needs significant polish, particularly in lighting, shadows, and materials, to meet the quality bar of its inspiration.",
+  "clip": "pizza"
+}

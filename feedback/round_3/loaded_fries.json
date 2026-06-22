@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "area": "Gameplay / Action Legibility",
+      "problem": "The core cooking logic is broken and illegible. The character performs nonsensical actions like 'cooking' an empty pan, placing empty plates on cutting boards and fryers, and combining raw ingredients on a plate before attempting to cook the plate itself. The prescribed recipe flow is not followed.",
+      "fix": "Implement a strict state-based system for recipes. An ingredient must be picked up, then processed (e.g., chopped/fried), which visibly changes its state. Only then can it be placed on a plate. Plates should be containers and should not be placed on processing stations. The AI must follow this logical sequence.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The scene's lighting is completely flat, ambient, and lacks any shadows. This removes all sense of depth, making objects appear to float and creating a visually unappealing, dated look. Materials are simplistic and lack properties like specularity or roughness.",
+      "fix": "Introduce a primary light source (e.g., a directional light) to cast soft real-time shadows from dynamic objects like the character. Bake ambient occlusion into the static environment to add contact shadows and depth. Update materials to a PBR-like model to give surfaces like metal and wood more realistic light interaction.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "Character movement is robotic and lacks weight. The cook slides between grid points and snaps to new facings instantly. Interactions like picking up and placing items are instantaneous, providing no satisfying feedback or 'juice'.",
+      "fix": "Add easing (acceleration/deceleration) to the character's movement. Implement a simple walk cycle, even a basic up-and-down bob. Add short, non-blocking 'tween' animations for picking up and placing objects, where the character visibly reaches for a fraction of a second.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Asset Design / World Building",
+      "problem": "Several key interactive stations are abstract and break immersion. The cutting board is represented by a UI-style arrow, the serving pass is a generic black box, and the cheese dispenser appears to contain lettuce.",
+      "fix": "Replace placeholder assets with thematic 3D models. The cutting board station should feature a board and a knife. The serving pass should be modeled as a kitchen window or counter. Ensure ingredient dispensers clearly and accurately represent the ingredient they provide.",
+      "severity": "Medium"
+    },
+    {
+      "area": "VFX / State Representation",
+      "problem": "There is no visual change in ingredients after they are processed. A raw potato placed on a plate looks identical after the plate has been 'cooked' on the frying pan. This fails to communicate progress to the player.",
+      "fix": "Create separate models or textures for each state of an ingredient (e.g., whole potato, chopped potato/fries, cooked fries). Swap the asset when a processing step is completed. Add simple particle effects like steam for cooking or small chips for chopping to reinforce the action.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 2,
+  "good_enough": false,
+  "summary": "The project is not yet a playable simulator. The fundamental gameplay logic is broken, making actions illegible and nonsensical. This core issue, combined with high-severity rendering problems like flat lighting and a lack of shadows, prevents the game from achieving its goal of emulating Overcooked. The immediate priorities must be to fix the recipe state machine and implement a basic lighting model.",
+  "clip": "loaded_fries"
+}

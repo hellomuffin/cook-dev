@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character has no animations. It slides across the floor instead of walking and stands perfectly still when performing actions like chopping or waiting. This makes the character feel lifeless and the actions weightless.",
+      "fix": "Implement a basic walk/run cycle animation for movement. Add a subtle idle animation. Create simple, expressive animations for interacting with stations (e.g., a chopping motion with arms, a 'placing' motion). These don't need to be complex, but they are essential for game feel.",
+      "severity": "high"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat, consisting of uniform ambient light. There are no discernible key light sources, leading to a lack of highlights, shading, and depth. The environment and objects do not cast shadows, making everything feel like it's floating in a non-physical space.",
+      "fix": "Introduce a primary directional light (like a sun or overhead kitchen light) to create highlights and cast shadows. Implement real-time shadows (or baked lightmaps with shadow blobs for performance) for the cook, counters, and objects. Add screen-space ambient occlusion (SSAO) to create contact shadows and give the scene depth.",
+      "severity": "high"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "While state changes are visible (raw vs. cooked), the actions themselves lack impact and clear feedback. There are no particle effects or other visual flourishes to confirm interactions.",
+      "fix": "Add visual effects (VFX) for key events. For example: a small 'poof' or sparkle when picking up/placing items, steam rising from cooking pots, sizzle lines from frying pans, and a celebratory particle burst at the serving pass upon successful delivery.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The models for food ingredients are overly simplistic, often just colored cubes (e.g., a red cube for a tomato, a blue cube for fish). This hurts the cooking theme and makes recipes harder to identify at a glance compared to Overcooked's more recognizable, stylized food models.",
+      "fix": "Remodel the food items to be more representative, while keeping the low-poly style. A tomato should be spherical, lettuce should be a leafy bunch, cheese a wedge. This will greatly improve the game's charm and visual clarity.",
+      "severity": "medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Player interactions (picking up, placing items) are instantaneous. The item simply teleports into the cook's hands. This feels robotic and lacks any sense of weight or physical interaction.",
+      "fix": "Add a very brief 'use' animation or tween for interactions. For example, when picking up an item, have it quickly move from the counter to the cook's hands over a few frames instead of instantly appearing. This small delay and visual motion adds a sense of physicality.",
+      "severity": "medium"
+    },
+    {
+      "area": "UI/UX",
+      "problem": "The progress bars for actions like cooking and chopping are functional but visually plain. They don't provide any anticipatory or completion feedback.",
+      "fix": "Enhance the progress bars. Add a subtle screen shake or a 'flash' to the bar when an action is completed. Consider making the bar wiggle or pulse slightly as it nears completion to build tension.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game functions as a simulation, but it currently lacks the essential 'game feel' and visual polish of its target, Overcooked 2. The experience is static due to a complete lack of character animation and flat, shadowless lighting. These two high-severity issues must be addressed to create a baseline of engaging gameplay. Secondary priorities include improving asset detail and adding visual effects to make interactions more satisfying and legible.",
+  "clip": "ep_grand"
+}

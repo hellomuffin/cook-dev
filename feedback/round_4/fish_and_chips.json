@@ -1,0 +1,56 @@
+{
+  "issues": [
+    {
+      "area": "Game Feel / Visual Feedback",
+      "problem": "The cook does not visually hold ingredients. When an item is picked up (e.g., fish at 00:01), a particle effect appears, but the item itself is not visible with the character, making it impossible to know what they are carrying.",
+      "fix": "When the cook picks up an ingredient, its model should appear in their hands or hover above their head, similar to how the plate is shown at 00:21. This provides immediate, crucial feedback about the character's state.",
+      "severity": "high"
+    },
+    {
+      "area": "UI / VFX",
+      "problem": "Cooking processes lack clear visual indicators. When an item is placed in the fryer (00:17), the station glows orange, but there is no progress bar or timer to indicate how long the cooking will take or when it will be finished.",
+      "fix": "Implement a diegetic UI element, such as a circular progress meter, that appears over any active cooking station. The color of the meter can change from green to yellow to red to warn of overcooking.",
+      "severity": "high"
+    },
+    {
+      "area": "Visual Feedback / Animation",
+      "problem": "Plating ingredients is not visualized. The cook holds an empty plate, interacts with cooking stations, but the ingredients never appear on the plate model. The player has no confirmation of what has been successfully plated.",
+      "fix": "When a cooked ingredient is combined with a plate the cook is holding, the ingredient's model must be added to the plate model that is hovering over the cook's head. The plate should visually accumulate all correct ingredients.",
+      "severity": "high"
+    },
+    {
+      "area": "Animation / Game Feel",
+      "problem": "The character's interaction animations are missing. The cook does not turn to face the station they are using (e.g., at 00:17, they use the fryer while facing the floor). This looks unnatural and makes the interaction unclear.",
+      "fix": "The character model must rotate to face the object of interaction (counter, stove, sink) before the interaction logic is triggered. Add a small 'use' animation, even a simple lean-in, to signify an action is taking place.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering / Lighting",
+      "problem": "The scene's lighting is flat, with no shadows or ambient occlusion. This removes all sense of depth, making objects look like they are floating and the overall image appear cheap and unfinished.",
+      "fix": "Add a primary directional light source to cast soft, real-time shadows. Implement Screen-Space Ambient Occlusion (SSAO) to create contact shadows where objects meet, giving them weight and grounding them in the scene.",
+      "severity": "medium"
+    },
+    {
+      "area": "Rendering / Materials",
+      "problem": "All surfaces share a similar, diffuse, non-reflective material. Metal pots don't look metallic, and wood counters look like plain colored blocks. This makes the environment visually uninteresting and bland.",
+      "fix": "Utilize physically-based rendering (PBR) materials. Create distinct materials with appropriate metallic and roughness values for wood, metal, and ceramic surfaces to add visual variety and realism.",
+      "severity": "medium"
+    },
+    {
+      "area": "Art Direction / Modeling",
+      "problem": "The ingredient models are overly simplistic and difficult to identify. The 'fish' is a generic red shape and the 'potato' is a white one. This hurts the cooking theme and game clarity.",
+      "fix": "Remodel the ingredients to have more recognizable, albeit stylized, silhouettes. The fish should have a tail fin shape, the potato an ovoid shape, etc., to be instantly identifiable at a glance.",
+      "severity": "medium"
+    },
+    {
+      "area": "Animation",
+      "problem": "Character movement is stiff and robotic. The cook moves at a constant speed and snaps to new directions instantly, lacking the organic feel of the reference game.",
+      "fix": "Add animation blending and smoothing to the character's movement. Implement subtle acceleration/deceleration curves for starting and stopping, and smoothly interpolate the character's rotation when changing direction.",
+      "severity": "low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "This is a functional technical prototype that successfully implements the basic logic of a cooking game. However, it currently fails on game feel and legibility due to a critical lack of visual feedback for core actions like carrying items, cooking, and plating. The rendering and animation are rudimentary and require significant polish. The highest priority must be making the cook's actions and their consequences immediately and clearly visible.",
+  "clip": "fish_and_chips"
+}

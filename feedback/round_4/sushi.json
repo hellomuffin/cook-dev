@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Action Legibility",
+      "problem": "There is no visual feedback for a successful delivery. The plated dish simply vanishes at the serving pass, making the core success state of the gameplay loop completely invisible and unsatisfying.",
+      "fix": "Implement a clear visual and audio cue for successful delivery. For example, a green checkmark icon, a particle burst effect, and a positive 'ding' or 'order up' sound effect should occur at the serving pass.",
+      "severity": "High"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The cook character lacks any interaction animations. For chopping, cooking, and plating, the character model is completely static, merely standing next to the station. This makes it hard to tell what action is being performed and for how long.",
+      "fix": "Create and trigger distinct, short animations for each core interaction: a chopping motion with the arms, a stirring/placing motion for cooking, and a reaching motion for picking up or plating items. These are critical for game feel.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Ingredient models are abstract, unrecognizable, and do not change state. It's impossible to tell a raw ingredient from a processed one (e.g., uncooked vs. cooked rice, whole vs. chopped fish). They appear as simple colored cylinders.",
+      "fix": "Create distinct 3D models for each ingredient and each of its states. A fish should look like a fish, and when chopped, it should become slices. Cooked rice should appear different from uncooked. This is fundamental to player understanding.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The scene's lighting is flat, lacking depth and definition. There are no strong cast shadows or ambient occlusion, making the environment feel disconnected and less tangible than the reference, Overcooked 2.",
+      "fix": "Implement a more advanced lighting model. At a minimum, bake ambient occlusion into lightmaps to create soft contact shadows where objects meet. Enable real-time shadows from a key light source to ground the character and dynamic objects.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character moves by sliding without a walk/run animation. This makes the movement feel robotic and weightless.",
+      "fix": "Implement a looping walk/run animation that plays whenever the character is moving. This is a baseline requirement for character-based games.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "Station models are too generic and lack signposting. The ingredient dispensers are plain boxes, and the serving pass is a black rectangle. They don't visually communicate their function.",
+      "fix": "Redesign the station models to better represent their real-world counterparts. Ingredient bins should show the ingredient inside (e.g., a crate of fish). The serving pass should look like a kitchen window, possibly with a heat lamp or bell.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "Interaction VFX are minimal or non-existent. The pot has a very faint, repetitive steam effect, and there are no effects for chopping, which feels inert.",
+      "fix": "Add satisfying particle effects to stations during use. For chopping, add small food particles that fly out and quick 'slash' line effects. For cooking, make the steam/boiling effect more dynamic and responsive to the cooking state.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The game is a functional prototype of the core movement and interaction loop, but it is not yet a playable game. It critically lacks the visual feedback, animation, and asset polish necessary for players to understand what is happening. The highest priorities are to implement clear feedback for deliveries, add character interaction animations, and create distinct models for ingredient states. Without these, the game is unreadable and lacks any satisfying game feel.",
+  "clip": "sushi"
+}

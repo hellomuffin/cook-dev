@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "area": "Animation & Game Feel",
+      "problem": "All interactions (pick up, place, serve) are instantaneous, happening in a single frame. The chef model does not have any animation for using its hands, making actions feel weightless and disconnected from the character.",
+      "fix": "Implement short, non-blocking 'interaction' animations for picking up, placing, and chopping. For example, a quick 'reach and grab' for pickup, and a 'place down' motion. These small delays add weight and provide crucial visual feedback.",
+      "severity": "High"
+    },
+    {
+      "area": "Core Gameplay",
+      "problem": "The chef can pick up a new item (e.g., a plate at 00:16) while already holding an ingredient (lettuce). When this happens, the originally held item simply vanishes. This is a critical logic bug.",
+      "fix": "Implement proper inventory logic. The chef should not be able to pick up a second item while their hands are full. Either block the action or implement a 'drop item' action first.",
+      "severity": "High"
+    },
+    {
+      "area": "Action Legibility",
+      "problem": "The chef does not turn to face the object or station they are interacting with. For example, at 00:06, the chef places cheese on a plate while facing away from the ingredient dispenser they just used. This breaks the illusion of interaction.",
+      "fix": "Before executing an interaction, the character controller must rotate the chef model to face the target object (counter, station, plate, etc.). This is fundamental for action legibility.",
+      "severity": "High"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The lighting is extremely flat and ambient, with no clear key light source. Shadows are simple, faint blobs under objects. This removes all sense of depth and makes the materials look dull.",
+      "fix": "Introduce a primary directional light to the scene to create highlights and cast sharper, more defined shadows. This will immediately add depth, volume, and visual interest to the models and environment.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Rendering",
+      "problem": "The design of the kitchen stations is too abstract and minimalist. The cutting board is just a grey square, and the serving pass is an undifferentiated part of the counter. Their function is not immediately obvious from their appearance.",
+      "fix": "Add simple, iconic details to each station. Place a static knife model on the cutting board. Frame the serving pass tile to look like a window. Add a tap to the sink. These cues help players instantly recognize station functions.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Game Feel",
+      "problem": "There is a complete lack of secondary feedback (VFX, UI pops, etc.) for actions. When an ingredient is plated or a dish is served, the state change is silent and lacks impact, making success feel unrewarding.",
+      "fix": "Add simple particle effects for key moments: a 'poof' on pickup/placement, chopping lines for cutting, and a sparkle/chime for a successful delivery. This is a low-cost way to make the game feel much more responsive and alive.",
+      "severity": "Medium"
+    },
+    {
+      "area": "Animation & Game Feel",
+      "problem": "The character's walk cycle is a simple waddle that is disconnected from its movement. The feet slide across the ground, and the movement starts and stops instantly, which feels robotic.",
+      "fix": "Adjust the animation speed to better match the movement speed to reduce foot-sliding. Add very brief acceleration and deceleration curves to the character's movement to make it feel less rigid.",
+      "severity": "Low"
+    }
+  ],
+  "realism_rating": 3,
+  "good_enough": false,
+  "summary": "The simulation is a functional proof-of-concept but currently lacks the core game feel, visual feedback, and polish of its target inspiration. Critical issues include the absence of interaction animations, a game-breaking inventory bug, and the character not facing interaction points. The rendering is flat and stations are unclear. Addressing these high-severity issues is essential for achieving action legibility and creating a believable kitchen environment.",
+  "clip": "greek_salad"
+}
