@@ -34,6 +34,8 @@ const ING = {
 };
 const COOK_COLORS = [0x4a90d9, 0xe0533d, 0x52b35a, 0xe0a52b, 0x9b59b6, 0x16a59a];
 const DIR_YAW = { north: Math.PI, south: 0, east: -Math.PI / 2, west: Math.PI / 2 };
+// facing offset in world (x, z): grid north = -z, south = +z, east = +x, west = -x
+const DIR_VEC = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] };
 
 function lerp(a, b, t) { return a + (b - a) * t; }
 function mat(color, opts = {}) {
@@ -94,10 +96,12 @@ class KitchenRenderer3D {
 
     this.state = null; this._sig = ""; this.center = new THREE.Vector3();
     this.cooks = {}; this.stationDyn = {}; this.items = {}; this.particles = []; this.sprites = [];
+    this._pulse = {};   // per-cook interact pulse, triggered once per state with action=interact
     this._lastScore = 0; this._t = 0;
     this._steamTex = this._softTex(0xffffff);
     this._fireTex = this._softTex(0xffd27f);
     this._sparkTex = this._softTex(0xffe14a);
+    this._ringTex = this._ringTexture();
     this._geo = {};   // shared geometry cache
   }
 
@@ -131,6 +135,8 @@ class KitchenRenderer3D {
     if (sig !== this._sig) { this._sig = sig; this._buildStatic(); this._resetDyn(); }
     if (this._lastScore && state.score > this._lastScore + 0.5) this._delivery();
     this._lastScore = state.score;
+    // each state where a cook is interacting fires one fresh action pulse
+    for (const p of state.players) if (p.action === "interact") this._pulse[p.id] = true;
     this.fit(this.renderer.domElement.width / this.renderer.getPixelRatio(),
              this.renderer.domElement.height / this.renderer.getPixelRatio());
   }
@@ -389,14 +395,30 @@ class KitchenRenderer3D {
       const ud = c.grp.userData;
       ud.legs[0].rotation.x = sw; ud.legs[1].rotation.x = -sw;
 
-      // --- interaction animation: lean in and work the hands ---------
-      const interacting = p.action === "interact";
-      ud.reach = lerp(ud.reach, interacting ? 1 : 0, Math.min(1, dt * 12));
-      const work = interacting ? (Math.sin(c.phase * 3.2) * 0.5 + 0.5) : 0;  // chop/stir pumping
-      const armAng = -0.7 - ud.reach * 0.5 - work * ud.reach * 0.5;
+      // --- interaction animation: a strong, timed "work" pulse -------
+      // Triggered once per state where the cook interacts (so even a single
+      // pick-up/place/serve plays a full, visible motion), and re-triggered
+      // every tick while chopping/cooking so it reads as repeated action.
+      const facing = DIR_VEC[p.dir_name] || [0, 0];
+      if (this._pulse[p.id]) {
+        ud.actT = 0.5;                       // (re)start a half-second work pulse
+        this._useBurst(wp.x + facing[0] * 0.7, wp.z + facing[1] * 0.7);
+        delete this._pulse[p.id];
+      }
+      ud.actT = Math.max(0, (ud.actT || 0) - dt);
+      // ramp up fast, ease down — two pumps over the pulse for a chop/grab feel
+      const a = ud.actT / 0.5;                                   // 1 -> 0
+      const env = Math.sin(Math.min(1, a) * Math.PI);            // 0..1..0 envelope
+      const pump = Math.abs(Math.sin(a * Math.PI * 2));          // two strokes
+      const act = env * (0.55 + 0.45 * pump);                    // strong overall
+
+      ud.torso.rotation.x = act * 0.6;                           // big lean toward station
+      ud.head.position.z = 0.02 + act * 0.14;
+      // arms swing out and down toward the station (clear reaching/chopping)
+      const armAng = -0.7 - act * 1.5;
       ud.arms[0].rotation.x = armAng; ud.arms[1].rotation.x = armAng;
-      ud.torso.rotation.x = ud.reach * 0.22;          // lean toward the station
-      ud.head.position.z = 0.02 + ud.reach * 0.06;
+      // the whole cook lunges toward the tile it faces, then settles back
+      c.grp.position.set(wp.x + facing[0] * act * 0.22, bob, wp.z + facing[1] * act * 0.22);
 
       // held item
       const sig = this._itemSig(p.holding);
@@ -412,9 +434,7 @@ class KitchenRenderer3D {
       }
       if (ud.held) {
         ud.pop = lerp(ud.pop, 0, Math.min(1, dt * 8));
-        const reachZ = 0.4 + ud.reach * 0.18;          // extend toward station when working
-        const liftY = 0.5 + ud.reach * 0.05 + work * ud.reach * 0.05;
-        ud.held.position.set(0, liftY, reachZ);
+        ud.held.position.set(0, 0.5 + act * 0.12, 0.4 + act * 0.28);   // thrust toward station
         ud.held.scale.setScalar(0.9 * (1 - 0.55 * ud.pop));
       }
     }
@@ -516,20 +536,43 @@ class KitchenRenderer3D {
       }
     }
   }
+  // A bright expanding ring + sparks at a station to mark "an action happened here".
+  _useBurst(x, z) {
+    const top = CH + 0.5;
+    const ring = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._ringTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffe07a }));
+    ring.position.set(x, top, z); this.scene.add(ring);
+    this.particles.push({ spr: ring, life: 1, vy: 0, kind: "ring" });
+    for (let i = 0; i < 7; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      s.position.set(x, top, z); s.scale.setScalar(0.12); this.scene.add(s);
+      const a = i / 7 * 6.28;
+      this.particles.push({ spr: s, life: 1, vx: Math.cos(a) * 1.1, vz: Math.sin(a) * 1.1, vy: 1.0, kind: "spark", grav: -3 });
+    }
+  }
   _updateParticles(dt) {
     const alive = [];
     for (const p of this.particles) {
-      p.life -= dt * (p.kind === "spark" ? 1.5 : 1.0);
-      p.spr.position.y += p.vy * dt;
+      p.life -= dt * (p.kind === "spark" ? 1.5 : p.kind === "ring" ? 2.6 : 1.0);
+      p.spr.position.y += (p.vy || 0) * dt;
       if (p.vx) p.spr.position.x += p.vx * dt;
       if (p.vz) p.spr.position.z += p.vz * dt;
       if (p.grav) p.vy += p.grav * dt;
-      const baseScale = p.kind === "spark" ? 0.18 : 0.3 + (1 - p.life) * 0.5;
-      p.spr.scale.setScalar(baseScale);
-      p.spr.material.opacity = Math.max(0, p.life) * (p.kind === "fire" ? 0.8 : p.kind === "spark" ? 1 : 0.4);
+      if (p.kind === "ring") {
+        p.spr.scale.setScalar(0.3 + (1 - p.life) * 1.1);
+        p.spr.material.opacity = Math.max(0, p.life) * 0.9;
+      } else {
+        const baseScale = p.kind === "spark" ? 0.16 : 0.3 + (1 - p.life) * 0.5;
+        p.spr.scale.setScalar(baseScale);
+        p.spr.material.opacity = Math.max(0, p.life) * (p.kind === "fire" ? 0.8 : p.kind === "spark" ? 1 : 0.4);
+      }
       if (p.life > 0) alive.push(p); else this.scene.remove(p.spr);
     }
     this.particles = alive;
+  }
+  _ringTexture() {
+    const C = document.createElement("canvas"); C.width = C.height = 64; const ctx = C.getContext("2d");
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(32, 32, 24, 0, 6.28); ctx.stroke();
+    const t = new THREE.CanvasTexture(C); t.colorSpace = THREE.SRGBColorSpace; return t;
   }
 
   // ---- textures --------------------------------------------------------
