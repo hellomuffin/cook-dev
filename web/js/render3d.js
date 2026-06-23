@@ -33,7 +33,7 @@ const ING = {
   potato:   { c: 0xcb9e60, c2: 0xa67d44 },
 };
 const COOK_COLORS = [0x4a90d9, 0xe0533d, 0x52b35a, 0xe0a52b, 0x9b59b6, 0x16a59a];
-const DIR_YAW = { north: Math.PI, south: 0, east: -Math.PI / 2, west: Math.PI / 2 };
+const DIR_YAW = { north: Math.PI, south: 0, east: Math.PI / 2, west: -Math.PI / 2 };
 // facing offset in world (x, z): grid north = -z, south = +z, east = +x, west = -x
 const DIR_VEC = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] };
 
