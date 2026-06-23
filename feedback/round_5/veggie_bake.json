@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "step": "deliver",
+      "problem": "When the cook delivers the finished dish at the pass (00:21), the dish simply vanishes from its hands. There is absolutely no feedback to confirm that a delivery happened, whether it was successful, or what its effect was (e.g., points scored). The most important action in the game loop is completely ambiguous.",
+      "fix": "Add explicit, multi-modal feedback for delivery. For example, a visual effect like a green checkmark or '+100' score text, a sound effect, and have the plate visibly slide away on the serving counter instead of just disappearing.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "When the cook is holding a plate, it can add new ingredients (e.g., mushroom at 00:12) just by standing next to a dispenser. The ingredient teleports directly onto the plate. This action is 'magical' and breaks the physical logic of the simulation, making it hard to understand the rules of interaction.",
+      "fix": "Enforce a more logical sequence: the cook must put the plate down on a counter, pick up the new ingredient, and then add it to the plate. Alternatively, if this 'magic' transfer is intended, add a clear visual effect showing the ingredient flying from the dispenser to the plate.",
+      "severity": "high"
+    },
+    {
+      "step": "pickup",
+      "problem": "Picking up and placing items (e.g., potato at 00:04, plate at 00:09) is instantaneous. The object teleports between the world and the cook's hands without any transitional motion. This makes the action feel abrupt and can be easy to miss.",
+      "fix": "Add a very brief pickup/place animation where the character model visibly reaches for the object or the surface. This creates a clear, readable 'moment of interaction' that is easier for a viewer to parse than an instant state change.",
+      "severity": "med"
+    },
+    {
+      "step": "process",
+      "problem": "While the oven is baking (00:17-00:19), it glows to indicate it is active, which is good. However, there is no visual indicator of its progress. A viewer cannot tell how much time is left, or if the food is close to being done or burning.",
+      "fix": "Add a progress timer to the station while it is active. This could be a circular progress bar that fills up over the oven, or the color of the oven's glow could change as it gets closer to completion.",
+      "severity": "med"
+    },
+    {
+      "step": "carry",
+      "problem": "When multiple ingredients are combined on a plate (00:15), they are small and clip into each other. This makes it difficult to quickly and clearly identify all the individual components of the dish being carried.",
+      "fix": "Slightly increase the size of the ingredients on the plate and/or define specific, non-overlapping positions for each ingredient so they are always individually distinguishable.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The core gameplay loop is partially readable, but it is severely hampered by a lack of feedback and non-physical interactions. Key actions like picking up items are instantaneous, making them hard to track. More critically, ingredients magically teleport onto held plates, and the delivery of a finished dish provides zero confirmation, making the game's primary goal state completely ambiguous. While some state changes (like cooked vs. raw food) are clear, the overall action legibility is low.",
+  "clip": "veggie_bake"
+}

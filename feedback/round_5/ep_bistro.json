@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "The contents of containers like plates and pots are not visible. A plate with a salad, a plate with soup, and an empty plate all look identical. This makes it impossible to know what dish is being prepared or carried without reading the UI.",
+      "fix": "Visually represent the contents on the container. For example, show a model of the salad on the plate, or change the color of the liquid in the pot to represent soup.",
+      "severity": "high"
+    },
+    {
+      "step": "state",
+      "problem": "Processed ingredients are visually identical to their raw counterparts. For example, a tomato on a cutting board looks the same before and after it has been chopped.",
+      "fix": "Use a distinct model or texture for processed ingredients. For example, a chopped tomato should look like a pile of slices, not a whole tomato.",
+      "severity": "high"
+    },
+    {
+      "step": "carry",
+      "problem": "A burnt pot is only identifiable by dark smoke while it is on the stove. Once the cook picks it up, it looks identical to a normal pot, so the reason for taking it to the trash is not clear.",
+      "fix": "Make the carried burnt pot visually distinct. For example, it could have a blackened texture or continue to emit a small wisp of dark smoke while being held.",
+      "severity": "med"
+    },
+    {
+      "step": "place",
+      "problem": "The action of plating soup is unclear. The cook holds a plate, approaches a pot on a counter, and the pot simply vanishes. It does not read as a transfer of contents.",
+      "fix": "Add a brief animation or particle effect that clearly shows the soup being poured from the pot onto the plate. The empty/dirty pot could then be left on the counter.",
+      "severity": "med"
+    },
+    {
+      "step": "process",
+      "problem": "While a glowing circle on the floor indicates a process (like cooking or chopping) is happening, there is no visual feedback on its progress. A viewer cannot tell how close it is to being finished.",
+      "fix": "Add a progress indicator over the active station, such as a radial timer or a filling bar, to clearly show the remaining time.",
+      "severity": "low"
+    },
+    {
+      "step": "deliver",
+      "problem": "The visual feedback for a successful delivery at the pass is a very small, brief flash of light. It is easy to miss and lacks impact.",
+      "fix": "Enhance the delivery feedback with a more prominent effect, such as a larger particle burst, a temporary score number appearing in the 3D space, or a clear sound effect.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 3,
+  "good_enough": false,
+  "summary": "The game's basic actions (movement, targeting, picking up items) are clear. However, the overall legibility is very low because crucial state changes are not visualized. Ingredients don't change appearance after being processed, and the contents of plates and pots are completely invisible. This forces a viewer to rely entirely on the UI to understand what is happening, making the 3D scene itself unreadable.",
+  "clip": "ep_bistro"
+}

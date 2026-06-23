@@ -42,9 +42,9 @@ function mat(color, opts = {}) {
   return new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.72, metalness: 0.0 }, opts));
 }
 function tintFor(state, base) {
-  if (state === "burnt") return 0x33302c;
-  if (state === "cooked") {
-    const c = new THREE.Color(base); c.offsetHSL(0, 0.05, -0.06); return c.getHex();
+  if (state === "burnt") return 0x1c1814;                 // clearly charred black
+  if (state === "cooked") {                                // clearly browned / golden
+    const c = new THREE.Color(base); c.lerp(new THREE.Color(0x8a4f24), 0.45); return c.getHex();
   }
   return base;
 }
@@ -133,8 +133,12 @@ class KitchenRenderer3D {
     this.state = state;
     const sig = state.width + "x" + state.height + ":" + JSON.stringify(state.terrain);
     if (sig !== this._sig) { this._sig = sig; this._buildStatic(); this._resetDyn(); }
-    if (this._lastScore && state.score > this._lastScore + 0.5) this._delivery();
+    const dScore = state.score - (this._lastScore || 0);
+    if (this._lastScore !== undefined && dScore > 0.5) this._delivery(Math.round(dScore));
     this._lastScore = state.score;
+    const fails = (state.stats && state.stats.failed_deliveries) || 0;
+    if (this._lastFails !== undefined && fails > this._lastFails) this._failFeedback();
+    this._lastFails = fails;
     // each state where a cook is interacting fires one fresh action pulse
     for (const p of state.players) if (p.action === "interact") this._pulse[p.id] = true;
     this.fit(this.renderer.domElement.width / this.renderer.getPixelRatio(),
@@ -330,7 +334,7 @@ class KitchenRenderer3D {
         dome.scale.y = 0.35; dome.position.y = 0.15; grp.add(dome);
       } else {
         const n = cont.length;
-        cont.forEach((c, i) => { const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.62); m.position.set((i - (n - 1) / 2) * 0.2, 0.12, 0); grp.add(m); });
+        cont.forEach((c, i) => { const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.72); m.position.set((i - (n - 1) / 2) * 0.22, 0.16, 0); grp.add(m); });
       }
     }
     return grp;
@@ -433,9 +437,13 @@ class KitchenRenderer3D {
         ud.heldSig = sig;
       }
       if (ud.held) {
-        ud.pop = lerp(ud.pop, 0, Math.min(1, dt * 8));
-        ud.held.position.set(0, 0.5 + act * 0.12, 0.4 + act * 0.28);   // thrust toward station
-        ud.held.scale.setScalar(0.9 * (1 - 0.55 * ud.pop));
+        ud.pop = lerp(ud.pop, 0, Math.min(1, dt * 5));   // ~0.2s grab arc
+        // hand position (with the work-thrust toward the station)
+        const hy = 0.5 + act * 0.12, hz = 0.4 + act * 0.28;
+        // when just acquired (pop~1) the item starts out at the faced station
+        // and travels into the hands, so a viewer sees it being TAKEN
+        ud.held.position.set(0, lerp(hy, 0.85, ud.pop), lerp(hz, 1.0, ud.pop));
+        ud.held.scale.setScalar(0.9);
       }
     }
     for (const id in this.cooks) if (!seenCooks.has(+id)) { this.dynGroup.remove(this.cooks[id].grp); delete this.cooks[id]; }
@@ -477,27 +485,46 @@ class KitchenRenderer3D {
 
   _stationContent(grp, s) {
     if ((s.type === "pot" || s.type === "oven") && s.contents && s.contents.length) {
-      const col = this._mix(s.contents, s.status);
-      const liq = new THREE.Mesh(this.cyl(0.28, 0.26, 0.1, 20), new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, emissive: new THREE.Color(col).multiplyScalar(s.status === "burnt" ? 0 : 0.15) }));
-      liq.position.y = s.type === "oven" ? 0.16 : 0.28; grp.add(liq);
+      // show the actual ingredient pieces (what & how many is legible). The
+      // oven is enclosed, so its contents sit on a visible tray on top of it.
+      const baseY = s.type === "oven" ? 0.66 : 0.27;
+      const n = s.contents.length;
+      s.contents.forEach((ing, i) => {
+        const m = this._ingredient(ing.name, ing.state); m.scale.setScalar(0.52);
+        const ang = n > 1 ? i / n * 6.28 : 0, rr = n > 1 ? 0.1 : 0;
+        m.position.set(Math.cos(ang) * rr, baseY, Math.sin(ang) * rr); grp.add(m);
+      });
+      if (s.status === "cooking" || s.status === "cooked" || s.status === "burnt") {
+        const col = this._mix(s.contents, s.status);
+        const liq = new THREE.Mesh(this.cyl(0.27, 0.25, 0.05, 20),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, transparent: true, opacity: 0.8,
+            emissive: new THREE.Color(col).multiplyScalar(s.status === "burnt" ? 0 : 0.12) }));
+        liq.position.y = baseY - 0.03; grp.add(liq);
+      }
     } else if (s.type === "pan" && s.contents && s.contents.length) {
-      const m = this._ingredient(s.contents[0].name, s.contents[0].state); m.position.y = 0.08; m.scale.setScalar(0.85); grp.add(m);
+      s.contents.forEach((ing, i) => { const m = this._ingredient(ing.name, ing.state); m.position.set((i - (s.contents.length - 1) / 2) * 0.18, 0.07, 0); m.scale.setScalar(0.8); grp.add(m); });
     } else if (s.type === "cutting_board" && s.item) {
-      const m = this._ingredient(s.item.name, s.item.state); m.position.set(0, 0.06, 0); m.scale.setScalar(0.8); grp.add(m);
+      const m = this._ingredient(s.item.name, s.item.state); m.position.set(0, 0.06, 0); m.scale.setScalar(0.85); grp.add(m);
     } else if (s.type === "sink" && (s.dirty > 0 || s.clean_ready > 0)) {
       const water = new THREE.Mesh(this.box(0.56, 0.04, 0.42), new THREE.MeshStandardMaterial({ color: 0x6fc3e8, transparent: true, opacity: 0.85, roughness: 0.15, metalness: 0.3, emissive: 0x1d6f9c, emissiveIntensity: 0.3 }));
       water.position.y = 0.16; grp.add(water);
     }
-    // progress ring (emissive torus arc)
-    let frac = 0, color = 0x66d98a;
+    // progress ring — a dim full-circle track + a bright filled arc, on EVERY
+    // station that is actively processing, so "how far along" is always clear
+    let frac = -1, color = 0x66d98a;
     if (s.status === "cooking") frac = s.progress;
-    else if (s.status === "cooked") { frac = 1; }
+    else if (s.status === "cooked") frac = 1;
     else if (s.type === "cutting_board" && s.item && !s.done) { frac = s.progress; color = 0xe8c14a; }
     else if (s.type === "sink" && s.progress > 0) { frac = s.progress; color = 0x6fc3e8; }
-    if (frac > 0.001) {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.04, 8, 28, Math.PI * 2 * frac),
-        new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.4 }));
-      ring.rotation.x = -Math.PI / 2; ring.position.y = 0.7; grp.add(ring);
+    if (frac >= 0) {
+      const track = new THREE.Mesh(this.g("ringtrack", () => new THREE.TorusGeometry(0.3, 0.045, 8, 32)),
+        new THREE.MeshStandardMaterial({ color: 0x222, emissive: 0x111, transparent: true, opacity: 0.6 }));
+      track.rotation.x = -Math.PI / 2; track.position.y = 0.82; grp.add(track);
+      if (frac > 0.001) {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.06, 8, 32, Math.PI * 2 * frac),
+          new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.6 }));
+        ring.rotation.x = -Math.PI / 2; ring.position.y = 0.82; grp.add(ring);
+      }
     }
   }
 
@@ -525,16 +552,36 @@ class KitchenRenderer3D {
     this.scene.add(spr);
     this.particles.push({ spr, life: 1, vy: kind === "fire" ? 1.2 : 0.8, kind });
   }
-  _delivery() {
+  _delivery(delta) {
     for (const s of this.state.stations) if (s.type === "serving") {
       const wp = this.toWorld(s.x, s.y);
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < 18; i++) {
         const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-        spr.position.set(wp.x, CH + 0.8, wp.z); spr.scale.setScalar(0.18); this.scene.add(spr);
-        const a = Math.random() * 6.28, sp = 1 + Math.random() * 2;
-        this.particles.push({ spr, life: 1, vy: Math.sin(a) * sp * 0.4 + 1.5, vx: Math.cos(a) * sp * 0.5, vz: Math.sin(a) * sp * 0.5, kind: "spark", grav: -4 });
+        spr.position.set(wp.x, CH + 0.8, wp.z); spr.scale.setScalar(0.2); this.scene.add(spr);
+        const a = Math.random() * 6.28, sp = 1 + Math.random() * 2.2;
+        this.particles.push({ spr, life: 1, vy: Math.sin(a) * sp * 0.4 + 1.8, vx: Math.cos(a) * sp * 0.6, vz: Math.sin(a) * sp * 0.6, kind: "spark", grav: -4 });
       }
+      // unmistakable "order complete" cue: a green +score and a check mark
+      this._popText(wp.x, CH + 1.25, wp.z, "+" + (delta || ""), "#56e08a", 2.6);
+      this._popText(wp.x, CH + 1.9, wp.z, "✓ SERVED", "#9af0bf", 2.6);
     }
+  }
+  _failFeedback() {
+    for (const s of this.state.stations) if (s.type === "serving") {
+      const wp = this.toWorld(s.x, s.y);
+      this._popText(wp.x, CH + 1.3, wp.z, "✗", "#ff5a4a", 2.0);
+    }
+  }
+  _popText(x, y, z, text, color, life) {
+    const C = document.createElement("canvas"); C.width = 512; C.height = 160;
+    const ctx = C.getContext("2d");
+    ctx.font = "bold 110px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.lineWidth = 12; ctx.strokeStyle = "rgba(0,0,0,.7)"; ctx.strokeText(text, 256, 80);
+    ctx.fillStyle = color; ctx.fillText(text, 256, 80);
+    const tex = new THREE.CanvasTexture(C); tex.colorSpace = THREE.SRGBColorSpace;
+    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+    spr.position.set(x, y, z); spr.scale.set(1.9, 0.6, 1); this.scene.add(spr);
+    this.particles.push({ spr, life: life || 2.0, vy: 0.7, kind: "pop" });
   }
   // A bright expanding ring + sparks at a station to mark "an action happened here".
   _useBurst(x, z) {
@@ -552,12 +599,14 @@ class KitchenRenderer3D {
   _updateParticles(dt) {
     const alive = [];
     for (const p of this.particles) {
-      p.life -= dt * (p.kind === "spark" ? 1.5 : p.kind === "ring" ? 2.6 : 1.0);
+      p.life -= dt * (p.kind === "spark" ? 1.5 : p.kind === "ring" ? 2.6 : p.kind === "pop" ? 0.5 : 1.0);
       p.spr.position.y += (p.vy || 0) * dt;
       if (p.vx) p.spr.position.x += p.vx * dt;
       if (p.vz) p.spr.position.z += p.vz * dt;
       if (p.grav) p.vy += p.grav * dt;
-      if (p.kind === "ring") {
+      if (p.kind === "pop") {
+        p.spr.material.opacity = Math.min(1, p.life * 1.6);    // float up & fade
+      } else if (p.kind === "ring") {
         p.spr.scale.setScalar(0.3 + (1 - p.life) * 1.1);
         p.spr.material.opacity = Math.max(0, p.life) * 0.9;
       } else {

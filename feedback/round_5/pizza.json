@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "When an item is placed in the oven (00:03), it becomes completely invisible. The viewer cannot see what ingredient is currently processing or what is ready to be picked up, only that the station is busy. This makes it impossible to track the recipe or differentiate between multiple ovens.",
+      "fix": "Make the oven interior visible, for example through a glass door. Show a model of the ingredient(s) inside the oven while they are processing and after they are finished.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "The cooking logic is not communicated visually. At 00:10, the cook puts a single tomato into the oven but retrieves what looks like a pizza base with sauce. The intended recipe requires dough, but no dough was ever picked up. This makes the process feel like a magical, unintuitive transformation, not cooking.",
+      "fix": "Ensure that every ingredient in a recipe is explicitly picked up and combined by the cook. For a pizza, the cook should pick up dough, place it on a counter, add processed tomato, add cheese, and only then bake the assembled item.",
+      "severity": "high"
+    },
+    {
+      "step": "place",
+      "problem": "At 00:18, the cook approaches the oven while visibly empty-handed and initiates a cooking process. An item is essentially created inside the oven from thin air. The viewer has no idea what is being cooked or where the ingredient came from.",
+      "fix": "The cook must be visibly carrying an item to be able to place it in a processing station. An interaction that requires an input item should not be possible if the cook is empty-handed.",
+      "severity": "high"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the cook serves the dish at 00:11, the item vanishes with a generic flash. There is no clear feedback to indicate if the delivery was successful, failed, or partial (as it was an incomplete pizza). The moment of completion is not obvious or satisfying.",
+      "fix": "Add explicit success/failure feedback in the 3D world upon delivery. For example, a '+100' score pop-up and a positive sound for a correct order, or a red 'X' and a negative sound for an incorrect or incomplete one.",
+      "severity": "med"
+    },
+    {
+      "step": "state",
+      "problem": "The visual transformation of ingredients is confusing. A raw tomato goes into an oven and comes out as a pizza base with sauce. A viewer cannot learn the recipes by observing, as the state changes don't follow a logical, step-by-step progression (e.g., tomato -> chopped tomato -> sauce).",
+      "fix": "Create distinct, logical models for each state of an ingredient. For example, a whole tomato, a chopped tomato, and tomato sauce should all have unique visuals so the player can track the item's progress through the recipe.",
+      "severity": "med"
+    },
+    {
+      "step": "pickup",
+      "problem": "When picking up a completed item from the oven (00:10), the item instantly appears in the cook's hands. The action of 'taking' the item is not clearly animated, making the transfer feel abrupt.",
+      "fix": "Add a short 'take' or 'grab' animation where the cook's model briefly reaches towards the station. This would make the transfer of the item from the station to the cook's hands more deliberate and readable.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 2,
+  "good_enough": false,
+  "summary": "The core gameplay loop is fundamentally illegible. Key actions like placing items in ovens, tracking their state, and understanding recipe transformations are obscured. Ovens act as 'black boxes' where ingredients disappear, and processed items appear magically without following a logical cooking sequence. The cook also performs actions without holding the necessary items, making it impossible for a viewer to follow the game's logic.",
+  "clip": "pizza"
+}

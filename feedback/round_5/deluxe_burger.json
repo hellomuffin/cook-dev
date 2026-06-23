@@ -1,0 +1,32 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "The visual difference between raw and chopped ingredients (e.g., lettuce, tomato) is extremely subtle. It is nearly impossible for a viewer to tell if an ingredient on a counter or being carried has been processed, making it very difficult to follow the state of the recipe.",
+      "fix": "Use models for processed ingredients that are distinctly different from their raw counterparts. For example, a whole tomato should become a pile of diced cubes, and a head of lettuce should become a pile of shredded greens. The change in state should be immediately obvious.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:09, the cook places a plate on a frying pan, which immediately causes a large fire. This interaction is illogical in a cooking context and is deeply confusing for the viewer, as it's unclear whether this is a bug, a penalty, or a bizarre game mechanic.",
+      "fix": "Prevent nonsensical actions. When the player attempts an invalid interaction like placing a plate on a stove, the action should fail with clear negative feedback (e.g., a red 'X' visual and an error sound) instead of producing a confusing and illogical outcome.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "Processing stations lack clear, persistent progress indicators. For chopping, the action is only confirmed by the subtle state change. For the pan and pot, there is no visible timer to indicate how close an item is to being cooked or burnt.",
+      "fix": "Display a persistent progress meter (e.g., a radial bar or a filling icon) directly above any station that is actively processing an ingredient. This gives the viewer clear feedback on the action's duration and status.",
+      "severity": "med"
+    },
+    {
+      "step": "process",
+      "problem": "The 'frying' process is not communicated clearly. The pan has no visual state for 'cooking' \u2014 it is either idle or on fire. A viewer cannot tell if an item is being cooked correctly or is simply burning.",
+      "fix": "Implement a distinct visual effect for a successful 'cooking' state on the pan, such as a sizzling oil effect. This should be clearly different from the 'burning' state (which is currently well-represented by fire and smoke).",
+      "severity": "med"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The legibility of the gameplay is low. While basic character movement and targeting are clear, critical information is not communicated effectively. Key ingredient state changes (raw vs. chopped) are almost invisible, and some game rules are conveyed in a confusing and illogical manner (e.g., frying a plate causes a fire). Without clear progress indicators and visually distinct states, a viewer cannot reliably understand what is being cooked or what progress is being made.",
+  "clip": "deluxe_burger"
+}

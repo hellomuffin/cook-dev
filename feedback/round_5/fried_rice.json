@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "deliver",
+      "problem": "When the completed dish is placed on the delivery counter (00:28), the plate icon simply vanishes. There is no visual or auditory feedback to confirm that a delivery occurred, whether it was successful, or what the reward was. This makes the core objective's completion completely ambiguous.",
+      "fix": "Add immediate and clear feedback for a successful delivery. For example, a particle effect, a positive sound, and a score pop-up appearing over the delivery counter.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "When an item is being processed (e.g., rice cooking in the pot from 00:05, egg frying from 00:10), there is an indicator that the station is active (steam/contents), but no indication of progress or time remaining. The viewer has to guess when it will be finished.",
+      "fix": "Add a progress indicator (e.g., a circular progress bar or a timer) above any station that is actively processing an item. It should clearly show when the process is complete.",
+      "severity": "high"
+    },
+    {
+      "step": "state",
+      "problem": "Ingredients do not have visually distinct states. For example, the onion on the cutting board (00:21) does not look different after being chopped. The icon for raw rice is the same as for cooked rice. This makes it difficult to track the progress of the recipe.",
+      "fix": "Use different 3D models or icons for each state of an ingredient (e.g., a whole onion vs. a pile of chopped onion). The visual representation should change immediately after a process like chopping is completed.",
+      "severity": "high"
+    },
+    {
+      "step": "pickup",
+      "problem": "The ingredient dispensers along the top wall are all identical brown boxes. The only thing differentiating them is a very small, low-contrast icon on top, making it impossible to tell what ingredient is being picked up without being familiar with the layout.",
+      "fix": "Make the dispensers visually distinct from each other based on the ingredient they provide. For example, the onion dispenser could be a crate of onions, the rice dispenser a sack of rice, etc.",
+      "severity": "med"
+    },
+    {
+      "step": "carry",
+      "problem": "The cook carries items as icons above their head, not as physical objects. These icons are small and can be hard to identify, especially when multiple ingredients are combined on a plate (00:24).",
+      "fix": "Have the character physically hold a 3D model of the item they are carrying. This is much more direct and easier to read than an icon.",
+      "severity": "med"
+    },
+    {
+      "step": "state",
+      "problem": "It is not possible to see what is cooking inside the pot (00:05). The viewer only knows rice is in there because they saw the cook put it in. If they looked away, they would have no way of knowing the pot's contents.",
+      "fix": "Show the contents of the pot, either by making the pot semi-transparent or by having the ingredient model visible inside. Alternatively, add a persistent icon next to the station indicating its current contents.",
+      "severity": "med"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The core gameplay loop is difficult to follow due to critical feedback failures. The lack of any confirmation upon delivering a dish is the most severe issue, leaving the player's main goal ambiguous. Additionally, the absence of progress bars on processing stations and indistinct visuals for ingredient state changes (e.g., raw vs. chopped) forces the viewer to memorize and guess instead of being able to read the game state directly. While the character's basic movements and interactions are clear, the meaning and status of those interactions are not.",
+  "clip": "fried_rice"
+}

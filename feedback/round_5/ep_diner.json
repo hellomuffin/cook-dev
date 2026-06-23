@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "The visual representation of a raw egg and a fried egg are identical. At 00:07, when the cook picks the egg up from the pan, it is impossible to tell from the item's appearance that it has been cooked.",
+      "fix": "The cooked egg model should be visually distinct from the raw egg model. For example, the fried egg should look like a classic white-and-yellow sunny-side-up egg, while the raw version could be a cracked shell or just the liquid egg.",
+      "severity": "high"
+    },
+    {
+      "step": "deliver",
+      "problem": "When a dish is served (e.g., 00:07, 00:17), the only in-world feedback is a very small, brief yellow glow. This is easy to miss and does not clearly communicate 'Order Complete!' or its success.",
+      "fix": "Add more explicit feedback in the 3D scene. For example, a '+[score]' text pop-up above the pass, a satisfying 'cha-ching' sound, and a larger, more distinct particle effect like a green checkmark.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "When the cook picks up a finished item from a cooking station (e.g., the egg from the pan at 00:06), a plate magically appears in its hands with the food on it. This breaks the logical flow of kitchen work and is confusing for a viewer.",
+      "fix": "Require the cook to be holding a plate *before* picking up a finished food item. The action sequence should be: 1. Get plate. 2. Go to pan. 3. Interact to transfer the food onto the held plate. This makes the process transparent.",
+      "severity": "med"
+    },
+    {
+      "step": "state",
+      "problem": "It is impossible to tell what is cooking inside a pot once an ingredient is added (e.g., 00:34). The pot is opaque, obscuring its contents entirely, which could lead to confusion in a busy kitchen.",
+      "fix": "Add a simple icon above the pot that indicates its contents (e.g., a tomato icon for tomato soup). This would allow a viewer to check the state of all stations at a glance.",
+      "severity": "med"
+    },
+    {
+      "step": "state",
+      "problem": "The visual difference between a raw ingredient and its chopped version is too subtle. For example, the whole lettuce (00:10) and chopped lettuce (00:14) are both simple green blobs with only a minor texture change.",
+      "fix": "Make the chopped state significantly different in form. A whole ingredient should become a small pile of visibly sliced or diced pieces, making the state change immediately obvious.",
+      "severity": "med"
+    },
+    {
+      "step": "pickup",
+      "problem": "All pickup and place actions are instantaneous. The item teleports from the station to the cook's hands (or vice-versa) with no transition, which can feel abrupt and makes actions slightly harder to track in quick succession.",
+      "fix": "Add a very brief 'tween' animation for the item moving from its start point to its end point. This short motion would connect the action to the object and make interactions feel less jarring and easier to follow.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 5,
+  "good_enough": false,
+  "summary": "The game has a solid legibility foundation, with clear 'held item' indicators above the cook's head and excellent progress bars for timed processes like cooking and chopping. However, it suffers from critical legibility gaps. Key state changes, like an egg going from raw to cooked, are not visually represented, making it impossible to track recipe progress without the UI. Furthermore, feedback for the crucial action of serving a dish is far too subtle, and the game's internal logic includes confusing 'magic' steps, such as plates appearing from nowhere. These issues prevent a viewer from being able to reliably follow the gameplay in the 3D scene alone.",
+  "clip": "ep_diner"
+}

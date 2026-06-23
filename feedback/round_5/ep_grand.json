@@ -1,0 +1,50 @@
+{
+  "issues": [
+    {
+      "step": "process",
+      "problem": "When the cook is performing an action like chopping or cooking, the character model is completely static. The only indicator that a process is happening is a small UI progress bar over the station. A viewer cannot tell what action is being performed without reading the UI.",
+      "fix": "Add a simple, looping animation to the cook for each type of process (e.g., a chopping motion, a stirring motion). Additionally, the station itself should have a visual effect, like steam from a pot or flashes on a cutting board.",
+      "severity": "high"
+    },
+    {
+      "step": "state",
+      "problem": "Pots are opaque, making it impossible for a viewer to see what ingredients have been added or what the current state of the dish is. The entire cooking process inside the pot is invisible.",
+      "fix": "Use a 'cutaway' view for pots so their contents are always visible. Alternatively, display icons of the added ingredients above the pot to clearly communicate its state.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "The action of plating an item from a pot is not shown. At 00:30, the cook approaches a pot with a plate, and the entire pot instantly disappears, replaced by a plated soup in the cook's hands. This transition is jarring and makes no logical sense.",
+      "fix": "Implement a clear plating action. The cook should interact with the pot, causing soup to appear on the plate they are holding. The pot itself should remain on the stove, perhaps visibly emptier, to be used again or washed.",
+      "severity": "high"
+    },
+    {
+      "step": "pickup",
+      "problem": "Picking up any item is instantaneous. The object simply teleports into the cook's hands with no transitional motion or effect. This can be easily missed by the viewer.",
+      "fix": "Add a very brief 'swoop' animation showing the item moving from the counter to the cook's hands. A small particle effect or 'pop' at the moment of pickup would also help confirm the action.",
+      "severity": "med"
+    },
+    {
+      "step": "place",
+      "problem": "Placing an item is instantaneous. The object teleports from the cook's hands to the counter or station. This lacks clear feedback that a deliberate action occurred.",
+      "fix": "Add a brief animation for placing an item, showing it move from the cook's hands to the surface. This makes the action feel more intentional and readable.",
+      "severity": "med"
+    },
+    {
+      "step": "carry",
+      "problem": "Items being carried are held low against the cook's body, making them partially obscured and difficult to identify, especially when the item's color is similar to the cook's (e.g., a white plate).",
+      "fix": "Raise the position where items are held so they are more in front of or even slightly above the cook's 'head'. This ensures the carried object is always clearly silhouetted and identifiable.",
+      "severity": "med"
+    },
+    {
+      "step": "deliver",
+      "problem": "The moment of serving a finished dish is not impactful or clear. The dish disappears and a very small, brief sparkle effect appears, which is easy to miss. The primary feedback is from the UI, not the world.",
+      "fix": "Make the delivery feedback much more obvious. Use a larger, more distinct visual effect (e.g., a big green checkmark, a shower of stars) at the delivery point to clearly signal a successful order.",
+      "severity": "med"
+    }
+  ],
+  "legibility_rating": 3,
+  "good_enough": false,
+  "summary": "The game's action legibility is low due to several high-severity issues. Critical information, such as the contents of a pot, is completely hidden. Core interactions like processing, picking up, and placing items lack clear visual feedback, forcing a viewer to rely on UI elements to understand the gameplay. The flow of actions is often abrupt and nonsensical, breaking the illusion of a physical cooking process.",
+  "clip": "ep_grand"
+}

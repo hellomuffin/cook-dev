@@ -1,0 +1,558 @@
+{
+  "round": 5,
+  "model": "gemini-2.5-pro",
+  "n_clips": 14,
+  "avg_rating": 3.79,
+  "ratings": {
+    "cheeseburger": 4,
+    "deluxe_burger": 4,
+    "ep_bistro": 3,
+    "ep_diner": 5,
+    "ep_grand": 3,
+    "fish_and_chips": 3,
+    "fried_rice": 4,
+    "greek_salad": 5,
+    "loaded_fries": 5,
+    "onion_soup": 3,
+    "page@c73626427951d9842c96a83c31266371": 4,
+    "pizza": 2,
+    "sushi": 4,
+    "veggie_bake": 4
+  },
+  "all_good_enough": false,
+  "n_high": 32,
+  "issues_by_severity": [
+    {
+      "step": "deliver",
+      "problem": "When the cook delivers the finished dish at the serving station (00:19), the plate and food simply vanish. There is no visual or audio cue to confirm that a delivery occurred, if it was the correct order, or that it was successful. This is the most critical moment of the gameplay loop, and it is completely uncommunicated.",
+      "fix": "Add a clear and rewarding delivery event. For example, have the plate slide into the serving window, accompanied by a positive sound, a score indicator, and a green checkmark or particle effect to unambiguously signal a successful order completion.",
+      "severity": "high",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an item from a dispenser or a station (e.g., 00:04, 00:06), the item instantly teleports into its hands. There is no 'taking' or 'placing' motion. This makes the action feel magical and abrupt, forcing the viewer to deduce the transfer of items rather than seeing it happen.",
+      "fix": "Implement a simple, quick animation for picking up and placing items. The cook's hands could reach out, and the item could smoothly travel from its source to the hands (and vice-versa for placing). This would make the transfer of objects clear and deliberate.",
+      "severity": "high",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "state",
+      "problem": "The visual difference between raw and chopped ingredients (e.g., lettuce, tomato) is extremely subtle. It is nearly impossible for a viewer to tell if an ingredient on a counter or being carried has been processed, making it very difficult to follow the state of the recipe.",
+      "fix": "Use models for processed ingredients that are distinctly different from their raw counterparts. For example, a whole tomato should become a pile of diced cubes, and a head of lettuce should become a pile of shredded greens. The change in state should be immediately obvious.",
+      "severity": "high",
+      "clip": "deluxe_burger"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:09, the cook places a plate on a frying pan, which immediately causes a large fire. This interaction is illogical in a cooking context and is deeply confusing for the viewer, as it's unclear whether this is a bug, a penalty, or a bizarre game mechanic.",
+      "fix": "Prevent nonsensical actions. When the player attempts an invalid interaction like placing a plate on a stove, the action should fail with clear negative feedback (e.g., a red 'X' visual and an error sound) instead of producing a confusing and illogical outcome.",
+      "severity": "high",
+      "clip": "deluxe_burger"
+    },
+    {
+      "step": "state",
+      "problem": "The contents of containers like plates and pots are not visible. A plate with a salad, a plate with soup, and an empty plate all look identical. This makes it impossible to know what dish is being prepared or carried without reading the UI.",
+      "fix": "Visually represent the contents on the container. For example, show a model of the salad on the plate, or change the color of the liquid in the pot to represent soup.",
+      "severity": "high",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "state",
+      "problem": "Processed ingredients are visually identical to their raw counterparts. For example, a tomato on a cutting board looks the same before and after it has been chopped.",
+      "fix": "Use a distinct model or texture for processed ingredients. For example, a chopped tomato should look like a pile of slices, not a whole tomato.",
+      "severity": "high",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "state",
+      "problem": "The visual representation of a raw egg and a fried egg are identical. At 00:07, when the cook picks the egg up from the pan, it is impossible to tell from the item's appearance that it has been cooked.",
+      "fix": "The cooked egg model should be visually distinct from the raw egg model. For example, the fried egg should look like a classic white-and-yellow sunny-side-up egg, while the raw version could be a cracked shell or just the liquid egg.",
+      "severity": "high",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "deliver",
+      "problem": "When a dish is served (e.g., 00:07, 00:17), the only in-world feedback is a very small, brief yellow glow. This is easy to miss and does not clearly communicate 'Order Complete!' or its success.",
+      "fix": "Add more explicit feedback in the 3D scene. For example, a '+[score]' text pop-up above the pass, a satisfying 'cha-ching' sound, and a larger, more distinct particle effect like a green checkmark.",
+      "severity": "high",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "process",
+      "problem": "When the cook is performing an action like chopping or cooking, the character model is completely static. The only indicator that a process is happening is a small UI progress bar over the station. A viewer cannot tell what action is being performed without reading the UI.",
+      "fix": "Add a simple, looping animation to the cook for each type of process (e.g., a chopping motion, a stirring motion). Additionally, the station itself should have a visual effect, like steam from a pot or flashes on a cutting board.",
+      "severity": "high",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "state",
+      "problem": "Pots are opaque, making it impossible for a viewer to see what ingredients have been added or what the current state of the dish is. The entire cooking process inside the pot is invisible.",
+      "fix": "Use a 'cutaway' view for pots so their contents are always visible. Alternatively, display icons of the added ingredients above the pot to clearly communicate its state.",
+      "severity": "high",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "sense",
+      "problem": "The action of plating an item from a pot is not shown. At 00:30, the cook approaches a pot with a plate, and the entire pot instantly disappears, replaced by a plated soup in the cook's hands. This transition is jarring and makes no logical sense.",
+      "fix": "Implement a clear plating action. The cook should interact with the pot, causing soup to appear on the plate they are holding. The pot itself should remain on the stove, perhaps visibly emptier, to be used again or washed.",
+      "severity": "high",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "pickup",
+      "problem": "The ingredients being picked up are unidentifiable. They appear as generic colored blobs (e.g., a whitish blob at 00:02, a reddish one at 00:05). A viewer cannot tell what food is being prepared (e.g., fish vs. potato).",
+      "fix": "Replace the generic blob shapes with distinct, recognizable 3D models for each ingredient. A fish should look like a fish fillet, a potato should look like a potato or cut fries.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "process",
+      "problem": "When ingredients are frying in the pan (00:08 onwards), there is a continuous smoke effect but no indication of progress. It's impossible to know how long the cooking will take, when it is complete, or if it is about to burn.",
+      "fix": "Add a clear progress indicator to the frying station when it is in use. A circular progress bar above the pan or a UI element that fills up would make the cooking state and timing legible.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the final dish is placed on the serving counter (00:15), there is no feedback whatsoever. The plate simply appears on the counter. It is not clear that a delivery occurred, nor whether it was successful.",
+      "fix": "Add an explicit success feedback effect for a correct delivery. This could include a particle effect, a sound cue, a score indicator appearing in the 3D space, and the plate quickly disappearing from the counter.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "carry",
+      "problem": "While it is clear that the character is holding an item, the item itself is unidentifiable for the same reason as the pickup issue. The viewer sees the character carrying a blob, not a specific ingredient or dish.",
+      "fix": "Use distinct, recognizable 3D models for all carriable items so a viewer can identify what the cook is holding at a glance.",
+      "severity": "high",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the completed dish is placed on the delivery counter (00:28), the plate icon simply vanishes. There is no visual or auditory feedback to confirm that a delivery occurred, whether it was successful, or what the reward was. This makes the core objective's completion completely ambiguous.",
+      "fix": "Add immediate and clear feedback for a successful delivery. For example, a particle effect, a positive sound, and a score pop-up appearing over the delivery counter.",
+      "severity": "high",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "process",
+      "problem": "When an item is being processed (e.g., rice cooking in the pot from 00:05, egg frying from 00:10), there is an indicator that the station is active (steam/contents), but no indication of progress or time remaining. The viewer has to guess when it will be finished.",
+      "fix": "Add a progress indicator (e.g., a circular progress bar or a timer) above any station that is actively processing an item. It should clearly show when the process is complete.",
+      "severity": "high",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "state",
+      "problem": "Ingredients do not have visually distinct states. For example, the onion on the cutting board (00:21) does not look different after being chopped. The icon for raw rice is the same as for cooked rice. This makes it difficult to track the progress of the recipe.",
+      "fix": "Use different 3D models or icons for each state of an ingredient (e.g., a whole onion vs. a pile of chopped onion). The visual representation should change immediately after a process like chopping is completed.",
+      "severity": "high",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "process",
+      "problem": "During chopping (e.g., at 00:10 and 00:17), particle effects indicate an action is happening, but there is no visual progress bar or timer. A viewer cannot tell how long the action will take or when it is about to complete.",
+      "fix": "Add a circular progress bar or a filling meter above the cutting board or the character's head during the chopping process to clearly communicate its duration and completion status.",
+      "severity": "high",
+      "clip": "greek_salad"
+    },
+    {
+      "step": "state",
+      "problem": "At 00:17, when the raw lettuce is placed on the cutting board, it completely covers the chopped tomato that was already there. This makes it impossible for the viewer to see all the ingredients being combined and track the state of the recipe.",
+      "fix": "When multiple ingredients are on a single station, ensure they are all visible. They could be arranged side-by-side, or a UI element with icons could appear above the station to show its contents.",
+      "severity": "high",
+      "clip": "greek_salad"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the finished dish is placed on the delivery counter (00:08), the plate and food simply vanish with no feedback. It is completely unclear if the delivery was successful, if points were scored, or if the action had any effect at all.",
+      "fix": "Add clear, immediate feedback for a successful delivery. This could be a visual effect (e.g., a 'poof' of stars, a checkmark), an audio cue, and/or a score number briefly appearing above the delivery station in the 3D world.",
+      "severity": "high",
+      "clip": "loaded_fries"
+    },
+    {
+      "step": "state",
+      "problem": "When an ingredient is placed in the pot, it vanishes, but the pot itself remains visually empty. It is impossible for a viewer to know what is inside the pot, how many ingredients have been added, or what their current cooking state is.",
+      "fix": "Visually represent the contents of the pot. For example, show models of the onions inside the pot. The models could change color or texture to indicate the cooking progress (e.g., from raw to cooked).",
+      "severity": "high",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "process",
+      "problem": "The pot displays a 'processing' animation (glowing, particles) from the very beginning of the clip, before any ingredients have been added. This is illogical and makes it unclear what triggers the cooking process.",
+      "fix": "The processing animation should only begin after the correct ingredients have been placed inside the pot. The stove should have a visually distinct 'idle' or 'on' state that is different from its 'processing' state.",
+      "severity": "high",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "state",
+      "problem": "Pots are opaque. It is impossible to see what ingredients are inside, how many there are, or what state they are in (raw, cooked, burnt). This makes following any soup recipe (e.g., at 00:19) impossible for a viewer without watching the UI.",
+      "fix": "Show icons of the ingredients floating over the pot as they are added. Alternatively, make the pot's contents visible, perhaps by making the pot semi-transparent or having the liquid inside change color with each ingredient.",
+      "severity": "high",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:27, the cook causes a meat patty to appear on a frying pan without ever picking it up from the dispenser or carrying it. The action is disconnected from the character and feels like teleportation, breaking the logical flow of actions.",
+      "fix": "The cook must perform a clear 'pickup' action at the ingredient dispenser, have a clear visual representation of the carried item (the raw patty), and then perform a 'place' action at the cooking station.",
+      "severity": "high",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "step": "state",
+      "problem": "When an item is placed in the oven (00:03), it becomes completely invisible. The viewer cannot see what ingredient is currently processing or what is ready to be picked up, only that the station is busy. This makes it impossible to track the recipe or differentiate between multiple ovens.",
+      "fix": "Make the oven interior visible, for example through a glass door. Show a model of the ingredient(s) inside the oven while they are processing and after they are finished.",
+      "severity": "high",
+      "clip": "pizza"
+    },
+    {
+      "step": "sense",
+      "problem": "The cooking logic is not communicated visually. At 00:10, the cook puts a single tomato into the oven but retrieves what looks like a pizza base with sauce. The intended recipe requires dough, but no dough was ever picked up. This makes the process feel like a magical, unintuitive transformation, not cooking.",
+      "fix": "Ensure that every ingredient in a recipe is explicitly picked up and combined by the cook. For a pizza, the cook should pick up dough, place it on a counter, add processed tomato, add cheese, and only then bake the assembled item.",
+      "severity": "high",
+      "clip": "pizza"
+    },
+    {
+      "step": "place",
+      "problem": "At 00:18, the cook approaches the oven while visibly empty-handed and initiates a cooking process. An item is essentially created inside the oven from thin air. The viewer has no idea what is being cooked or where the ingredient came from.",
+      "fix": "The cook must be visibly carrying an item to be able to place it in a processing station. An interaction that requires an input item should not be possible if the cook is empty-handed.",
+      "severity": "high",
+      "clip": "pizza"
+    },
+    {
+      "step": "state",
+      "problem": "At 00:02 the cook picks up raw rice, and at 00:06 it picks up cooked rice from the pot. The two items are visually identical, making it impossible to know the ingredient's state by looking at it.",
+      "fix": "Use a visually distinct model or texture for cooked rice. For example, raw rice could be in a small bag, while cooked rice is a sticky white ball.",
+      "severity": "high",
+      "clip": "sushi"
+    },
+    {
+      "step": "deliver",
+      "problem": "At 00:27, the completed dish is served by disappearing from the counter. There is no visual or auditory feedback to confirm that the delivery was successful.",
+      "fix": "Add a clear success indicator when a correct dish is served, such as a particle effect (e.g., stars, a green checkmark), a sound effect, or a temporary UI element appearing over the serving window.",
+      "severity": "high",
+      "clip": "sushi"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the cook delivers the finished dish at the pass (00:21), the dish simply vanishes from its hands. There is absolutely no feedback to confirm that a delivery happened, whether it was successful, or what its effect was (e.g., points scored). The most important action in the game loop is completely ambiguous.",
+      "fix": "Add explicit, multi-modal feedback for delivery. For example, a visual effect like a green checkmark or '+100' score text, a sound effect, and have the plate visibly slide away on the serving counter instead of just disappearing.",
+      "severity": "high",
+      "clip": "veggie_bake"
+    },
+    {
+      "step": "sense",
+      "problem": "When the cook is holding a plate, it can add new ingredients (e.g., mushroom at 00:12) just by standing next to a dispenser. The ingredient teleports directly onto the plate. This action is 'magical' and breaks the physical logic of the simulation, making it hard to understand the rules of interaction.",
+      "fix": "Enforce a more logical sequence: the cook must put the plate down on a counter, pick up the new ingredient, and then add it to the plate. Alternatively, if this 'magic' transfer is intended, add a clear visual effect showing the ingredient flying from the dispenser to the plate.",
+      "severity": "high",
+      "clip": "veggie_bake"
+    },
+    {
+      "step": "process",
+      "problem": "The same green circular progress bar is used for every timed process, regardless of the action (e.g., frying a raw patty at 00:01, heating a cooked patty with a bun at 00:08, and heating a fully plated dish at 00:15). This makes it impossible to know what process is happening without prior knowledge of the recipe.",
+      "fix": "Use distinct visual cues for different processes. For example, use a red/orange bar with sizzle VFX for frying, a yellow bar for toasting, and a blue bar for boiling. This would allow a viewer to understand the specific action being performed at a glance.",
+      "severity": "med",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:14, the cook places a dish that is already on a plate back into a frying pan to continue cooking. This action is illogical within the context of cooking and confuses the viewer about the game's rules. It's unclear if this is a bug or an intended, but strange, recipe step.",
+      "fix": "Disallow nonsensical actions like placing a plate in a pan. If the goal is to melt cheese on the burger, the recipe step should be to add cheese to the patty while it's in the pan, before plating it. The game's logic should guide the player through a sequence that makes intuitive sense.",
+      "severity": "med",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "process",
+      "problem": "Processing stations lack clear, persistent progress indicators. For chopping, the action is only confirmed by the subtle state change. For the pan and pot, there is no visible timer to indicate how close an item is to being cooked or burnt.",
+      "fix": "Display a persistent progress meter (e.g., a radial bar or a filling icon) directly above any station that is actively processing an ingredient. This gives the viewer clear feedback on the action's duration and status.",
+      "severity": "med",
+      "clip": "deluxe_burger"
+    },
+    {
+      "step": "process",
+      "problem": "The 'frying' process is not communicated clearly. The pan has no visual state for 'cooking' \u2014 it is either idle or on fire. A viewer cannot tell if an item is being cooked correctly or is simply burning.",
+      "fix": "Implement a distinct visual effect for a successful 'cooking' state on the pan, such as a sizzling oil effect. This should be clearly different from the 'burning' state (which is currently well-represented by fire and smoke).",
+      "severity": "med",
+      "clip": "deluxe_burger"
+    },
+    {
+      "step": "carry",
+      "problem": "A burnt pot is only identifiable by dark smoke while it is on the stove. Once the cook picks it up, it looks identical to a normal pot, so the reason for taking it to the trash is not clear.",
+      "fix": "Make the carried burnt pot visually distinct. For example, it could have a blackened texture or continue to emit a small wisp of dark smoke while being held.",
+      "severity": "med",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "place",
+      "problem": "The action of plating soup is unclear. The cook holds a plate, approaches a pot on a counter, and the pot simply vanishes. It does not read as a transfer of contents.",
+      "fix": "Add a brief animation or particle effect that clearly shows the soup being poured from the pot onto the plate. The empty/dirty pot could then be left on the counter.",
+      "severity": "med",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "sense",
+      "problem": "When the cook picks up a finished item from a cooking station (e.g., the egg from the pan at 00:06), a plate magically appears in its hands with the food on it. This breaks the logical flow of kitchen work and is confusing for a viewer.",
+      "fix": "Require the cook to be holding a plate *before* picking up a finished food item. The action sequence should be: 1. Get plate. 2. Go to pan. 3. Interact to transfer the food onto the held plate. This makes the process transparent.",
+      "severity": "med",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "state",
+      "problem": "It is impossible to tell what is cooking inside a pot once an ingredient is added (e.g., 00:34). The pot is opaque, obscuring its contents entirely, which could lead to confusion in a busy kitchen.",
+      "fix": "Add a simple icon above the pot that indicates its contents (e.g., a tomato icon for tomato soup). This would allow a viewer to check the state of all stations at a glance.",
+      "severity": "med",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "state",
+      "problem": "The visual difference between a raw ingredient and its chopped version is too subtle. For example, the whole lettuce (00:10) and chopped lettuce (00:14) are both simple green blobs with only a minor texture change.",
+      "fix": "Make the chopped state significantly different in form. A whole ingredient should become a small pile of visibly sliced or diced pieces, making the state change immediately obvious.",
+      "severity": "med",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "pickup",
+      "problem": "Picking up any item is instantaneous. The object simply teleports into the cook's hands with no transitional motion or effect. This can be easily missed by the viewer.",
+      "fix": "Add a very brief 'swoop' animation showing the item moving from the counter to the cook's hands. A small particle effect or 'pop' at the moment of pickup would also help confirm the action.",
+      "severity": "med",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "place",
+      "problem": "Placing an item is instantaneous. The object teleports from the cook's hands to the counter or station. This lacks clear feedback that a deliberate action occurred.",
+      "fix": "Add a brief animation for placing an item, showing it move from the cook's hands to the surface. This makes the action feel more intentional and readable.",
+      "severity": "med",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "carry",
+      "problem": "Items being carried are held low against the cook's body, making them partially obscured and difficult to identify, especially when the item's color is similar to the cook's (e.g., a white plate).",
+      "fix": "Raise the position where items are held so they are more in front of or even slightly above the cook's 'head'. This ensures the carried object is always clearly silhouetted and identifiable.",
+      "severity": "med",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "deliver",
+      "problem": "The moment of serving a finished dish is not impactful or clear. The dish disappears and a very small, brief sparkle effect appears, which is easy to miss. The primary feedback is from the UI, not the world.",
+      "fix": "Make the delivery feedback much more obvious. Use a larger, more distinct visual effect (e.g., a big green checkmark, a shower of stars) at the delivery point to clearly signal a successful order.",
+      "severity": "med",
+      "clip": "ep_grand"
+    },
+    {
+      "step": "state",
+      "problem": "The visual difference between a raw ingredient and a cooked one is only a slight color change (e.g., the whitish blob becomes a brownish blob at 00:13). This is not a strong enough visual cue to clearly signal a state change.",
+      "fix": "Make the cooked models look qualitatively different from the raw models, not just a recolor. For example, a raw fish fillet model should change into a golden-brown, textured fried fish model.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "sense",
+      "problem": "The action of plating the food is combined with picking it up from the pan (00:13). The cooked items teleport instantly from the pan onto the plate the cook is already holding. This compressed action feels magical and can be hard to follow.",
+      "fix": "Create a more deliberate plating animation. For example, have the cook briefly pause and perform a scooping motion that clearly shows the items moving from the pan to the plate.",
+      "severity": "medium",
+      "clip": "fish_and_chips"
+    },
+    {
+      "step": "pickup",
+      "problem": "The ingredient dispensers along the top wall are all identical brown boxes. The only thing differentiating them is a very small, low-contrast icon on top, making it impossible to tell what ingredient is being picked up without being familiar with the layout.",
+      "fix": "Make the dispensers visually distinct from each other based on the ingredient they provide. For example, the onion dispenser could be a crate of onions, the rice dispenser a sack of rice, etc.",
+      "severity": "med",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "carry",
+      "problem": "The cook carries items as icons above their head, not as physical objects. These icons are small and can be hard to identify, especially when multiple ingredients are combined on a plate (00:24).",
+      "fix": "Have the character physically hold a 3D model of the item they are carrying. This is much more direct and easier to read than an icon.",
+      "severity": "med",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "state",
+      "problem": "It is not possible to see what is cooking inside the pot (00:05). The viewer only knows rice is in there because they saw the cook put it in. If they looked away, they would have no way of knowing the pot's contents.",
+      "fix": "Show the contents of the pot, either by making the pot semi-transparent or by having the ingredient model visible inside. Alternatively, add a persistent icon next to the station indicating its current contents.",
+      "severity": "med",
+      "clip": "fried_rice"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an ingredient from a dispenser (e.g., tomato at 00:07, lettuce at 00:13), the item instantly appears in its hand. There is no 'taking' motion or visual effect connecting the dispenser to the character, making the action feel abrupt.",
+      "fix": "Add a short animation where the character's hand reaches for the dispenser, or have the item briefly travel from the dispenser to the character's hand, to create a clear visual link for the pickup action.",
+      "severity": "med",
+      "clip": "greek_salad"
+    },
+    {
+      "step": "place",
+      "problem": "When the raw potato is placed in the fryer (00:02), it simply disappears. The fryer's appearance does not change, so there is no visual confirmation that it contains an item or what that item is.",
+      "fix": "Change the fryer's visual state to show it contains a raw item. For example, the raw potato model could be visible inside the fryer basket, or a status light on the machine could turn on.",
+      "severity": "med",
+      "clip": "loaded_fries"
+    },
+    {
+      "step": "state",
+      "problem": "After the frying process completes (00:03), the fryer looks identical to when it was empty. It's impossible to tell by looking at the station that it contains a finished product ready for pickup.",
+      "fix": "Change the fryer's visual state to indicate a cooked item is ready. For example, the cooked fries model could become visible in the basket, or a status light could turn green and/or blink.",
+      "severity": "med",
+      "clip": "loaded_fries"
+    },
+    {
+      "step": "process",
+      "problem": "The cooking process is represented by a looping animation with no indication of progress. A viewer cannot tell how long the cooking will take, when it is finished, or if it is at risk of burning.",
+      "fix": "Add a clear progress indicator to the cooking station. A circular timer or a filling bar above the pot would make the duration and completion of the action legible.",
+      "severity": "medium",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an item (onion, plate), the item instantly teleports into its hand. There is no pickup motion, which makes the interaction feel abrupt and less clear than it could be.",
+      "fix": "Add a simple, quick 'reach and grab' animation to the cook. This would create a clearer visual link between the cook and the object it is interacting with.",
+      "severity": "medium",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "sense",
+      "problem": "The overall sequence of actions performed by the cook is illogical. It collects one onion, then gets a plate, then gets a second onion while still holding the plate. This makes the overall goal and strategy very difficult to understand.",
+      "fix": "The AI should follow a more sensible cooking pattern (e.g., gather all ingredients, then process, then plate). While an AI issue, this directly impacts the legibility of the gameplay sequence for a viewer.",
+      "severity": "medium",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the cook serves the dish at 00:11, the item vanishes with a generic flash. There is no clear feedback to indicate if the delivery was successful, failed, or partial (as it was an incomplete pizza). The moment of completion is not obvious or satisfying.",
+      "fix": "Add explicit success/failure feedback in the 3D world upon delivery. For example, a '+100' score pop-up and a positive sound for a correct order, or a red 'X' and a negative sound for an incorrect or incomplete one.",
+      "severity": "med",
+      "clip": "pizza"
+    },
+    {
+      "step": "state",
+      "problem": "The visual transformation of ingredients is confusing. A raw tomato goes into an oven and comes out as a pizza base with sauce. A viewer cannot learn the recipes by observing, as the state changes don't follow a logical, step-by-step progression (e.g., tomato -> chopped tomato -> sauce).",
+      "fix": "Create distinct, logical models for each state of an ingredient. For example, a whole tomato, a chopped tomato, and tomato sauce should all have unique visuals so the player can track the item's progress through the recipe.",
+      "severity": "med",
+      "clip": "pizza"
+    },
+    {
+      "step": "process",
+      "problem": "While cooking rice (00:04-00:06) and chopping fish (00:11-00:13), there is an effect indicating an action is in progress, but no indicator of how long is left until completion.",
+      "fix": "Add a radial progress bar or a filling bar over any station that is actively processing an item. This allows the player to manage their time and know when to return to the station.",
+      "severity": "med",
+      "clip": "sushi"
+    },
+    {
+      "step": "pickup",
+      "problem": "Picking up and placing items (e.g., potato at 00:04, plate at 00:09) is instantaneous. The object teleports between the world and the cook's hands without any transitional motion. This makes the action feel abrupt and can be easy to miss.",
+      "fix": "Add a very brief pickup/place animation where the character model visibly reaches for the object or the surface. This creates a clear, readable 'moment of interaction' that is easier for a viewer to parse than an instant state change.",
+      "severity": "med",
+      "clip": "veggie_bake"
+    },
+    {
+      "step": "process",
+      "problem": "While the oven is baking (00:17-00:19), it glows to indicate it is active, which is good. However, there is no visual indicator of its progress. A viewer cannot tell how much time is left, or if the food is close to being done or burning.",
+      "fix": "Add a progress timer to the station while it is active. This could be a circular progress bar that fills up over the oven, or the color of the oven's glow could change as it gets closer to completion.",
+      "severity": "med",
+      "clip": "veggie_bake"
+    },
+    {
+      "step": "state_change",
+      "problem": "When a process completes, the resulting state change can be subtle. At 00:11, after the second cooking step, the bun is now on top of the patty, but this is a minor positional change that doesn't clearly communicate what was achieved by the process.",
+      "fix": "Make state changes more distinct. For example, a toasted bun could change to a golden-brown color. A cooked patty is good (it changes from red to brown), but all other state changes should be equally clear.",
+      "severity": "low",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "carry",
+      "problem": "When the cook carries a stack of items (e.g., patty and bun at 00:07), the items are small and overlap, making it difficult to identify all the individual ingredients being held.",
+      "fix": "Slightly increase the vertical offset between items in a carried stack so that a piece of each item is always visible. This allows for easy identification of the stack's contents.",
+      "severity": "low",
+      "clip": "cheeseburger"
+    },
+    {
+      "step": "process",
+      "problem": "While a glowing circle on the floor indicates a process (like cooking or chopping) is happening, there is no visual feedback on its progress. A viewer cannot tell how close it is to being finished.",
+      "fix": "Add a progress indicator over the active station, such as a radial timer or a filling bar, to clearly show the remaining time.",
+      "severity": "low",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "deliver",
+      "problem": "The visual feedback for a successful delivery at the pass is a very small, brief flash of light. It is easy to miss and lacks impact.",
+      "fix": "Enhance the delivery feedback with a more prominent effect, such as a larger particle burst, a temporary score number appearing in the 3D space, or a clear sound effect.",
+      "severity": "low",
+      "clip": "ep_bistro"
+    },
+    {
+      "step": "pickup",
+      "problem": "All pickup and place actions are instantaneous. The item teleports from the station to the cook's hands (or vice-versa) with no transition, which can feel abrupt and makes actions slightly harder to track in quick succession.",
+      "fix": "Add a very brief 'tween' animation for the item moving from its start point to its end point. This short motion would connect the action to the object and make interactions feel less jarring and easier to follow.",
+      "severity": "low",
+      "clip": "ep_diner"
+    },
+    {
+      "step": "pickup",
+      "problem": "At 00:01, the plate pickup is a two-stage action: the plate first appears floating above the dispenser, and then teleports to the cook's hand. This is not a single, clear 'pickup' action and is momentarily confusing.",
+      "fix": "The plate should appear directly in the cook's hand as it interacts with the dispenser, or travel smoothly from the dispenser into its hand, to make it a single, understandable action.",
+      "severity": "low",
+      "clip": "greek_salad"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:21, the chopped ingredients fly from the cutting board to the cook's hand without the cook physically interacting with the board. This 'telekinetic' pickup feels magical and breaks the physical logic of the cooking process.",
+      "fix": "Require the cook to be adjacent to the station and perform a 'scoop' or 'pick up' animation to make the transfer of items from the station to its hand feel more direct and intentional.",
+      "severity": "low",
+      "clip": "greek_salad"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an ingredient (e.g., potato at 00:01, cheese at 00:05), the item instantly appears in its hand. There is no pickup animation or transition, making the action feel abrupt and less clear than it could be.",
+      "fix": "Add a short pickup animation, such as the cook briefly leaning down or reaching out. This would create a clear 'cause and effect' for the item appearing in its hand.",
+      "severity": "low",
+      "clip": "loaded_fries"
+    },
+    {
+      "step": "carry",
+      "problem": "At 00:12, the white plate is held high, very close to the white '1' UI element above the cook's head. The similar color and proximity cause them to blend, making it slightly difficult to identify the carried object at a glance.",
+      "fix": "Adjust the position where items are held to be lower or further from the head, or use a different color for the plate to create more contrast with the UI element.",
+      "severity": "low",
+      "clip": "onion_soup"
+    },
+    {
+      "step": "deliver",
+      "problem": "When a dish is successfully served (e.g., at 00:10), the dish just slides off-screen. There is no strong, celebratory feedback in the 3D world to confirm the success. Viewers must look at the score in the UI to be sure.",
+      "fix": "Add a clear success particle effect (e.g., a burst of stars, a green checkmark, or a '+score' number appearing over the delivery pass) in the 3D scene itself when an order is correctly fulfilled.",
+      "severity": "low",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "step": "carry",
+      "problem": "When carrying certain items on a plate, their colors can blend together, making them hard to identify. For example, the white cheese block on the white plate (seen at 00:16) lacks contrast.",
+      "fix": "Ensure key ingredients have distinct colors or shapes that contrast well with the plates/bowls they are carried on. For example, make the cheese a more distinct yellow or give it a unique shape like a wedge.",
+      "severity": "low",
+      "clip": "page@c73626427951d9842c96a83c31266371"
+    },
+    {
+      "step": "pickup",
+      "problem": "When picking up a completed item from the oven (00:10), the item instantly appears in the cook's hands. The action of 'taking' the item is not clearly animated, making the transfer feel abrupt.",
+      "fix": "Add a short 'take' or 'grab' animation where the cook's model briefly reaches towards the station. This would make the transfer of the item from the station to the cook's hands more deliberate and readable.",
+      "severity": "low",
+      "clip": "pizza"
+    },
+    {
+      "step": "pickup",
+      "problem": "All pickup and placement actions (e.g., 00:02, 00:04, 00:10) are instantaneous. The item simply teleports into or out of the cook's possession without any transitional animation, making the action feel abrupt.",
+      "fix": "Add a brief 'reach and take' or 'put down' animation. Even a simple, quick bobbing motion would help telegraph the interaction and make it feel more deliberate and less jarring.",
+      "severity": "low",
+      "clip": "sushi"
+    },
+    {
+      "step": "carry",
+      "problem": "When the cook is carrying an item (e.g., the rice at 00:03), the item floats in front of the character model rather than being visibly held, which is slightly ambiguous.",
+      "fix": "Adjust the position of carried items to be closer to the character's hands, or add simple geometry representing hands that appear to hold the object, making the 'carrying' state unambiguous.",
+      "severity": "low",
+      "clip": "sushi"
+    },
+    {
+      "step": "carry",
+      "problem": "When multiple ingredients are combined on a plate (00:15), they are small and clip into each other. This makes it difficult to quickly and clearly identify all the individual components of the dish being carried.",
+      "fix": "Slightly increase the size of the ingredients on the plate and/or define specific, non-overlapping positions for each ingredient so they are always individually distinguishable.",
+      "severity": "low",
+      "clip": "veggie_bake"
+    }
+  ]
+}

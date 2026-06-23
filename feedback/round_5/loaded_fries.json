@@ -1,0 +1,32 @@
+{
+  "issues": [
+    {
+      "step": "deliver",
+      "problem": "When the finished dish is placed on the delivery counter (00:08), the plate and food simply vanish with no feedback. It is completely unclear if the delivery was successful, if points were scored, or if the action had any effect at all.",
+      "fix": "Add clear, immediate feedback for a successful delivery. This could be a visual effect (e.g., a 'poof' of stars, a checkmark), an audio cue, and/or a score number briefly appearing above the delivery station in the 3D world.",
+      "severity": "high"
+    },
+    {
+      "step": "place",
+      "problem": "When the raw potato is placed in the fryer (00:02), it simply disappears. The fryer's appearance does not change, so there is no visual confirmation that it contains an item or what that item is.",
+      "fix": "Change the fryer's visual state to show it contains a raw item. For example, the raw potato model could be visible inside the fryer basket, or a status light on the machine could turn on.",
+      "severity": "med"
+    },
+    {
+      "step": "state",
+      "problem": "After the frying process completes (00:03), the fryer looks identical to when it was empty. It's impossible to tell by looking at the station that it contains a finished product ready for pickup.",
+      "fix": "Change the fryer's visual state to indicate a cooked item is ready. For example, the cooked fries model could become visible in the basket, or a status light could turn green and/or blink.",
+      "severity": "med"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an ingredient (e.g., potato at 00:01, cheese at 00:05), the item instantly appears in its hand. There is no pickup animation or transition, making the action feel abrupt and less clear than it could be.",
+      "fix": "Add a short pickup animation, such as the cook briefly leaning down or reaching out. This would create a clear 'cause and effect' for the item appearing in its hand.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 5,
+  "good_enough": false,
+  "summary": "The core actions of carrying and combining ingredients are clear, largely because the carried item is held high. However, legibility is severely hampered by a lack of feedback on key interactions. Items become invisible inside processing stations like the fryer, making their state ambiguous. The most critical issue is the complete absence of feedback upon delivering a dish, which makes the core objective of the game visually unconfirmed and unsatisfying.",
+  "clip": "loaded_fries"
+}

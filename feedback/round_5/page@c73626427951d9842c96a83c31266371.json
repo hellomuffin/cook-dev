@@ -1,0 +1,32 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "Pots are opaque. It is impossible to see what ingredients are inside, how many there are, or what state they are in (raw, cooked, burnt). This makes following any soup recipe (e.g., at 00:19) impossible for a viewer without watching the UI.",
+      "fix": "Show icons of the ingredients floating over the pot as they are added. Alternatively, make the pot's contents visible, perhaps by making the pot semi-transparent or having the liquid inside change color with each ingredient.",
+      "severity": "high"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:27, the cook causes a meat patty to appear on a frying pan without ever picking it up from the dispenser or carrying it. The action is disconnected from the character and feels like teleportation, breaking the logical flow of actions.",
+      "fix": "The cook must perform a clear 'pickup' action at the ingredient dispenser, have a clear visual representation of the carried item (the raw patty), and then perform a 'place' action at the cooking station.",
+      "severity": "high"
+    },
+    {
+      "step": "deliver",
+      "problem": "When a dish is successfully served (e.g., at 00:10), the dish just slides off-screen. There is no strong, celebratory feedback in the 3D world to confirm the success. Viewers must look at the score in the UI to be sure.",
+      "fix": "Add a clear success particle effect (e.g., a burst of stars, a green checkmark, or a '+score' number appearing over the delivery pass) in the 3D scene itself when an order is correctly fulfilled.",
+      "severity": "low"
+    },
+    {
+      "step": "carry",
+      "problem": "When carrying certain items on a plate, their colors can blend together, making them hard to identify. For example, the white cheese block on the white plate (seen at 00:16) lacks contrast.",
+      "fix": "Ensure key ingredients have distinct colors or shapes that contrast well with the plates/bowls they are carried on. For example, make the cheese a more distinct yellow or give it a unique shape like a wedge.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The game has a strong foundation for legibility with clear progress bars and good visual state changes for simple items like chopped tomatoes. However, it fails completely when ingredients are placed in opaque containers like pots, making it impossible for a viewer to track the recipe's state. Furthermore, some actions, like placing a meat patty, happen 'magically' without the cook physically carrying the item, which breaks the logical flow of the simulation. These high-severity issues make complex recipes very difficult to follow without the UI.",
+  "clip": "page@c73626427951d9842c96a83c31266371"
+}

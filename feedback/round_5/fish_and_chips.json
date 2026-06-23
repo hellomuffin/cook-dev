@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "pickup",
+      "problem": "The ingredients being picked up are unidentifiable. They appear as generic colored blobs (e.g., a whitish blob at 00:02, a reddish one at 00:05). A viewer cannot tell what food is being prepared (e.g., fish vs. potato).",
+      "fix": "Replace the generic blob shapes with distinct, recognizable 3D models for each ingredient. A fish should look like a fish fillet, a potato should look like a potato or cut fries.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "When ingredients are frying in the pan (00:08 onwards), there is a continuous smoke effect but no indication of progress. It's impossible to know how long the cooking will take, when it is complete, or if it is about to burn.",
+      "fix": "Add a clear progress indicator to the frying station when it is in use. A circular progress bar above the pan or a UI element that fills up would make the cooking state and timing legible.",
+      "severity": "high"
+    },
+    {
+      "step": "deliver",
+      "problem": "When the final dish is placed on the serving counter (00:15), there is no feedback whatsoever. The plate simply appears on the counter. It is not clear that a delivery occurred, nor whether it was successful.",
+      "fix": "Add an explicit success feedback effect for a correct delivery. This could include a particle effect, a sound cue, a score indicator appearing in the 3D space, and the plate quickly disappearing from the counter.",
+      "severity": "high"
+    },
+    {
+      "step": "carry",
+      "problem": "While it is clear that the character is holding an item, the item itself is unidentifiable for the same reason as the pickup issue. The viewer sees the character carrying a blob, not a specific ingredient or dish.",
+      "fix": "Use distinct, recognizable 3D models for all carriable items so a viewer can identify what the cook is holding at a glance.",
+      "severity": "high"
+    },
+    {
+      "step": "state",
+      "problem": "The visual difference between a raw ingredient and a cooked one is only a slight color change (e.g., the whitish blob becomes a brownish blob at 00:13). This is not a strong enough visual cue to clearly signal a state change.",
+      "fix": "Make the cooked models look qualitatively different from the raw models, not just a recolor. For example, a raw fish fillet model should change into a golden-brown, textured fried fish model.",
+      "severity": "medium"
+    },
+    {
+      "step": "sense",
+      "problem": "The action of plating the food is combined with picking it up from the pan (00:13). The cooked items teleport instantly from the pan onto the plate the cook is already holding. This compressed action feels magical and can be hard to follow.",
+      "fix": "Create a more deliberate plating animation. For example, have the cook briefly pause and perform a scooping motion that clearly shows the items moving from the pan to the plate.",
+      "severity": "medium"
+    }
+  ],
+  "legibility_rating": 3,
+  "good_enough": false,
+  "summary": "The gameplay is very difficult to read. Critical actions lack the necessary visual information for a viewer to understand what is happening. Ingredients are unidentifiable, cooking has no progress indicator, and serving a dish provides no feedback. A first-time viewer would be unable to follow the cooking process without a detailed UI.",
+  "clip": "fish_and_chips"
+}

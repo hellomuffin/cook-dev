@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "deliver",
+      "problem": "When the cook delivers the finished dish at the serving station (00:19), the plate and food simply vanish. There is no visual or audio cue to confirm that a delivery occurred, if it was the correct order, or that it was successful. This is the most critical moment of the gameplay loop, and it is completely uncommunicated.",
+      "fix": "Add a clear and rewarding delivery event. For example, have the plate slide into the serving window, accompanied by a positive sound, a score indicator, and a green checkmark or particle effect to unambiguously signal a successful order completion.",
+      "severity": "high"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an item from a dispenser or a station (e.g., 00:04, 00:06), the item instantly teleports into its hands. There is no 'taking' or 'placing' motion. This makes the action feel magical and abrupt, forcing the viewer to deduce the transfer of items rather than seeing it happen.",
+      "fix": "Implement a simple, quick animation for picking up and placing items. The cook's hands could reach out, and the item could smoothly travel from its source to the hands (and vice-versa for placing). This would make the transfer of objects clear and deliberate.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "The same green circular progress bar is used for every timed process, regardless of the action (e.g., frying a raw patty at 00:01, heating a cooked patty with a bun at 00:08, and heating a fully plated dish at 00:15). This makes it impossible to know what process is happening without prior knowledge of the recipe.",
+      "fix": "Use distinct visual cues for different processes. For example, use a red/orange bar with sizzle VFX for frying, a yellow bar for toasting, and a blue bar for boiling. This would allow a viewer to understand the specific action being performed at a glance.",
+      "severity": "med"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:14, the cook places a dish that is already on a plate back into a frying pan to continue cooking. This action is illogical within the context of cooking and confuses the viewer about the game's rules. It's unclear if this is a bug or an intended, but strange, recipe step.",
+      "fix": "Disallow nonsensical actions like placing a plate in a pan. If the goal is to melt cheese on the burger, the recipe step should be to add cheese to the patty while it's in the pan, before plating it. The game's logic should guide the player through a sequence that makes intuitive sense.",
+      "severity": "med"
+    },
+    {
+      "step": "state_change",
+      "problem": "When a process completes, the resulting state change can be subtle. At 00:11, after the second cooking step, the bun is now on top of the patty, but this is a minor positional change that doesn't clearly communicate what was achieved by the process.",
+      "fix": "Make state changes more distinct. For example, a toasted bun could change to a golden-brown color. A cooked patty is good (it changes from red to brown), but all other state changes should be equally clear.",
+      "severity": "low"
+    },
+    {
+      "step": "carry",
+      "problem": "When the cook carries a stack of items (e.g., patty and bun at 00:07), the items are small and overlap, making it difficult to identify all the individual ingredients being held.",
+      "fix": "Slightly increase the vertical offset between items in a carried stack so that a piece of each item is always visible. This allows for easy identification of the stack's contents.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The core actions are difficult to read. Items teleport instead of being picked up, making interactions feel disconnected and hard to follow. The most critical feedback, a successful delivery, is entirely missing. Furthermore, identical progress bars for different cooking steps create ambiguity about what action is being performed. A first-time viewer would struggle to understand the sequence of events or whether they are succeeding.",
+  "clip": "cheeseburger"
+}

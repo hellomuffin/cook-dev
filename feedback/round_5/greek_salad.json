@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "step": "process",
+      "problem": "During chopping (e.g., at 00:10 and 00:17), particle effects indicate an action is happening, but there is no visual progress bar or timer. A viewer cannot tell how long the action will take or when it is about to complete.",
+      "fix": "Add a circular progress bar or a filling meter above the cutting board or the character's head during the chopping process to clearly communicate its duration and completion status.",
+      "severity": "high"
+    },
+    {
+      "step": "state",
+      "problem": "At 00:17, when the raw lettuce is placed on the cutting board, it completely covers the chopped tomato that was already there. This makes it impossible for the viewer to see all the ingredients being combined and track the state of the recipe.",
+      "fix": "When multiple ingredients are on a single station, ensure they are all visible. They could be arranged side-by-side, or a UI element with icons could appear above the station to show its contents.",
+      "severity": "high"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an ingredient from a dispenser (e.g., tomato at 00:07, lettuce at 00:13), the item instantly appears in its hand. There is no 'taking' motion or visual effect connecting the dispenser to the character, making the action feel abrupt.",
+      "fix": "Add a short animation where the character's hand reaches for the dispenser, or have the item briefly travel from the dispenser to the character's hand, to create a clear visual link for the pickup action.",
+      "severity": "med"
+    },
+    {
+      "step": "pickup",
+      "problem": "At 00:01, the plate pickup is a two-stage action: the plate first appears floating above the dispenser, and then teleports to the cook's hand. This is not a single, clear 'pickup' action and is momentarily confusing.",
+      "fix": "The plate should appear directly in the cook's hand as it interacts with the dispenser, or travel smoothly from the dispenser into its hand, to make it a single, understandable action.",
+      "severity": "low"
+    },
+    {
+      "step": "sense",
+      "problem": "At 00:21, the chopped ingredients fly from the cutting board to the cook's hand without the cook physically interacting with the board. This 'telekinetic' pickup feels magical and breaks the physical logic of the cooking process.",
+      "fix": "Require the cook to be adjacent to the station and perform a 'scoop' or 'pick up' animation to make the transfer of items from the station to its hand feel more direct and intentional.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 5,
+  "good_enough": false,
+  "summary": "The overall sequence of actions is broadly understandable, but legibility is severely hampered by two key issues: 1) Processing stations like the cutting board lack any progress indicator, making it impossible to gauge timing. 2) When multiple ingredients are placed on a station, they occlude each other, making it impossible to see the current state of the recipe. Pick-up actions are also abrupt and could be clearer.",
+  "clip": "greek_salad"
+}

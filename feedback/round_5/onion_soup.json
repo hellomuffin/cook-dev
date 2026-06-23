@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "When an ingredient is placed in the pot, it vanishes, but the pot itself remains visually empty. It is impossible for a viewer to know what is inside the pot, how many ingredients have been added, or what their current cooking state is.",
+      "fix": "Visually represent the contents of the pot. For example, show models of the onions inside the pot. The models could change color or texture to indicate the cooking progress (e.g., from raw to cooked).",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "The pot displays a 'processing' animation (glowing, particles) from the very beginning of the clip, before any ingredients have been added. This is illogical and makes it unclear what triggers the cooking process.",
+      "fix": "The processing animation should only begin after the correct ingredients have been placed inside the pot. The stove should have a visually distinct 'idle' or 'on' state that is different from its 'processing' state.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "The cooking process is represented by a looping animation with no indication of progress. A viewer cannot tell how long the cooking will take, when it is finished, or if it is at risk of burning.",
+      "fix": "Add a clear progress indicator to the cooking station. A circular timer or a filling bar above the pot would make the duration and completion of the action legible.",
+      "severity": "medium"
+    },
+    {
+      "step": "pickup",
+      "problem": "When the cook picks up an item (onion, plate), the item instantly teleports into its hand. There is no pickup motion, which makes the interaction feel abrupt and less clear than it could be.",
+      "fix": "Add a simple, quick 'reach and grab' animation to the cook. This would create a clearer visual link between the cook and the object it is interacting with.",
+      "severity": "medium"
+    },
+    {
+      "step": "sense",
+      "problem": "The overall sequence of actions performed by the cook is illogical. It collects one onion, then gets a plate, then gets a second onion while still holding the plate. This makes the overall goal and strategy very difficult to understand.",
+      "fix": "The AI should follow a more sensible cooking pattern (e.g., gather all ingredients, then process, then plate). While an AI issue, this directly impacts the legibility of the gameplay sequence for a viewer.",
+      "severity": "medium"
+    },
+    {
+      "step": "carry",
+      "problem": "At 00:12, the white plate is held high, very close to the white '1' UI element above the cook's head. The similar color and proximity cause them to blend, making it slightly difficult to identify the carried object at a glance.",
+      "fix": "Adjust the position where items are held to be lower or further from the head, or use a different color for the plate to create more contrast with the UI element.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 3,
+  "good_enough": false,
+  "summary": "The current implementation has severe legibility issues. The core cooking process is fundamentally unreadable: the pot appears to cook while empty, and its contents are completely invisible, making it impossible to track the recipe's progress. Additionally, the lack of a progress indicator for cooking and the abrupt, animation-free item interactions make the actions difficult to follow.",
+  "clip": "onion_soup"
+}

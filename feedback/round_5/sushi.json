@@ -1,0 +1,38 @@
+{
+  "issues": [
+    {
+      "step": "state",
+      "problem": "At 00:02 the cook picks up raw rice, and at 00:06 it picks up cooked rice from the pot. The two items are visually identical, making it impossible to know the ingredient's state by looking at it.",
+      "fix": "Use a visually distinct model or texture for cooked rice. For example, raw rice could be in a small bag, while cooked rice is a sticky white ball.",
+      "severity": "high"
+    },
+    {
+      "step": "deliver",
+      "problem": "At 00:27, the completed dish is served by disappearing from the counter. There is no visual or auditory feedback to confirm that the delivery was successful.",
+      "fix": "Add a clear success indicator when a correct dish is served, such as a particle effect (e.g., stars, a green checkmark), a sound effect, or a temporary UI element appearing over the serving window.",
+      "severity": "high"
+    },
+    {
+      "step": "process",
+      "problem": "While cooking rice (00:04-00:06) and chopping fish (00:11-00:13), there is an effect indicating an action is in progress, but no indicator of how long is left until completion.",
+      "fix": "Add a radial progress bar or a filling bar over any station that is actively processing an item. This allows the player to manage their time and know when to return to the station.",
+      "severity": "med"
+    },
+    {
+      "step": "pickup",
+      "problem": "All pickup and placement actions (e.g., 00:02, 00:04, 00:10) are instantaneous. The item simply teleports into or out of the cook's possession without any transitional animation, making the action feel abrupt.",
+      "fix": "Add a brief 'reach and take' or 'put down' animation. Even a simple, quick bobbing motion would help telegraph the interaction and make it feel more deliberate and less jarring.",
+      "severity": "low"
+    },
+    {
+      "step": "carry",
+      "problem": "When the cook is carrying an item (e.g., the rice at 00:03), the item floats in front of the character model rather than being visibly held, which is slightly ambiguous.",
+      "fix": "Adjust the position of carried items to be closer to the character's hands, or add simple geometry representing hands that appear to hold the object, making the 'carrying' state unambiguous.",
+      "severity": "low"
+    }
+  ],
+  "legibility_rating": 4,
+  "good_enough": false,
+  "summary": "The basic sequence of actions is generally followable, but critical state changes and feedback are missing. Specifically, cooked rice is visually identical to raw rice, and there is zero feedback when a dish is successfully delivered, making the core loop feel incomplete and confusing. Additionally, the lack of progress bars for cooking/chopping hinders player planning. Minor issues with instantaneous interactions also detract from overall clarity.",
+  "clip": "sushi"
+}
