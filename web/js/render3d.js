@@ -42,9 +42,9 @@ function mat(color, opts = {}) {
   return new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.72, metalness: 0.0 }, opts));
 }
 function tintFor(state, base) {
-  if (state === "burnt") return 0x1c1814;                 // clearly charred black
-  if (state === "cooked") {                                // clearly browned / golden
-    const c = new THREE.Color(base); c.lerp(new THREE.Color(0x8a4f24), 0.45); return c.getHex();
+  if (state === "burnt") return 0x140f0c;                 // clearly charred black
+  if (state === "cooked") {                                // strongly browned/seared
+    const c = new THREE.Color(base); c.lerp(new THREE.Color(0x5a2606), 0.8); return c.getHex();
   }
   return base;
 }
@@ -88,7 +88,7 @@ class KitchenRenderer3D {
     // postprocessing — bloom only on genuinely bright (emissive) things
     this.composer = new EffectComposer(r);
     this.composer.addPass(new RenderPass(scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.6, 0.95);
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.14, 0.5, 0.96);  // gentle — don't wash items into "magic light"
     this.composer.addPass(this.bloom);
 
     this.staticGroup = new THREE.Group(); scene.add(this.staticGroup);
@@ -97,6 +97,7 @@ class KitchenRenderer3D {
     this.state = null; this._sig = ""; this.center = new THREE.Vector3();
     this.cooks = {}; this.stationDyn = {}; this.items = {}; this.particles = []; this.sprites = [];
     this._pulse = {};   // per-cook interact pulse, triggered once per state with action=interact
+    this._flyers = [];  // transient meshes flying hand<->station to show transfers
     this._lastScore = 0; this._t = 0;
     this._steamTex = this._softTex(0xffffff);
     this._fireTex = this._softTex(0xffd27f);
@@ -114,19 +115,43 @@ class KitchenRenderer3D {
   iso() {}                       // (compat no-op)
   toWorld(x, y) { return new THREE.Vector3(x - this.center.x, 0, y - this.center.z); }
 
-  // ---- camera fit ------------------------------------------------------
+  // ---- camera ----------------------------------------------------------
+  // A follow-camera keeps the cook large & centred so every action (hands,
+  // station, held item, state change) is readable — far more legible than a
+  // fit-the-whole-kitchen shot where the cook is a few pixels tall.
   fit(W, H) {
     if (!this.state) return;
     const w = this.state.width, h = this.state.height;
     this.center.set((w - 1) / 2, 0, (h - 1) / 2);
-    const radius = Math.max(w, h) * 0.62 + 1.4;
     const cam = this.camera;
     cam.aspect = W / H;
-    const dist = radius / Math.tan((cam.fov * Math.PI / 180) / 2) * (W > H ? 0.58 : 0.86);
-    cam.position.set(0, dist * 0.8, dist * 0.64);
-    cam.lookAt(0, -0.5, 0.3);
+    // view radius: cook stays large & readable, but enough kitchen shows that
+    // the stations it's working (and their progress rings) stay on screen
+    this._viewR = 3.7;
+    this._camDist = this._viewR / Math.tan((cam.fov * Math.PI / 180) / 2);
     cam.updateProjectionMatrix();
-    this.key.target.position.set(0, 0, 0);
+    if (!this._camFocus) this._camFocus = new THREE.Vector3(0, 0, 0);
+  }
+
+  _updateCamera(dt) {
+    if (!this._camDist) return;
+    let fx = 0, fz = 0, n = 0;
+    for (const id in this.cooks) { const c = this.cooks[id]; const wp = this.toWorld(c.x, c.y); fx += wp.x; fz += wp.z; n++; }
+    if (n) {
+      const k = Math.min(1, dt * 3.5);
+      this._camFocus.x += (fx / n - this._camFocus.x) * k;
+      this._camFocus.z += (fz / n - this._camFocus.z) * k;
+    }
+    // clamp focus so the view never drifts off the kitchen into empty space
+    const halfW = (this.state.width - 1) / 2, halfH = (this.state.height - 1) / 2;
+    const mx = Math.max(0, halfW - (this._viewR - 2)), mz = Math.max(0, halfH - (this._viewR - 2));
+    const f = this._camFocus;
+    f.x = Math.max(-mx, Math.min(mx, f.x));
+    f.z = Math.max(-mz, Math.min(mz, f.z));
+    const d = this._camDist;
+    this.camera.position.set(f.x, d * 0.82, f.z + d * 0.66);
+    this.camera.lookAt(f.x, 0.3, f.z);
+    this.key.target.position.set(f.x, 0, f.z);
   }
 
   setState(state) {
@@ -288,9 +313,9 @@ class KitchenRenderer3D {
       case "fish": { const b = add(this.sph(0.15), M, 0, 0.12, 0, 1.5, 0.7, 0.8); add(this.cyl(0, 0.12, 0.02, 3), M, -0.26, 0.12, 0).rotation.z = Math.PI / 2; break; }
       case "bun": add(this.sph(0.17), M, 0, 0.12, 0, 1, 0.62, 1); break;
       case "cheese": { const m = add(this.cyl(0.0, 0.2, 0.16, 3), M, 0, 0.1); m.rotation.y = 0.5; break; }
-      case "rice": add(this.cyl(0.16, 0.12, 0.12, 16), mat(0xf6f1e6, { roughness: 0.8 }), 0, 0.08); break;
+      case "rice": add(this.cyl(0.16, 0.12, 0.12, 16), mat(tintFor(state, 0xf6f1e6), { roughness: 0.8 }), 0, 0.08); break;
       case "dough": add(this.sph(0.17), M, 0, 0.1, 0, 1, 0.55, 1); break;
-      case "egg": add(this.sph(0.16), mat(0xfaf3e2), 0, 0.07, 0, 1, 0.5, 1); add(this.sph(0.06), mat(0xf6b73c), 0, 0.12); break;
+      case "egg": add(this.sph(0.16), mat(tintFor(state, 0xfaf3e2)), 0, 0.07, 0, 1, 0.5, 1); add(this.sph(0.06), mat(state === "cooked" ? 0xf2a51e : 0xf6b73c), 0, 0.12); break;
       case "potato": add(this.sph(0.16), M, 0, 0.13, 0, 1.2, 0.85, 0.95); break;
       default: add(this.sph(0.15), M, 0, 0.15);
     }
@@ -305,7 +330,20 @@ class KitchenRenderer3D {
         d.rotation.set(Math.sin(x * 9), x * 4 + z, Math.cos(z * 7)); d.castShadow = true; grp.add(d);
       }
     }
-    if (state === "cooked") grp.traverse(o => { if (o.isMesh && o.material.emissive) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(0x3a1d00); o.material.emissiveIntensity = 0.25; } });
+    if (state === "cooked") {
+      // warm sear glow + glossier surface so even pale foods (rice/egg/potato)
+      // read as unmistakably COOKED, not raw
+      grp.traverse(o => {
+        if (o.isMesh && o.material.emissive) {
+          o.material = o.material.clone();
+          o.material.emissive = new THREE.Color(0x5a2400); o.material.emissiveIntensity = 0.45;
+          o.material.roughness = Math.max(0.2, (o.material.roughness ?? 0.5) - 0.25);
+        }
+      });
+      // a darker browned "crust" cap sitting on top makes the state change obvious
+      const crust = new THREE.Mesh(this.sph(0.13), new THREE.MeshStandardMaterial({ color: 0x3d1c08, roughness: 0.4, emissive: 0x2a1000, emissiveIntensity: 0.3 }));
+      crust.scale.set(1, 0.32, 1); crust.position.y = 0.24; grp.add(crust);
+    }
     return grp;
   }
 
@@ -323,6 +361,11 @@ class KitchenRenderer3D {
     const rim = new THREE.Mesh(this.g("bowlrim", () => new THREE.TorusGeometry(0.32, 0.03, 10, 28)), mat(dirty ? 0x8a7c64 : 0xe6e9ec, { roughness: 0.3 }));
     rim.rotation.x = Math.PI / 2; rim.position.y = 0.1; grp.add(rim);
     if (!dirty && plate.contents && plate.contents.length) {
+      // a shaded inner well so light foods (rice, egg, bun) clearly stand out
+      const well = new THREE.Mesh(this.cyl(0.27, 0.27, 0.02, 24), mat(0xc4ccd6, { roughness: 0.5 }));
+      well.position.y = 0.11; grp.add(well);
+    }
+    if (!dirty && plate.contents && plate.contents.length) {
       const cont = plate.contents;
       if (this._isHotSoup({ contents: cont })) {
         const col = ING[cont[0].name] ? tintFor("cooked", ING[cont[0].name].c) : 0xcc8844;
@@ -333,8 +376,14 @@ class KitchenRenderer3D {
         const dome = new THREE.Mesh(this.sph(0.27), new THREE.MeshStandardMaterial({ color: col, roughness: 0.32 }));
         dome.scale.y = 0.35; dome.position.y = 0.15; grp.add(dome);
       } else {
+        // a clear, generous mound of the components sitting up in the bowl so a
+        // finished dish is never mistaken for an empty plate
         const n = cont.length;
-        cont.forEach((c, i) => { const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.72); m.position.set((i - (n - 1) / 2) * 0.22, 0.16, 0); grp.add(m); });
+        cont.forEach((c, i) => {
+          const m = this._ingredient(c.name, c.state); m.scale.setScalar(0.85);
+          const ang = n > 1 ? (i / n) * 6.28 : 0, rr = n > 1 ? 0.13 : 0;
+          m.position.set(Math.cos(ang) * rr, 0.2, Math.sin(ang) * rr); grp.add(m);
+        });
       }
     }
     return grp;
@@ -380,6 +429,7 @@ class KitchenRenderer3D {
     if (!this.state) { return; }
     const st = this.state;
     const seenItems = new Set();
+    this._updateCamera(dt);
 
     // cooks
     const seenCooks = new Set();
@@ -433,6 +483,9 @@ class KitchenRenderer3D {
           const m = this._itemMesh(p.holding);
           c.grp.add(m); ud.held = m;
           ud.pop = 1;                                  // pop-in when just acquired
+          // a quick puff at the faced tile so the grab reads as a deliberate
+          // TAKE/transfer, not a teleport (round-14: pickups felt "magical")
+          this._useBurst(wp.x + facing[0] * 0.5, wp.z + facing[1] * 0.5);
         }
         ud.heldSig = sig;
       }
@@ -442,8 +495,12 @@ class KitchenRenderer3D {
         const hy = 0.5 + act * 0.12, hz = 0.4 + act * 0.28;
         // when just acquired (pop~1) the item starts out at the faced station
         // and travels into the hands, so a viewer sees it being TAKEN
-        ud.held.position.set(0, lerp(hy, 0.85, ud.pop), lerp(hz, 1.0, ud.pop));
+        ud.held.position.set(0, lerp(hy, 0.62, ud.pop), lerp(hz, 0.85, ud.pop));
         ud.held.scale.setScalar(0.9);
+        // a hot, finished dish in hand visibly steams
+        if (p.holding.kind === "plate" && (p.holding.contents || []).some(it => it.state === "cooked") && Math.random() < 0.2) {
+          this._spawn(wp.x + facing[0] * 0.42, 0.95, wp.z + facing[1] * 0.42, "steam");
+        }
       }
     }
     for (const id in this.cooks) if (!seenCooks.has(+id)) { this.dynGroup.remove(this.cooks[id].grp); delete this.cooks[id]; }
@@ -480,6 +537,7 @@ class KitchenRenderer3D {
     for (const key in this.items) if (!present.has(key)) { this.dynGroup.remove(this.items[key].grp); delete this.items[key]; }
 
     this._updateParticles(dt);
+    this._updateFlyers(dt);
     this.composer.render();
   }
 
@@ -490,21 +548,21 @@ class KitchenRenderer3D {
       const baseY = s.type === "oven" ? 0.66 : 0.27;
       const n = s.contents.length;
       s.contents.forEach((ing, i) => {
-        const m = this._ingredient(ing.name, ing.state); m.scale.setScalar(0.52);
-        const ang = n > 1 ? i / n * 6.28 : 0, rr = n > 1 ? 0.1 : 0;
-        m.position.set(Math.cos(ang) * rr, baseY, Math.sin(ang) * rr); grp.add(m);
+        const m = this._ingredient(ing.name, ing.state); m.scale.setScalar(0.62);
+        const ang = n > 1 ? i / n * 6.28 : 0, rr = n > 1 ? 0.11 : 0;
+        m.position.set(Math.cos(ang) * rr, baseY + 0.04, Math.sin(ang) * rr); grp.add(m);
       });
       if (s.status === "cooking" || s.status === "cooked" || s.status === "burnt") {
         const col = this._mix(s.contents, s.status);
-        const liq = new THREE.Mesh(this.cyl(0.27, 0.25, 0.05, 20),
-          new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, transparent: true, opacity: 0.8,
+        const liq = new THREE.Mesh(this.cyl(0.27, 0.25, 0.04, 20),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, transparent: true, opacity: 0.5,
             emissive: new THREE.Color(col).multiplyScalar(s.status === "burnt" ? 0 : 0.12) }));
-        liq.position.y = baseY - 0.03; grp.add(liq);
+        liq.position.y = baseY - 0.04; grp.add(liq);
       }
     } else if (s.type === "pan" && s.contents && s.contents.length) {
-      s.contents.forEach((ing, i) => { const m = this._ingredient(ing.name, ing.state); m.position.set((i - (s.contents.length - 1) / 2) * 0.18, 0.07, 0); m.scale.setScalar(0.8); grp.add(m); });
+      s.contents.forEach((ing, i) => { const m = this._ingredient(ing.name, ing.state); m.position.set((i - (s.contents.length - 1) / 2) * 0.18, 0.11, 0); m.scale.setScalar(0.92); grp.add(m); });
     } else if (s.type === "cutting_board" && s.item) {
-      const m = this._ingredient(s.item.name, s.item.state); m.position.set(0, 0.06, 0); m.scale.setScalar(0.85); grp.add(m);
+      const m = this._ingredient(s.item.name, s.item.state); m.position.set(0, 0.1, 0); m.scale.setScalar(1.0); grp.add(m);
     } else if (s.type === "sink" && (s.dirty > 0 || s.clean_ready > 0)) {
       const water = new THREE.Mesh(this.box(0.56, 0.04, 0.42), new THREE.MeshStandardMaterial({ color: 0x6fc3e8, transparent: true, opacity: 0.85, roughness: 0.15, metalness: 0.3, emissive: 0x1d6f9c, emissiveIntensity: 0.3 }));
       water.position.y = 0.16; grp.add(water);
@@ -517,13 +575,28 @@ class KitchenRenderer3D {
     else if (s.type === "cutting_board" && s.item && !s.done) { frac = s.progress; color = 0xe8c14a; }
     else if (s.type === "sink" && s.progress > 0) { frac = s.progress; color = 0x6fc3e8; }
     if (frac >= 0) {
-      const track = new THREE.Mesh(this.g("ringtrack", () => new THREE.TorusGeometry(0.3, 0.045, 8, 32)),
-        new THREE.MeshStandardMaterial({ color: 0x222, emissive: 0x111, transparent: true, opacity: 0.6 }));
-      track.rotation.x = -Math.PI / 2; track.position.y = 0.82; grp.add(track);
+      const yR = 1.05;   // well above the station & its contents
+      const track = new THREE.Mesh(this.g("ringtrack", () => new THREE.TorusGeometry(0.36, 0.07, 10, 36)),
+        new THREE.MeshStandardMaterial({ color: 0x1a1a1a, emissive: 0x0a0a0a, transparent: true, opacity: 0.7 }));
+      track.rotation.x = -Math.PI / 2; track.position.y = yR; grp.add(track);
+      // a bold UPRIGHT progress bar standing above the station — unmistakable
+      // "how far along" from the angled follow-camera, on EVERY active station
+      const BW = 0.62, BH = 0.18, byBase = 1.32;
+      const btrack = new THREE.Mesh(this.box(BW + 0.06, BH + 0.06, 0.05), new THREE.MeshStandardMaterial({ color: 0x101216, emissive: 0x050608, transparent: true, opacity: 0.92 }));
+      btrack.position.y = byBase; grp.add(btrack);
+      const fillW = Math.max(0.001, BW * Math.min(1, frac));
+      const fill = new THREE.Mesh(this.box(fillW, BH, 0.07), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 2.0 }));
+      fill.position.set(-BW / 2 + fillW / 2, byBase, 0.01); grp.add(fill);
       if (frac > 0.001) {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.06, 8, 32, Math.PI * 2 * frac),
-          new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.6 }));
-        ring.rotation.x = -Math.PI / 2; ring.position.y = 0.82; grp.add(ring);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.1, 10, 36, Math.PI * 2 * frac),
+          new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.8 }));
+        ring.rotation.x = -Math.PI / 2; ring.position.y = yR; grp.add(ring);
+        if (frac >= 1) {  // a clear "done" tick floats up when ready
+          const done = new THREE.Mesh(this.sph(0.07), new THREE.MeshStandardMaterial({ color: 0x9af0bf, emissive: 0x4cd07a, emissiveIntensity: 1.5 }));
+          done.position.y = yR; grp.add(done);
+          const big = new THREE.Mesh(this.box(BW + 0.06, BH + 0.06, 0.08), new THREE.MeshStandardMaterial({ color: 0x9af0bf, emissive: 0x4cd07a, emissiveIntensity: 2.2 }));
+          big.position.y = byBase; grp.add(big);  // bar flashes solid green when READY
+        }
       }
     }
   }
@@ -531,16 +604,23 @@ class KitchenRenderer3D {
   _stationFx(s) {
     const wp = this.toWorld(s.x, s.y);
     const top = CH + 0.5;
-    if ((s.type === "pot" || s.type === "oven") && s.status === "cooking" && Math.random() < 0.25)
+    if ((s.type === "pot" || s.type === "oven" || s.type === "pan") && s.status === "cooking" && Math.random() < 0.3)
       this._spawn(wp.x, top, wp.z, "steam");
-    if (s.status === "cooked" && Math.random() < 0.16) this._spawn(wp.x, top, wp.z, "steam");
-    if (s.status === "burnt" && Math.random() < 0.4) this._spawn(wp.x, top, wp.z, "fire");
+    if (s.status === "cooked" && Math.random() < 0.4) this._spawn(wp.x, top, wp.z, "steam");  // cooked = clearly steaming
+    if (s.status === "burnt" && Math.random() < 0.5) this._spawn(wp.x, top, wp.z, "fire");
   }
 
   _mix(contents, status) {
-    let r = 0, g = 0, b = 0; for (const c of contents) { const k = ING[c.name] || { c: 0xcccccc }; r += (k.c >> 16) & 255; g += (k.c >> 8) & 255; b += k.c & 255; }
-    const n = contents.length || 1; r /= n; g /= n; b /= n; if (status === "burnt") { r *= .3; g *= .28; b *= .28; }
-    return (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(b);
+    // average the per-ingredient colours AT THEIR CURRENT STATE, so a cooked
+    // soup looks browned (not raw-coloured) and a burnt one looks charred.
+    let r = 0, g = 0, b = 0;
+    for (const c of contents) {
+      const base = (ING[c.name] || { c: 0xcccccc }).c;
+      const col = tintFor(status === "burnt" ? "burnt" : c.state, base);
+      r += (col >> 16) & 255; g += (col >> 8) & 255; b += col & 255;
+    }
+    const n = contents.length || 1;
+    return (Math.round(r / n) << 16) | (Math.round(g / n) << 8) | Math.round(b / n);
   }
 
   // ---- particles (sprites) --------------------------------------------
@@ -553,48 +633,72 @@ class KitchenRenderer3D {
     this.particles.push({ spr, life: 1, vy: kind === "fire" ? 1.2 : 0.8, kind });
   }
   _delivery(delta) {
+    // sparkle burst at the serving pass...
     for (const s of this.state.stations) if (s.type === "serving") {
       const wp = this.toWorld(s.x, s.y);
       for (let i = 0; i < 18; i++) {
         const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-        spr.position.set(wp.x, CH + 0.8, wp.z); spr.scale.setScalar(0.2); this.scene.add(spr);
+        spr.position.set(wp.x, CH + 0.7, wp.z); spr.scale.setScalar(0.2); this.scene.add(spr);
         const a = Math.random() * 6.28, sp = 1 + Math.random() * 2.2;
-        this.particles.push({ spr, life: 1, vy: Math.sin(a) * sp * 0.4 + 1.8, vx: Math.cos(a) * sp * 0.6, vz: Math.sin(a) * sp * 0.6, kind: "spark", grav: -4 });
+        this.particles.push({ spr, life: 1, vy: Math.sin(a) * sp * 0.4 + 1.6, vx: Math.cos(a) * sp * 0.6, vz: Math.sin(a) * sp * 0.6, kind: "spark", grav: -4 });
       }
-      // unmistakable "order complete" cue: a green +score and a check mark
-      this._popText(wp.x, CH + 1.25, wp.z, "+" + (delta || ""), "#56e08a", 2.6);
-      this._popText(wp.x, CH + 1.9, wp.z, "✓ SERVED", "#9af0bf", 2.6);
     }
+    // ...and a brief "ORDER DONE +N" banner anchored at the camera focus, so it
+    // is in-frame regardless of where the pass is. Short-lived so it doesn't
+    // linger over the cook (round-13: a stale banner obscured the character).
+    const f = this._camFocus || new THREE.Vector3();
+    this._popText(f.x, 1.8, f.z, "✓ +" + (delta || ""), "#5fe39a", 1.5, 2.4);
   }
   _failFeedback() {
-    for (const s of this.state.stations) if (s.type === "serving") {
-      const wp = this.toWorld(s.x, s.y);
-      this._popText(wp.x, CH + 1.3, wp.z, "✗", "#ff5a4a", 2.0);
-    }
+    const f = this._camFocus || new THREE.Vector3();
+    this._popText(f.x, 1.7, f.z, "✗ WRONG", "#ff6a5a", 2.0, 2.2);
   }
-  _popText(x, y, z, text, color, life) {
+  _popText(x, y, z, text, color, life, sc) {
+    sc = sc || 1.9;
     const C = document.createElement("canvas"); C.width = 512; C.height = 160;
     const ctx = C.getContext("2d");
     ctx.font = "bold 110px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.lineWidth = 12; ctx.strokeStyle = "rgba(0,0,0,.7)"; ctx.strokeText(text, 256, 80);
+    ctx.lineWidth = 14; ctx.strokeStyle = "rgba(0,0,0,.78)"; ctx.strokeText(text, 256, 80);
     ctx.fillStyle = color; ctx.fillText(text, 256, 80);
     const tex = new THREE.CanvasTexture(C); tex.colorSpace = THREE.SRGBColorSpace;
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-    spr.position.set(x, y, z); spr.scale.set(1.9, 0.6, 1); this.scene.add(spr);
-    this.particles.push({ spr, life: life || 2.0, vy: 0.7, kind: "pop" });
+    spr.position.set(x, y, z); spr.scale.set(sc, sc * 0.31, 1); this.scene.add(spr);
+    this.particles.push({ spr, life: life || 2.0, vy: 1.3, kind: "pop" });  // rises up & out quickly
   }
-  // A bright expanding ring + sparks at a station to mark "an action happened here".
+  // A small, brief puff at the worked tile — a subtle contact cue. The real
+  // signal is the cook's lunge + the visibly changing item, NOT a glowing flash
+  // (round-6: the old bright ring read as a "magic light" that hid the action).
   _useBurst(x, z) {
-    const top = CH + 0.5;
-    const ring = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._ringTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffe07a }));
-    ring.position.set(x, top, z); this.scene.add(ring);
-    this.particles.push({ spr: ring, life: 1, vy: 0, kind: "ring" });
-    for (let i = 0; i < 7; i++) {
-      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-      s.position.set(x, top, z); s.scale.setScalar(0.12); this.scene.add(s);
-      const a = i / 7 * 6.28;
-      this.particles.push({ spr: s, life: 1, vx: Math.cos(a) * 1.1, vz: Math.sin(a) * 1.1, vy: 1.0, kind: "spark", grav: -3 });
+    const top = CH + 0.32;
+    for (let i = 0; i < 3; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: this._steamTex, transparent: true, depthWrite: false, blending: THREE.NormalBlending, color: 0xfff0d0 }));
+      s.position.set(x + (Math.random() - .5) * 0.2, top, z + (Math.random() - .5) * 0.2);
+      s.scale.setScalar(0.14); s.material.opacity = 0.45; this.scene.add(s);
+      const a = Math.random() * 6.28;
+      this.particles.push({ spr: s, life: 0.5, vx: Math.cos(a) * 0.4, vz: Math.sin(a) * 0.4, vy: 0.6, kind: "puff" });
     }
+  }
+  _flyItem(item, from, to) {
+    if (!item) return;
+    const m = item.kind === "plate" ? this._plate(item) : this._ingredient(item.name, item.state);
+    m.scale.setScalar(0.8); m.position.set(from.x, from.y, from.z);
+    this.scene.add(m);
+    this._flyers.push({ m, from, to, t: 0, dur: 0.32 });
+  }
+  _updateFlyers(dt) {
+    const alive = [];
+    for (const f of this._flyers) {
+      f.t += dt / f.dur;
+      if (f.t >= 1) { this.scene.remove(f.m); continue; }
+      const e = f.t;
+      f.m.position.set(
+        f.from.x + (f.to.x - f.from.x) * e,
+        f.from.y + (f.to.y - f.from.y) * e + Math.sin(e * Math.PI) * 0.3,  // little arc
+        f.from.z + (f.to.z - f.from.z) * e);
+      f.m.scale.setScalar(0.8);
+      alive.push(f);
+    }
+    this._flyers = alive;
   }
   _updateParticles(dt) {
     const alive = [];

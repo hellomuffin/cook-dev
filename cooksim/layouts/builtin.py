@@ -77,15 +77,13 @@ _LAYOUTS: Dict[str, List[str]] = {
     # Grand kitchen: every ingredient source and every station — any of the
     # 19 recipes can be made here. Roomy enough for a full brigade of cooks.
     "grand_kitchen": [
-        "XOTLMEFBCRGZX",
-        "Y           P",
-        "/    1 2    P",
-        "A    3 4    N",
-        "W           /",
-        "D           S",
-        "U           S",
-        "X           X",
-        "XXXXXXXXXXXXX",
+        "XOTLMEFBCX",
+        "R        P",
+        "G  1 2   P",
+        "Z        N",
+        "Y  3 4   A",
+        "D        S",
+        "XXX//WUXXX",
     ],
 }
 
