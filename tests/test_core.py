@@ -32,23 +32,56 @@ def test_procedural_generation_valid(style):
 
 
 def test_movement_and_collision():
+    from cooksim.core.enums import Direction
     g = KitchenGame(load_layout("cramped_room"), n_players=2, seed=0)
     # two cooks cannot occupy the same cell; swapping is blocked
     c0, c1 = g.cooks
     c0.x, c0.y = 1, 2
     c1.x, c1.y = 2, 2
+    # already facing the contested direction (orient-first: a turn step would
+    # otherwise just rotate them), so this step is a real move attempt
+    c0.direction, c1.direction = Direction.EAST, Direction.WEST
     # c0 tries to move east into c1, c1 tries west into c0 -> both blocked
     g.step([int(Action.EAST), int(Action.WEST)])
     assert (c0.x, c0.y) != (c1.x, c1.y)
+    assert (c0.x, c0.y) == (1, 2) and (c1.x, c1.y) == (2, 2)  # neither swapped
+
+
+def test_orient_first_movement():
+    """A cook must face a direction before it can advance in it: pressing a new
+    direction only turns (no step) this tick; it walks once already facing."""
+    from cooksim.core.enums import Direction
+    g = KitchenGame(load_layout("open_kitchen"), n_players=1, seed=0)
+    c = g.cooks[0]
+    # place on open floor facing south, with east clear
+    c.x, c.y, c.direction = 4, 3, Direction.SOUTH
+    assert g._walkable(c.x + 1, c.y)
+    start = c.pos
+    g.step([int(Action.EAST)])           # not facing east yet -> pure turn
+    assert c.direction == Direction.EAST and c.pos == start
+    assert c.last_action == "turn"
+    g.step([int(Action.EAST)])           # now facing east -> actually steps
+    assert c.pos == (start[0] + 1, start[1])
+    assert c.last_action == "walk"
 
 
 def test_full_soup_delivery_scores():
+    from cooksim.core.enums import DIRECTION_VECTORS, Direction
     g = KitchenGame(load_layout("cramped_room"), n_players=1, seed=0)
+    cook = g.cooks[0]
     N, S, E, W, I, St = 0, 1, 2, 3, 4, 5
     seq = ([N, W, I, E, N, I, W, W, I, E, N, I, W, W, I, E, N, I,
             S, W, S, I] + [St] * 25 + [E, N, N, I, S, E, S, I])
+    move_acts = {N, S, E, W}
     for a in seq:
+        before = cook.pos
         g.step([a])
+        # Orient-first: a move into an OPEN tile only turns this tick, so take
+        # the follow-up step to reproduce the original one-tile-per-move path.
+        if a in move_acts and cook.pos == before:
+            dx, dy = DIRECTION_VECTORS[Direction(a)]
+            if g._walkable(cook.x + dx, cook.y + dy):
+                g.step([a])
     assert g.stats.get("deliveries", 0) == 1
     assert g.score > 15
 

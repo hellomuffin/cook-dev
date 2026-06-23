@@ -125,6 +125,7 @@ class KitchenGame:
         self.agent_rewards = [0.0] * len(self.cooks)
 
         # 1) Movement / facing -------------------------------------------
+        pre_pos = {c.id: c.pos for c in self.cooks}
         self._resolve_movement(actions)
 
         # 2) Interactions ------------------------------------------------
@@ -132,7 +133,9 @@ class KitchenGame:
             if action == Action.INTERACT:
                 self.agent_rewards[i] += self._interact(cook)
             elif action in MOVE_ACTIONS:
-                cook.last_action = "walk"
+                # A move that didn't change the cell was a pure re-orient (the
+                # cook turned to face that way before it may walk/act next tick).
+                cook.last_action = "walk" if cook.pos != pre_pos[cook.id] else "turn"
             elif action == Action.STAY:
                 cook.last_action = "idle"
 
@@ -155,7 +158,14 @@ class KitchenGame:
         target: Dict[int, Pos] = dict(pos)
         for cook, action in zip(self.cooks, actions):
             if action in MOVE_ACTIONS:
-                cook.direction = MOVE_ACTIONS[action]
+                want = MOVE_ACTIONS[action]
+                # Orient-first rule: a cook must already be facing a direction to
+                # advance in it. Pressing a new direction only TURNS the cook this
+                # tick (no step); it walks on a later tick once already facing it.
+                # So turning can never be combined with moving or interacting.
+                if cook.direction != want:
+                    cook.direction = want
+                    continue
                 dx, dy = DIRECTION_VECTORS[cook.direction]
                 nx, ny = cook.x + dx, cook.y + dy
                 if self._walkable(nx, ny):
