@@ -116,6 +116,15 @@
   .callout{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
     border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:14.5px}
   .callout.blue{border-left-color:var(--blue)} .callout.green{border-left-color:var(--green)}
+  .divider{margin:38px 0 2px;padding:14px 0 4px;border-top:2px solid var(--line);font-size:13px;font-weight:800;
+    letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  .divider span{color:var(--blue)}
+  .divider .d2{display:block;font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:4px}
+  .steps-list{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+  .steps-list li{position:relative;padding:6px 0 6px 42px;margin:8px 0;font-size:14.5px}
+  .steps-list li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:4px;
+    width:28px;height:28px;border-radius:50%;background:linear-gradient(180deg,var(--accent),var(--accent2));
+    color:#3a2410;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
   footer{padding:50px 0 70px;text-align:center;color:var(--muted);border-top:1px solid var(--line);margin-top:30px}
   @media(max-width:680px){.matrix{font-size:12px}details.cat>summary .hook{display:none}}
 </style>
@@ -253,6 +262,7 @@ const VISITS = [
   ["deluxe_burger",4,"bun-raw + meat-cooked + 2× chopped","10","+8 chop, +15 cook"],
   ["fried_rice",4,"rice-cooked + egg-cooked + onion-chopped","10","+4 chop, +20/15 cook"],
 ];
+const ORDERED = new Set(["burger","cheeseburger","deluxe_burger","loaded_fries","sushi","fried_rice"]);
 const TIER = {y:"yes",b:"borderline",n:"engine-only"};
 const TIERLBL = {y:"plausible",b:"borderline",n:"engine-only"};
 
@@ -359,15 +369,27 @@ const cats=document.getElementById("cats");
   const byArch={};
   Object.entries(RECIPES).forEach(([id,r])=>{(byArch[r[4]]=byArch[r[4]]||[]).push([id,r]);});
   let inner=Object.entries(byArch).map(([arch,list])=>{
-    let rows=list.map(([id,[name,contents,reward,diff]])=>
-      `<tr><td style="font-weight:700;color:var(--ink)">${name}</td><td>${compStr(contents)}</td>
-       <td><b>+${reward}</b></td><td><span class="pill d${diff}">d${diff}</span></td></tr>`).join("");
+    let rows=list.map(([id,[name,contents,reward,diff]])=>{
+      const ord=ORDERED.has(id);
+      const cstr=ord ? contents.map(([n,s,k])=>`${k>1?k+"× ":""}${n}<span class="muted">·${s}</span>`).join(" <b style='color:var(--blue)'>→</b> ") : compStr(contents);
+      const ob=ord?` <span class="pill" style="background:rgba(90,169,230,.16);color:#9bd0f5;border-color:rgba(90,169,230,.4)">⛓ ordered</span>`:"";
+      return `<tr><td style="font-weight:700;color:var(--ink)">${name}${ob}</td><td>${cstr}</td>
+       <td><b>+${reward}</b></td><td><span class="pill d${diff}">d${diff}</span></td></tr>`;}).join("");
     return sub(`${arch} <span class="pill st" style="margin-left:auto">${list.length}</span>`,
       `<table><tr><th>Recipe</th><th>Plate contents</th><th>Reward</th><th>Difficulty</th></tr>${rows}</table>`);
   }).join("");
-  const body=`<p class="lead2">The 19 recipes currently shipped (of the ~55 plausible space). Difficulty ≈ #distinct prep ops + #tool types.</p>${inner}`;
+  const body=`<p class="lead2">The 19 recipes currently shipped (of the ~55 plausible space). Difficulty ≈ #distinct prep ops + #tool types.</p>
+    <div class="callout blue"><b>⛓ Ordered (stacked) dishes</b> must be assembled in a specific <b>addition sequence</b> (shown with →), not just
+      as a set — e.g. a Cheeseburger is bun → patty → cheese. Building the same ingredients in the wrong order does <b>not</b> satisfy
+      the recipe. Note an in-progress ordered dish can pass through another complete recipe (bun + patty <i>is</i> a Burger) — order is
+      what distinguishes them.</div>${inner}`;
   cats.appendChild(category({id:"recipes",ico:"📖",ttl:"Authored recipes",hook:"what ships today, by archetype",cnt:"19"},body));
 }
+// ===== ANALYSIS divider =====
+cats.appendChild(el("div","divider",`<span>Analysis</span> — from atoms to events
+  <span class="d2">The sections above enumerate the building blocks. These five compose them: how many dishes exist, what the
+  map adds, how they multiply into events, how to score difficulty, and how to generate one.</span>`));
+
 // 9. Recipe-space funnel
 {
   const F=[["91,389","100%","engine-permissible multisets (≤4 items, 36 components)"],
@@ -375,9 +397,23 @@ const cats=document.getElementById("cats");
     ["~55","12%","after the archetype / combination grammar — the real recipe space"],
     ["19","7%","currently authored"]];
   let rows=F.map(([n,w,l])=>`<div class="frow"><div class="fbar" style="width:${w}">${n}</div><div class="fl">${l}</div></div>`).join("");
-  const body=`<p class="lead2">How permissive raw combinatorics collapse to a sensible recipe set. Diversity is cheap; <b>plausibility is the
-    scarce resource</b>, and the grammar is what supplies it.</p><div class="funnel">${rows}</div>`;
-  cats.appendChild(category({id:"funnel",ico:"📊",ttl:"Recipe-space magnitudes",hook:"91,389 → ~55 → 19",cnt:"funnel"},body));
+  // archetype contribution derivation
+  const totals=ARCHETYPES.map(a=>a[4]);  // strings like "8–10"
+  let arows=ARCHETYPES.map(([n,e,rule,st,cnt])=>`<tr><td>${e} <b style="color:var(--ink)">${n}</b></td><td><span class="pill st">${st}</span></td><td><b>~${cnt}</b></td></tr>`).join("");
+  arows+=`<tr><td colspan="2" style="text-align:right;color:var(--muted)">Σ over all six archetypes</td><td><b style="color:var(--green)">~45–65</b></td></tr>`;
+  const body=`<p class="lead2">How permissive raw combinatorics collapse to a sensible recipe set. <b>Diversity is cheap; plausibility is the
+    scarce resource</b>, and the grammar is what supplies it. The engine permits ~91k plates; common sense (state mask + combination
+    grammar) is what carves out the ~55 that read as real food.</p><div class="funnel">${rows}</div>
+    <div class="callout">Multiset count = Σ<sub>k=1..4</sub> C(n+k−1, k). With <b>n=36</b> components → <b>91,389</b>; with the
+      <b>n=16</b> plausible components → <b>4,844</b> (still full of bad <i>combinations</i> like {bun, cooked-rice}).</div>
+    <div class="callout blue"><b>⛓ Assembly order is a new compositional axis.</b> A dish can now require a specific addition
+      <b>sequence</b>, not just a set. A k-component recipe admits up to <b>k!</b> orderings — so the same multiset can name several
+      distinct dishes (and a wrong order is a non-dish). Order multiplies the space and lets a recipe's prefix overlap another recipe
+      (bun+patty ⊂ cheeseburger <i>is</i> a Burger). 6 of the 19 shipped recipes are ordered.</div>
+    ${sub("📐 Where the ~55 comes from (per-archetype contribution)",
+      `<table><tr><th>Archetype</th><th>Stations</th><th>Plausible dishes</th></tr>${arows}</table>
+       <p class="muted" style="font-size:13px">Today's 19 authored recipes use ~⅓ of this; the grammar is exactly what you'd sample to fill the rest.</p>`)}`;
+  cats.appendChild(category({id:"funnel",ico:"📊",ttl:"2 · Recipe (dish) space — magnitudes",hook:"91,389 → ~55 → 19",cnt:"funnel"},body));
 }
 // 10. Spatial layer
 {
@@ -400,7 +436,7 @@ Z . . . . . . . . N   <span class="c">1 oven (N), 1 pan (A)</span>
 Y . . 3 . 4 . . . A   <span class="c">2 cutting boards (//)</span>
 D . . . . . . . . S   <span class="c">sink (W), serving (S), trash (U)</span>
 X X X / / W U X X X   <span class="c">4 cook spawn points (1-4)</span></pre>`)}`;
-  cats.appendChild(category({id:"spatial",ico:"🗺️",ttl:"Spatial layer (map & route)",hook:"sites scattered → routing problem",cnt:"4–22 sites"},body));
+  cats.appendChild(category({id:"spatial",ico:"🗺️",ttl:"3 · Spatial layer — what the map adds",hook:"sites scattered → routing problem",cnt:"4–22 sites"},body));
 }
 // 11. Event product space
 {
@@ -415,7 +451,7 @@ X X X / / W U X X X   <span class="c">4 cook spawn points (1-4)</span></pre>`)}`
       well-posed events before varying agents or deadline.</div>
     <p class="muted" style="font-size:14px">A second multiplier at fixed placement: # valid routes = (topological sorts of the task DAG)
       × (which duplicate tile to use). One placed deluxe-burger order already admits dozens of correct trajectories — the RL task diversity.</p>`;
-  cats.appendChild(category({id:"event",ico:"🎲",ttl:"The event space",hook:"recipe × map × placement × agents × deadline",cnt:"~10⁷"},body));
+  cats.appendChild(category({id:"event",ico:"🎲",ttl:"4 · The event as a product space",hook:"recipe × map × placement × agents × deadline",cnt:"~10⁷"},body));
 }
 // 12. Complexity axes
 {
@@ -425,20 +461,59 @@ X X X / / W U X X X   <span class="c">4 cook spawn points (1-4)</span></pre>`)}`
     ["Temporal","slack = deadline − (route + cook + chop ticks)","order timer"],
     ["Coordination","# agents vs # parallel tracks; shared-tile conflicts","spatial + agent config"]];
   let rows=A.map(([a,m,s])=>`<tr><td><b>${a}</b></td><td>${m}</td><td class="muted">${s}</td></tr>`).join("");
-  const body=`<p class="lead2">Difficulty decomposes into 5 orthogonal axes. A single solvability estimator:
-    <code class="inline">T_complete ≈ Σtravel + Σcook(batches) + 4·(#chopped) + interactions</code>; require it ≤ deadline.
-    Normalized by deadline, that's your continuous difficulty knob.</p>
+  // worked difficulty examples
+  const W=[["onion_soup",1,"boil 3 onions","1 (pot)","1"],["garden_salad",1,"chop ×2","1 (board)","2"],
+    ["cheeseburger",3,"fry patty + raw bun + raw cheese","1 (pan)","3"],
+    ["deluxe_burger",4,"fry + chop ×2 + raw bun","2 (pan, board)","4"],
+    ["fried_rice",4,"boil rice + fry egg + chop onion","3 (pot, pan, board)","3"],
+    ["pizza",4,"bake dough + tomato + cheese","1 (oven)","3"]];
+  let wrows=W.map(([id,d,ops,tools,tracks])=>`<tr><td style="font-weight:700;color:var(--ink)">${RECIPES[id][0]}</td>
+    <td class="muted">${ops}</td><td>${tools}</td><td><b>${tracks}</b></td><td><span class="pill d${d}">d${d}</span></td></tr>`).join("");
+  const body=`<p class="lead2">Difficulty decomposes into <b>5 orthogonal axes</b> — the recipe sets the floor, the map and deadline scale it.
+    A single solvability estimator combines them:</p>
+    <pre>T_complete ≈ Σ travel(BFS over visits) + Σ cook_time(batches) + 4·(#chopped) + interactions
+require:  T_complete ≤ deadline      <span class="c"># normalized by deadline = continuous difficulty knob</span></pre>
     <table><tr><th>Axis</th><th>Metric</th><th>Controlled by</th></tr>${rows}</table>
+    ${sub("🧮 Worked examples — recipe → difficulty",
+      `<table><tr><th>Recipe</th><th>Prep ops</th><th>Tool types</th><th>Tracks</th><th>Difficulty</th></tr>${wrows}</table>
+       <p class="muted" style="font-size:13px">Difficulty ≈ #distinct prep ops + #tool types (+ burn-risk). Note depth is shallow (1 transform/ingredient);
+       the hard recipes are <i>wide</i> — many parallel tracks converging at the plate — not deep.</p>`)}
     <div class="callout green">Three orthogonal generator knobs: <b>recipe grammar</b> (what), <b>placement</b> (where / how far),
       <b>deadline &amp; agents</b> (how much pressure).</div>`;
-  cats.appendChild(category({id:"complexity",ico:"🎚️",ttl:"Complexity axes",hook:"how to tune event difficulty",cnt:"5"},body));
+  cats.appendChild(category({id:"complexity",ico:"🎚️",ttl:"5 · Unified complexity score",hook:"how to tune event difficulty",cnt:"5 axes"},body));
+}
+// 13. Compositional event generator (the pipeline)
+{
+  const steps=[
+    "<b>Sample a recipe</b> r from the archetype grammar — picks plausibility &amp; the recipe-difficulty tier.",
+    "<b>Choose / synthesize a layout</b> L with <code class=\"inline\">feasible_recipes(L) ∋ r</code> — has every needed source, a heat tool for any cooked component, a board for any chopped one.",
+    "<b>Place</b> r's required sites on L toward a target <b>route-length / contention</b> band — spread them far for hard events, cluster for easy; add/remove duplicate tools to tune contention.",
+    "<b>Pick agents &amp; start tiles</b> — for multi-cook, verify the task DAG has ≥2 parallelizable tracks or the extra cook is wasted.",
+    "<b>Set the deadline</b> T from <code class=\"inline\">T_complete × margin</code> to hit a target solvability / difficulty.",
+    "<b>Validate &amp; dedup</b> — BFS-reachability of every site, batch ≤ tool capacity, |plate| ≤ 4, and dedup by <code class=\"inline\">content_keys</code>.",
+  ];
+  const body=`<p class="lead2">Putting it together: a compositional generator that emits ready-to-run, solvable orders, reusing the
+    engine's own <code class="inline">feasible_recipes</code> and <code class="inline">generate_layout</code>.</p>
+    <ol class="steps-list">${steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+    <pre>generate_event(target_difficulty, ingredients, plate_cap=4):
+    r      = sample_archetype().fill_slots(ingredients × state_mask, ≤ plate_cap)
+    L      = layout where feasible_recipes(L) ∋ r          <span class="c"># content feasibility</span>
+    π      = place(r.sites, L, target_route_len, contention) <span class="c"># spatial difficulty</span>
+    agents = pick_agents(r.dag)                            <span class="c"># ≥2 tracks ⇒ multi-cook helps</span>
+    T      = T_complete(r, π) × margin                     <span class="c"># temporal pressure</span>
+    assert reachable(π) and batches ≤ tool_cap and |r| ≤ plate_cap
+    return KitchenGame(L, order=r, n_agents=agents, deadline=T)</pre>
+    <div class="callout blue">The knobs are independent: sample <b>uniformly over archetypes</b> for diversity, or <b>condition on the
+      difficulty score</b> for a curriculum. Magnitudes from this page: ~55 recipes × ~10⁷ placements × agent/deadline continuum.</div>`;
+  cats.appendChild(category({id:"generator",ico:"⚙️",ttl:"6 · Compositional event generator",hook:"the full pipeline",cnt:"6 steps"},body));
 }
 
 // ---- stat cards (link to categories) -----------------------------------
 const STATS=[["12","Ingredients","raw materials","ingredients"],["4","Prep states","raw·chopped·cooked·burnt","states"],
   ["36","Components","~16 plausible","components"],["5","Tools","3 heat·1 chop·1 wash","tools"],
   ["6","Actions","the control API","actions"],["~55","Plausible recipes","19 authored","funnel"],
-  ["8","Built-in maps","4–22 sites each","spatial"],["~10⁷","Events / recipe","via placement","event"]];
+  ["8","Built-in maps","4–22 sites each","spatial"],["~10⁷","Events / recipe","via placement","event"],
+  ["6","Generator steps","content × map × pressure","generator"]];
 const sg=document.getElementById("stats");
 STATS.forEach(([n,l,s,id])=>{
   const c=el("div","stat");c.innerHTML=`<div class="n">${n}</div><div class="l">${l}</div><div class="sub">${s}</div>`;

@@ -19,16 +19,28 @@ from .items import Plate
 class Recipe:
     id: str
     name: str
-    # multiset of (name, state) required on the final plate
+    # multiset of (name, state) required on the final plate. When ``ordered``
+    # is True this tuple is also the required ADDITION SEQUENCE (the order
+    # ingredients must be placed on the plate / layered), not just a multiset.
     contents: Tuple[Tuple[str, str], ...]
     base_reward: float
     color: str = "#ffcc66"        # used by the renderer for the order ticket
     difficulty: int = 1           # influences order timer / spawn weighting
     steps: Tuple[str, ...] = ()   # human-readable prep steps (for the UI)
+    ordered: bool = False         # if True, the plate must be assembled in the
+                                  # exact order of ``contents`` (a stacked dish)
 
     @property
     def content_keys(self) -> Tuple[Tuple[str, str], ...]:
         return tuple(sorted(self.contents))
+
+    def accepts(self, plate) -> bool:
+        """Does this plate satisfy the recipe? The caller has already confirmed
+        the multiset matches; ordered recipes additionally require the plate's
+        addition sequence to equal ``contents``."""
+        if not self.ordered:
+            return True
+        return plate.content_seq == self.contents
 
 
 def _c(name: str, state: PrepState) -> Tuple[str, str]:
@@ -64,30 +76,30 @@ DEFAULT_RECIPES: List[Recipe] = [
            ("Chop lettuce", "Chop tomato", "Add cheese, plate & serve")),
     # --- Burgers (fry + chop + assemble) ------------------------------------
     Recipe("burger", "Burger", (_c("bun", RAW), _c("meat", COOK)), 26, "#b5651d", 2,
-           ("Fry a patty", "Add a bun", "Plate & serve")),
+           ("Bun first", "then the fried patty on top", "Plate & serve"), ordered=True),
     Recipe("cheeseburger", "Cheeseburger",
            (_c("bun", RAW), _c("meat", COOK), _c("cheese", RAW)), 34, "#c87a2a", 3,
-           ("Fry a patty", "Bun + cheese", "Plate & serve")),
+           ("Bun", "fried patty", "cheese on top — in that order"), ordered=True),
     Recipe("deluxe_burger", "Deluxe Burger",
            (_c("bun", RAW), _c("meat", COOK), _c("lettuce", CHOP), _c("tomato", CHOP)), 46, "#a85a1c", 4,
-           ("Fry a patty", "Chop lettuce + tomato", "Stack on a bun, plate & serve")),
+           ("Bun → patty → lettuce → tomato", "stacked in that order", "plate & serve"), ordered=True),
     # --- Pan / fried --------------------------------------------------------
     Recipe("fried_fish", "Fried Fish", (_c("fish", COOK),), 22, "#7fa8c9", 2,
            ("Fry the fish", "Plate & serve")),
     Recipe("fried_egg", "Fried Egg", (_c("egg", COOK),), 12, "#f4d35e", 1,
            ("Crack an egg in the pan", "Fry", "Plate & serve")),
     Recipe("loaded_fries", "Loaded Fries", (_c("potato", COOK), _c("cheese", RAW)), 26, "#e6b24a", 2,
-           ("Fry the potato", "Top with cheese", "Plate & serve")),
+           ("Fries down first", "then cheese on top", "Plate & serve"), ordered=True),
     Recipe("fish_and_chips", "Fish & Chips", (_c("fish", COOK), _c("potato", COOK)), 38, "#c8a36a", 3,
            ("Fry the fish", "Fry the potato", "Plate both & serve")),
     # --- Rice ---------------------------------------------------------------
     Recipe("rice_bowl", "Rice Bowl", (_c("rice", COOK),), 12, "#efe7d2", 1,
            ("Cook the rice", "Plate & serve")),
     Recipe("sushi", "Sushi", (_c("rice", COOK), _c("fish", CHOP)), 36, "#a9c4d8", 3,
-           ("Cook rice", "Chop raw fish", "Plate both & serve")),
+           ("Rice base first", "then chopped raw fish on top", "Plate & serve"), ordered=True),
     Recipe("fried_rice", "Fried Rice",
            (_c("rice", COOK), _c("egg", COOK), _c("onion", CHOP)), 44, "#dcb86a", 4,
-           ("Cook rice", "Fry egg", "Chop onion, plate all & serve")),
+           ("Rice → fried egg → chopped onion", "added in that order", "plate & serve"), ordered=True),
     # --- Oven / baked -------------------------------------------------------
     Recipe("pizza", "Pizza",
            (_c("dough", COOK), _c("tomato", COOK), _c("cheese", COOK)), 42, "#e08a3c", 4,
@@ -130,17 +142,34 @@ class RecipeBook:
 
     def __init__(self, recipes: Optional[List[Recipe]] = None):
         self.recipes: List[Recipe] = list(recipes if recipes is not None else DEFAULT_RECIPES)
-        self._by_keys: Dict[Tuple, Recipe] = {r.content_keys: r for r in self.recipes}
+        # One multiset can map to several recipes that differ only by required
+        # assembly order, so index to a LIST of candidates.
+        self._by_keys: Dict[Tuple, List[Recipe]] = {}
+        for r in self.recipes:
+            self._by_keys.setdefault(r.content_keys, []).append(r)
         self._by_id: Dict[str, Recipe] = {r.id: r for r in self.recipes}
 
     def match_plate(self, plate: Plate) -> Optional[Recipe]:
-        """Return the recipe a plate exactly satisfies, or None."""
+        """Return the recipe a plate exactly satisfies, or None.
+
+        Among recipes sharing the plate's multiset, an ordered recipe matches
+        only if the addition sequence is right; it is preferred over an
+        unordered recipe (it is the more specific dish)."""
         if plate.dirty or not plate.contents:
             return None
         # A burnt ingredient can never satisfy a recipe.
         if any(c.state == PrepState.BURNT for c in plate.contents):
             return None
-        return self._by_keys.get(plate.content_keys)
+        candidates = self._by_keys.get(plate.content_keys)
+        if not candidates:
+            return None
+        for r in candidates:               # ordered dishes are the specific match
+            if r.ordered and r.accepts(plate):
+                return r
+        for r in candidates:               # otherwise any order-free dish
+            if not r.ordered:
+                return r
+        return None
 
     def get(self, recipe_id: str) -> Optional[Recipe]:
         return self._by_id.get(recipe_id)
@@ -158,6 +187,7 @@ class RecipeBook:
                 "color": r.color,
                 "difficulty": r.difficulty,
                 "steps": list(r.steps),
+                "ordered": r.ordered,
             }
             for r in self.recipes
         ]

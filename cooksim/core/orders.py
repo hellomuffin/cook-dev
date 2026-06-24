@@ -26,6 +26,7 @@ class Order:
             "name": self.recipe.name,
             "contents": [{"name": n, "state": s} for n, s in self.recipe.contents],
             "steps": list(self.recipe.steps),
+            "ordered": self.recipe.ordered,
             "color": self.recipe.color,
             "reward": self.recipe.base_reward,
             "time_left": self.time_left,

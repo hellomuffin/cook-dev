@@ -48,8 +48,14 @@ class Plate:
 
     @property
     def content_keys(self) -> tuple:
-        """Sorted multiset of (name, state) — used to match recipes."""
+        """Sorted multiset of (name, state) — used to match unordered recipes."""
         return tuple(sorted(c.key for c in self.contents))
+
+    @property
+    def content_seq(self) -> tuple:
+        """(name, state) in the order ingredients were ADDED — used to match
+        order-sensitive recipes (e.g. layered/stacked dishes)."""
+        return tuple(c.key for c in self.contents)
 
     def is_empty(self) -> bool:
         return not self.contents

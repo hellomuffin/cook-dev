@@ -352,16 +352,35 @@ class GreedyChef:
                 sink = self._nearest(game, cook, self._cells(game, Terrain.SINK))
                 return go(sink or self._nearest(game, cook, self._cells(game, Terrain.TRASH)))
             have = _Counter((i.name, i.state.value) for i in held.contents)
-            matched = game.book.match_plate(held)
-            if held.contents and matched is not None:
-                active_ids = {o.recipe.id for o in game.orders.orders}
-                if (not game.orders.enabled) or matched.id in active_ids:
+            seq = recipe.contents
+            cur = tuple((i.name, i.state.value) for i in held.contents)
+            active_ids = {o.recipe.id for o in game.orders.orders}
+            # Decisions are made against our COMMITTED target, not "any recipe a
+            # plate happens to match" — an in-progress ordered dish can pass
+            # through states that ARE another complete recipe (e.g. bun+meat is a
+            # Burger en route to a Cheeseburger); we must keep building, not bin.
+            on_track = (cur == seq[:len(cur)]) if recipe.ordered else (not (have - need))
+            complete = (cur == seq) if recipe.ordered else (not (have - need) and not (need - have))
+            if complete and held.contents:                 # our target dish is done
+                if (not game.orders.enabled) or recipe.id in active_ids:
                     return go(self._nearest(game, cook, self._cells(game, Terrain.SERVING)))
-                # finished a dish nobody wants any more -> cut losses, bin it
-                self._target = None
+                self._target = None                        # nobody wants it any more
                 return go(self._nearest(game, cook, self._cells(game, Terrain.TRASH)))
-            if held.contents and (have - need):            # wrong items -> bin
+            if held.contents and not on_track:             # wrong items / wrong order -> bin
+                self._stash = None
                 return go(self._nearest(game, cook, self._cells(game, Terrain.TRASH)))
+            # ----- ordered (stacked) dishes: add the next layer, in sequence ----
+            if recipe.ordered:
+                nm, st = seq[len(cur)]              # the one next layer we may add
+                if st == "raw":
+                    return go(source_cell(nm))
+                if st == "chopped":
+                    cell = next((c for c, s in board_chopped if s.item.name == nm), None)
+                    return go(cell) if cell else stash_held()   # else free hands & chop it
+                # cooked: scoop only from a station holding exactly this item
+                cell = next((c for c, s in pots if s.status == "cooked"
+                             and any(ing.name == nm for ing in s.contents)), None)
+                return go(cell) if cell else stash_held()       # else free hands & cook it
             missing = need - have
             # add a raw component straight from its source
             for (name, st) in missing:

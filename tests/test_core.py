@@ -112,6 +112,24 @@ def test_recipe_matching():
     assert book.match_plate(plate) is None
 
 
+def test_ordered_recipe_requires_addition_sequence():
+    """An ordered recipe matches only when ingredients are added in sequence;
+    the same multiset in the wrong order does not satisfy it."""
+    from cooksim.core.recipes import RecipeBook
+    book = RecipeBook()
+    burger = book.get("burger")
+    assert burger.ordered
+    # correct order bun -> patty matches
+    good = Plate(contents=[Ingredient("bun"), Ingredient("meat", PrepState.COOKED)])
+    assert book.match_plate(good) is not None and book.match_plate(good).id == "burger"
+    # reversed order: same multiset, but no recipe accepts it
+    bad = Plate(contents=[Ingredient("meat", PrepState.COOKED), Ingredient("bun")])
+    assert book.match_plate(bad) is None
+    # an unordered recipe still matches in any order
+    soup = Plate(contents=[Ingredient("onion", PrepState.COOKED)] * 3)
+    assert book.match_plate(soup).id == "onion_soup"
+
+
 def test_feasible_recipes_filtering():
     from cooksim.core.recipes import RecipeBook, feasible_recipes
     book = RecipeBook()
