@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CookSim — The Generative Space (Taxonomy &amp; Event Composition)</title>
+<meta name="description" content="An interactive taxonomy of CookSim's compositional building blocks: ingredients, prep states, tools, recipe archetypes, the spatial map layer, and how they multiply into the full event space." />
+<style>
+  :root{
+    --bg:#15121b; --bg2:#1d1825; --card:#241e2e; --card2:#2c2536;
+    --ink:#f4eee7; --muted:#b6abc2; --line:#3a3247;
+    --accent:#ffb454; --accent2:#ff8a4c; --green:#5fcf94; --blue:#5aa9e6; --pink:#e87da8;
+    --code:#1a1622;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
+  a{color:var(--accent)}
+  h1,h2,h3{line-height:1.2;font-weight:800}
+  code,pre{font-family:"SF Mono", Menlo,Consolas,monospace}
+
+  nav{position:sticky;top:0;z-index:20;background:rgba(21,18,27,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
+  nav .logo{font-weight:800;font-size:18px}
+  nav .logo span{background:linear-gradient(90deg,#ffd27f,#ff8a4c);-webkit-background-clip:text;background-clip:text;color:transparent}
+  nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+  nav a:hover{color:var(--ink)}
+  nav .spacer{flex:1}
+
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  p{color:#e7e0ea}
+  .muted{color:var(--muted)}
+
+  header.hero{padding:60px 0 30px;background:
+    radial-gradient(1200px 500px at 70% -10%,rgba(255,138,76,.18),transparent),
+    radial-gradient(900px 500px at 0% 10%,rgba(90,169,230,.14),transparent)}
+  header.hero h1{font-size:42px;margin:0 0 12px;letter-spacing:-1px}
+  header.hero h1 .g{background:linear-gradient(90deg,#ffd27f,#ff8a4c 60%,#e87da8);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header.hero p.lead{font-size:19px;color:var(--muted);max-width:720px}
+  .kicker{color:var(--accent);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:12px;margin-bottom:8px}
+
+  /* clickable stat cards */
+  .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:26px 0 8px}
+  .stat{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;
+    padding:16px;cursor:pointer;transition:transform .12s,border-color .12s;text-align:left}
+  .stat:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .stat .n{font-size:30px;font-weight:800;color:var(--accent);line-height:1}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:6px}
+  .stat .sub{font-size:11px;color:#8e85a0;margin-top:2px}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap}
+  .btn{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 13px;
+    font-size:13px;font-weight:600;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* expandable category */
+  details.cat{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:14px 0;overflow:hidden}
+  details.cat[open]{border-color:#4a4159}
+  details.cat>summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:14px;
+    user-select:none}
+  details.cat>summary::-webkit-details-marker{display:none}
+  details.cat>summary .ico{font-size:26px;width:34px;text-align:center}
+  details.cat>summary .ttl{font-size:19px;font-weight:800}
+  details.cat>summary .hook{color:var(--muted);font-size:13px;font-weight:500}
+  details.cat>summary .cnt{margin-left:auto;background:var(--card2);border:1px solid var(--line);border-radius:20px;
+    padding:4px 12px;font-size:13px;font-weight:800;color:var(--accent);white-space:nowrap}
+  details.cat>summary .chev{transition:transform .2s;color:var(--muted);font-size:16px;margin-left:10px}
+  details.cat[open]>summary .chev{transform:rotate(90deg)}
+  .cat .body{padding:4px 20px 20px;border-top:1px solid var(--line)}
+  .cat .lead2{color:var(--muted);font-size:14px;margin:14px 0 8px}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+  th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  td b{color:var(--accent)}
+
+  .swatch{display:inline-block;width:13px;height:13px;border-radius:4px;border:1px solid rgba(255,255,255,.25);
+    margin-right:7px;vertical-align:-1px}
+  .pill{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11.5px;font-weight:700;margin:2px 3px 2px 0;
+    border:1px solid var(--line)}
+  .pill.yes{background:rgba(95,207,148,.16);color:#8fe6b4;border-color:rgba(95,207,148,.4)}
+  .pill.bd{background:rgba(255,180,84,.14);color:#ffcf8a;border-color:rgba(255,180,84,.4)}
+  .pill.no{background:rgba(150,140,165,.1);color:#8e85a0}
+  .pill.st{background:var(--card2);color:var(--blue)}
+  .pill.d1{background:rgba(95,207,148,.16);color:#8fe6b4}
+  .pill.d2{background:rgba(90,169,230,.16);color:#9bd0f5}
+  .pill.d3{background:rgba(255,180,84,.16);color:#ffcf8a}
+  .pill.d4{background:rgba(232,125,168,.16);color:#f3a9c8}
+
+  /* component matrix */
+  .matrix{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:6px;margin:14px 0;font-size:14px}
+  .matrix .h{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:4px 6px;font-weight:700}
+  .matrix .rl{padding:8px 6px;font-weight:600}
+  .cell{border-radius:8px;padding:8px 6px;text-align:center;font-size:12.5px;font-weight:700;border:1px solid var(--line)}
+  .cell.yes{background:rgba(95,207,148,.16);color:#8fe6b4;border-color:rgba(95,207,148,.35)}
+  .cell.bd{background:rgba(255,180,84,.12);color:#ffcf8a;border-color:rgba(255,180,84,.3)}
+  .cell.no{background:rgba(150,140,165,.06);color:#6f6781}
+
+  details.sub{background:var(--card2);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+  details.sub>summary{cursor:pointer;padding:11px 14px;font-weight:700;font-size:14.5px;list-style:none;display:flex;align-items:center;gap:10px}
+  details.sub>summary::-webkit-details-marker{display:none}
+  details.sub>summary .chev{color:var(--muted);transition:transform .2s}
+  details.sub[open]>summary .chev{transform:rotate(90deg)}
+  details.sub .sbody{padding:0 14px 14px}
+
+  .funnel{margin:14px 0}
+  .frow{display:flex;align-items:center;gap:12px;margin:7px 0}
+  .fbar{height:34px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));display:flex;align-items:center;
+    padding:0 12px;font-weight:800;color:#3a2410;font-size:13px;white-space:nowrap;min-width:60px}
+  .frow .fl{font-size:13px;color:var(--muted);flex:1}
+
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5;color:#cfc7da}
+  pre .c{color:#7d7491}
+  code.inline{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13.5px;color:#ffd9a8}
+  .callout{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:14.5px}
+  .callout.blue{border-left-color:var(--blue)} .callout.green{border-left-color:var(--green)}
+  footer{padding:50px 0 70px;text-align:center;color:var(--muted);border-top:1px solid var(--line);margin-top:30px}
+  @media(max-width:680px){.matrix{font-size:12px}details.cat>summary .hook{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">🍳 <span>CookSim</span></div>
+  <a href="index.html">← Home</a>
+  <a href="index.html#watch">▶ See it cook</a>
+  <a href="index.html#recipes">Recipes</a>
+  <a href="index.html#engine">Engine</a>
+  <span class="spacer"></span>
+  <a href="index.html#play" style="color:var(--accent)">▶ Run it</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Lesson · The generative space</div>
+    <h1>Every piece CookSim can <span class="g">compose into a task</span>.</h1>
+    <p class="lead">An order ("event") in CookSim is built bottom-up from a small set of atoms: ingredients, prep states,
+      tools, and a spatial map. Click any category to expand its full taxonomy. The counts show how a handful of atoms
+      multiply into millions of distinct, solvable tasks.</p>
+    <div class="statgrid" id="stats"></div>
+    <div class="toolbar">
+      <button class="btn" id="expandAll">⊕ Expand all</button>
+      <button class="btn" id="collapseAll">⊖ Collapse all</button>
+      <span class="muted" style="font-size:13px">— or click a number above to jump to that category</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="cats"></main>
+
+<footer>
+  <div class="wrap">
+    <p>🍳 <b>CookSim</b> — the compositional event space.
+       <a href="index.html">Back to the walkthrough →</a></p>
+  </div>
+</footer>
+
+<script>
+const hex = n => "#" + n.toString(16).padStart(6,"0");
+const ING_C = {onion:0xe8c14a,tomato:0xe1452f,lettuce:0x66c244,mushroom:0xb79a82,meat:0xb0563f,fish:0x9cbcd6,
+  bun:0xd9a566,cheese:0xf2c94c,rice:0xf6f1e6,dough:0xeed9a8,egg:0xfaf3e2,potato:0xcb9e60};
+
+// ---- DATA --------------------------------------------------------------
+const INGREDIENTS = [
+  // [name, emoji, {raw,chopped,cooked} tier: y=plausible, b=borderline, n=engine-only, note]
+  ["onion","🧅",{raw:"b",chopped:"y",cooked:"y"},"soups, salads"],
+  ["tomato","🍅",{raw:"b",chopped:"y",cooked:"y"},"soups, salads, sauce"],
+  ["lettuce","🥬",{raw:"b",chopped:"y",cooked:"n"},"salads (chopped)"],
+  ["mushroom","🍄",{raw:"n",chopped:"b",cooked:"y"},"soups, bakes (sautéed)"],
+  ["meat","🥩",{raw:"n",chopped:"n",cooked:"y"},"burgers (fried patty)"],
+  ["fish","🐟",{raw:"n",chopped:"y",cooked:"y"},"fried, or chopped sashimi"],
+  ["bun","🍞",{raw:"y",chopped:"n",cooked:"b"},"burgers (as-is / toasted)"],
+  ["cheese","🧀",{raw:"y",chopped:"b",cooked:"y"},"salads raw, pizza/bake melted"],
+  ["rice","🍚",{raw:"n",chopped:"n",cooked:"y"},"bowls, sushi (cooked)"],
+  ["dough","🫓",{raw:"n",chopped:"n",cooked:"y"},"pizza/bread base (baked)"],
+  ["egg","🥚",{raw:"n",chopped:"n",cooked:"y"},"fried egg, fried rice"],
+  ["potato","🥔",{raw:"n",chopped:"n",cooked:"y"},"fries, bakes (cooked)"],
+];
+const STATES = [
+  ["raw","🥗","the dispensed state — eaten as-is (bun, cheese, salad leaf)","source"],
+  ["chopped","🔪","produced on a cutting board (4 chop interactions)","cutting board"],
+  ["cooked","🔥","produced by any heat tool over time (pot / pan / oven)","pot · pan · oven"],
+  ["burnt","💀","over-cooked failure state — can NEVER satisfy a recipe","(over-cook)"],
+];
+const TOOLS = [
+  ["pot","🍲","boil","3","20 / +25","cooked","soups, rice"],
+  ["pan","🍳","fry","2","15 / +18","cooked","patties, fish, egg, potato"],
+  ["oven","🔥","bake","3","28 / +30","cooked","pizza, veggie bake"],
+  ["cutting board","🔪","chop","1 item","4 interactions","chopped","salad veg, sashimi fish"],
+  ["sink","🚰","wash","—","5 interactions","clean plate","recycles dirty plates"],
+];
+const FIXTURES = [
+  ["Sources",13,"♻️","Infinite dispensers — one INTERACT yields the item (or adds it to a held plate).",
+    "12 ingredient sources + 1 plate source"],
+  ["Terminals",2,"🛎️","Where outcomes happen: the serving pass scores a matched plate; the trash discards.",
+    "serving pass · trash bin"],
+  ["Storage",1,"📦","Counters hold one loose item — used to stash a partial plate or hand off between cooks.",
+    "counter"],
+];
+const ACTIONS = [
+  ["0","NORTH","face / step −y"],["1","SOUTH","face / step +y"],["2","EAST","face / step +x"],
+  ["3","WEST","face / step −x"],["4","INTERACT","act on the one tile you face"],["5","STAY","idle — let timers run"],
+];
+const ARCHETYPES = [
+  ["Soup","🍲","3×cooked X, or 2×cooked X + 1×cooked Y;  X,Y ∈ {onion, tomato, mushroom}","pot","8–10",
+    ["onion_soup","tomato_soup","mushroom_soup","mixed_soup"]],
+  ["Salad","🥗","nonempty subset of chopped {lettuce, tomato, onion} + optional raw cheese","board","8–12",
+    ["garden_salad","caprese","greek_salad"]],
+  ["Burger / sandwich","🍔","bun + (cooked meat∨fish) + subset{chopped lettuce, tomato} + optional cheese, ≤4","pan + board","10–16",
+    ["burger","cheeseburger","deluxe_burger"]],
+  ["Fried plate","🍤","1–2 of cooked {fish, egg, potato} + optional raw cheese","pan","6–10",
+    ["fried_fish","fried_egg","loaded_fries","fish_and_chips"]],
+  ["Rice bowl","🍚","cooked rice + subset{cooked egg, chopped fish, chopped onion}, ≤4","pot/pan + board","5–8",
+    ["rice_bowl","sushi","fried_rice"]],
+  ["Baked","🍕","3× cooked from {dough, tomato, cheese, potato, mushroom} combos","oven","5–8",
+    ["pizza","veggie_bake"]],
+];
+const RECIPES = {
+  onion_soup:["Onion Soup",[["onion","cooked",3]],20,1,"Soup"],
+  tomato_soup:["Tomato Soup",[["tomato","cooked",3]],20,1,"Soup"],
+  mushroom_soup:["Mushroom Soup",[["mushroom","cooked",3]],26,2,"Soup"],
+  mixed_soup:["Mixed Soup",[["onion","cooked",2],["tomato","cooked",1]],30,2,"Soup"],
+  garden_salad:["Garden Salad",[["lettuce","chopped",1],["tomato","chopped",1]],18,1,"Salad"],
+  caprese:["Caprese",[["tomato","chopped",1],["cheese","raw",1]],20,1,"Salad"],
+  greek_salad:["Greek Salad",[["lettuce","chopped",1],["tomato","chopped",1],["cheese","raw",1]],30,2,"Salad"],
+  burger:["Burger",[["bun","raw",1],["meat","cooked",1]],26,2,"Burger / sandwich"],
+  cheeseburger:["Cheeseburger",[["bun","raw",1],["meat","cooked",1],["cheese","raw",1]],34,3,"Burger / sandwich"],
+  deluxe_burger:["Deluxe Burger",[["bun","raw",1],["meat","cooked",1],["lettuce","chopped",1],["tomato","chopped",1]],46,4,"Burger / sandwich"],
+  fried_fish:["Fried Fish",[["fish","cooked",1]],22,2,"Fried plate"],
+  fried_egg:["Fried Egg",[["egg","cooked",1]],12,1,"Fried plate"],
+  loaded_fries:["Loaded Fries",[["potato","cooked",1],["cheese","raw",1]],26,2,"Fried plate"],
+  fish_and_chips:["Fish & Chips",[["fish","cooked",1],["potato","cooked",1]],38,3,"Fried plate"],
+  rice_bowl:["Rice Bowl",[["rice","cooked",1]],12,1,"Rice bowl"],
+  sushi:["Sushi",[["rice","cooked",1],["fish","chopped",1]],36,3,"Rice bowl"],
+  fried_rice:["Fried Rice",[["rice","cooked",1],["egg","cooked",1],["onion","chopped",1]],44,4,"Rice bowl"],
+  pizza:["Pizza",[["dough","cooked",1],["tomato","cooked",1],["cheese","cooked",1]],42,4,"Baked"],
+  veggie_bake:["Veggie Bake",[["potato","cooked",1],["mushroom","cooked",1],["cheese","cooked",1]],40,4,"Baked"],
+};
+const LAYOUTS = [
+  ["cramped_room",4,"onion soup only — 2 cooks, 1 pot"],
+  ["forced_coordination",5,"a wall splits ingredients from pots — forces handoff"],
+  ["open_kitchen",10,"roomy single kitchen, full station set"],
+  ["bistro",7,"two pots — soups & salads"],
+  ["burger_bar",6,"pans, buns, meat, cheese"],
+  ["pizzeria",7,"ovens + dough/tomato/cheese"],
+  ["diner",12,"pans + pots + board + sink — every prep type"],
+  ["grand_kitchen",22,"every source & every tool — any recipe"],
+];
+const VISITS = [
+  ["onion_soup",1,"3×cooked onion (1 pot batch)","9","+20 cook"],
+  ["garden_salad",1,"2× chopped","6","+8 chop"],
+  ["deluxe_burger",4,"bun-raw + meat-cooked + 2× chopped","10","+8 chop, +15 cook"],
+  ["fried_rice",4,"rice-cooked + egg-cooked + onion-chopped","10","+4 chop, +20/15 cook"],
+];
+const TIER = {y:"yes",b:"borderline",n:"engine-only"};
+const TIERLBL = {y:"plausible",b:"borderline",n:"engine-only"};
+
+// ---- RENDER ------------------------------------------------------------
+const el = (t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+function ingChip(name){return `<span class="swatch" style="background:${hex(ING_C[name])}"></span>${name}`;}
+function compStr(contents){return contents.map(([n,s,k])=>`${k>1?k+"× ":""}${n}<span class="muted">·${s}</span>`).join(" + ");}
+
+function category({id,ico,ttl,hook,cnt,open}, bodyHTML){
+  const d=el("details","cat");d.id=id;if(open)d.open=true;
+  d.innerHTML=`<summary><span class="ico">${ico}</span>
+    <span><span class="ttl">${ttl}</span> &nbsp;<span class="hook">${hook}</span></span>
+    <span class="cnt">${cnt}</span><span class="chev">▶</span></summary>
+    <div class="body">${bodyHTML}</div>`;
+  return d;
+}
+function sub(title,inner){
+  return `<details class="sub"><summary><span class="chev">▶</span>${title}</summary><div class="sbody">${inner}</div></details>`;
+}
+
+const cats=document.getElementById("cats");
+
+// 1. Ingredients
+{
+  let rows=INGREDIENTS.map(([n,e,t,note])=>{
+    const pills=["raw","chopped","cooked"].map(s=>`<span class="pill ${t[s]}">${s}${t[s]==="y"?" ✓":t[s]==="b"?" ~":" ✕"}</span>`).join("");
+    return `<tr><td style="white-space:nowrap">${e} <b style="color:var(--ink)">${ingChip(n)}</b></td><td>${pills}</td><td class="muted">${note}</td></tr>`;
+  }).join("");
+  const body=`<p class="lead2">The 12 raw materials, each from an infinite source tile. The pills show which prep states are
+    <span class="pill yes">plausible ✓</span> <span class="pill bd">borderline ~</span> <span class="pill no">engine-only ✕</span>
+    — the engine itself allows <i>any</i> ingredient in <i>any</i> state; sense is a design layer.</p>
+    <table><tr><th>Ingredient</th><th>Plausible prep states</th><th>Used in</th></tr>${rows}</table>`;
+  cats.appendChild(category({id:"ingredients",ico:"🥕",ttl:"Ingredients",hook:"the raw materials",cnt:"12"},body));
+}
+// 2. States
+{
+  let rows=STATES.map(([n,e,desc,by])=>`<tr><td>${e} <b style="color:var(--ink)">${n}</b></td><td class="muted">${desc}</td><td><span class="pill st">${by}</span></td></tr>`).join("");
+  const body=`<p class="lead2">An ingredient carries exactly one prep state. Transforms are <b>depth-1</b>: raw → {chopped | cooked};
+    cooking a chopped item just overwrites it to cooked. <b>Burnt</b> is a failure sink — it never matches a recipe.</p>
+    <table><tr><th>State</th><th>Meaning</th><th>Produced by</th></tr>${rows}</table>`;
+  cats.appendChild(category({id:"states",ico:"🔄",ttl:"Prep states",hook:"raw · chopped · cooked (+burnt)",cnt:"4"},body));
+}
+// 3. Components matrix
+{
+  let cells="";
+  cells+=`<div class="h"></div><div class="h">raw</div><div class="h">chopped</div><div class="h">cooked</div>`;
+  INGREDIENTS.forEach(([n,e,t])=>{
+    cells+=`<div class="rl">${e} ${ingChip(n)}</div>`;
+    ["raw","chopped","cooked"].forEach(s=>{
+      const cls=t[s]==="y"?"yes":t[s]==="b"?"bd":"no";
+      cells+=`<div class="cell ${cls}">${TIERLBL[t[s]]}</div>`;
+    });
+  });
+  const body=`<p class="lead2">A <b>component</b> is an (ingredient, state) pair — the alphabet recipes are written in.
+    12 × 3 = <b>36</b> are engine-permissible; the green cells (<b>~16</b>) are the common-sense plausible ones.</p>
+    <div class="matrix">${cells}</div>
+    <div class="callout">A recipe is a <b>multiset of components</b> on one plate (capacity 4). Matching is set-based and
+      order-free — two recipes with the same component multiset are the same dish.</div>`;
+  cats.appendChild(category({id:"components",ico:"🧩",ttl:"Components",hook:"ingredient × state = recipe alphabet",cnt:"36 (~16)"},body));
+}
+// 4. Tools
+{
+  let rows=TOOLS.map(([n,e,fn,cap,time,out,use])=>`<tr><td style="white-space:nowrap">${e} <b style="color:var(--ink)">${n}</b></td>
+    <td><span class="pill st">${fn}</span></td><td><b>${cap}</b></td><td class="muted">${time}</td>
+    <td><span class="pill ${out==="chopped"?"bd":out==="cooked"?"d3":"st"}">${out}</span></td><td class="muted">${use}</td></tr>`).join("");
+  const body=`<p class="lead2">5 processing stations. <b>3 heat tools</b> (pot/pan/oven) all output the same <code class="inline">cooked</code>
+    state — so which one you use is a spatial &amp; plausibility choice, not a state difference. Time column = cook / +burn ticks,
+    or # of INTERACTs.</p>
+    <table><tr><th>Tool</th><th>Function</th><th>Capacity</th><th>Time</th><th>Output</th><th>Typical use</th></tr>${rows}</table>`;
+  cats.appendChild(category({id:"tools",ico:"🍳",ttl:"Tools / stations",hook:"3 heat · 1 chop · 1 wash",cnt:"5"},body));
+}
+// 5. Fixtures (sources/terminals/storage)
+{
+  let rows=FIXTURES.map(([n,c,e,desc,members])=>`<tr><td style="white-space:nowrap">${e} <b style="color:var(--ink)">${n}</b> <span class="pill st">${c}</span></td>
+    <td class="muted">${desc}<br><span style="color:#8e85a0">${members}</span></td></tr>`).join("");
+  const body=`<p class="lead2">The other 16 interactive tiles. Together with the 5 tools, a map exposes <b>21 interactive terrain types</b>.</p>
+    <table><tr><th>Role</th><th>What it does</th></tr>${rows}</table>`;
+  cats.appendChild(category({id:"fixtures",ico:"♻️",ttl:"Sources · terminals · storage",hook:"dispensers, pass, trash, counters",cnt:"16"},body));
+}
+// 6. Actions
+{
+  let rows=ACTIONS.map(([i,n,d])=>`<tr><td><b>${i}</b></td><td style="font-weight:700;color:var(--ink)">${n}</td><td class="muted">${d}</td></tr>`).join("");
+  const body=`<p class="lead2">The entire control API: one integer 0–5 per cook per tick. There is no "cook" or "deliver" command —
+    those are all <code class="inline">INTERACT</code> against different tiles. <b>Orient-first:</b> a direction only turns you if you
+    aren't already facing that way, so turning is always its own tick.</p>
+    <table><tr><th>#</th><th>Action</th><th>Effect</th></tr>${rows}</table>`;
+  cats.appendChild(category({id:"actions",ico:"🎮",ttl:"Low-level actions",hook:"the whole control API",cnt:"6"},body));
+}
+// 7. Archetypes
+{
+  let inner=ARCHETYPES.map(([n,e,rule,st,cnt,ex])=>{
+    const exs=ex.map(id=>`<span class="pill st">${RECIPES[id][0]}</span>`).join(" ");
+    return sub(`${e} ${n} <span class="pill st" style="margin-left:auto">~${cnt}</span>`,
+      `<p class="muted" style="margin:4px 0">Rule: <code class="inline">${rule}</code></p>
+       <p style="font-size:13px;margin:6px 0"><b>Stations:</b> ${st} &nbsp; <b>Examples:</b> ${exs}</p>`);
+  }).join("");
+  const body=`<p class="lead2">Combination common-sense, encoded as a grammar of dish templates with typed slots. Sampling an archetype
+    then filling its slots from (ingredient × state) generates plausible recipes by construction. Summed across all six, today's
+    12 ingredients yield <b>~45–65 plausible recipes</b> at ≤4 components.</p>${inner}`;
+  cats.appendChild(category({id:"archetypes",ico:"📐",ttl:"Recipe archetypes",hook:"the compositional grammar",cnt:"6 → ~55"},body));
+}
+// 8. Authored recipes
+{
+  const byArch={};
+  Object.entries(RECIPES).forEach(([id,r])=>{(byArch[r[4]]=byArch[r[4]]||[]).push([id,r]);});
+  let inner=Object.entries(byArch).map(([arch,list])=>{
+    let rows=list.map(([id,[name,contents,reward,diff]])=>
+      `<tr><td style="font-weight:700;color:var(--ink)">${name}</td><td>${compStr(contents)}</td>
+       <td><b>+${reward}</b></td><td><span class="pill d${diff}">d${diff}</span></td></tr>`).join("");
+    return sub(`${arch} <span class="pill st" style="margin-left:auto">${list.length}</span>`,
+      `<table><tr><th>Recipe</th><th>Plate contents</th><th>Reward</th><th>Difficulty</th></tr>${rows}</table>`);
+  }).join("");
+  const body=`<p class="lead2">The 19 recipes currently shipped (of the ~55 plausible space). Difficulty ≈ #distinct prep ops + #tool types.</p>${inner}`;
+  cats.appendChild(category({id:"recipes",ico:"📖",ttl:"Authored recipes",hook:"what ships today, by archetype",cnt:"19"},body));
+}
+// 9. Recipe-space funnel
+{
+  const F=[["91,389","100%","engine-permissible multisets (≤4 items, 36 components)"],
+    ["4,844","30%","after the per-ingredient plausible-state mask (16 components)"],
+    ["~55","12%","after the archetype / combination grammar — the real recipe space"],
+    ["19","7%","currently authored"]];
+  let rows=F.map(([n,w,l])=>`<div class="frow"><div class="fbar" style="width:${w}">${n}</div><div class="fl">${l}</div></div>`).join("");
+  const body=`<p class="lead2">How permissive raw combinatorics collapse to a sensible recipe set. Diversity is cheap; <b>plausibility is the
+    scarce resource</b>, and the grammar is what supplies it.</p><div class="funnel">${rows}</div>`;
+  cats.appendChild(category({id:"funnel",ico:"📊",ttl:"Recipe-space magnitudes",hook:"91,389 → ~55 → 19",cnt:"funnel"},body));
+}
+// 10. Spatial layer
+{
+  let lay=LAYOUTS.map(([n,c,d])=>`<tr><td style="font-weight:700;color:var(--ink)">${n}</td><td><b>${c}</b></td><td class="muted">${d}</td></tr>`).join("");
+  let vis=VISITS.map(([id,diff,comp,v,extra])=>`<tr><td style="font-weight:700;color:var(--ink)">${RECIPES[id][0]}</td>
+    <td><span class="pill d${diff}">d${diff}</span></td><td class="muted">${comp}</td><td><b>${v}</b></td><td class="muted">${extra}</td></tr>`).join("");
+  const cost=`<table><tr><th>Component kind</th><th>Route cost</th><th>Why</th></tr>
+    <tr><td><span class="pill yes">raw on plate</span></td><td><b>1 visit</b></td><td class="muted">hold the plate, one INTERACT at the source adds it</td></tr>
+    <tr><td><span class="pill d3">cooked</span></td><td><b>~2·b + 1 / batch</b></td><td class="muted">b pickups + b drops at a heat tool + 1 plate-ladle, + cook wait</td></tr>
+    <tr><td><span class="pill bd">chopped</span></td><td><b>~2 visits + 4 chops</b></td><td class="muted">source → board → 4× chop → carry to plate (needs free hands)</td></tr></table>`;
+  const body=`<p class="lead2">The map turns an order-free bag of sub-tasks into a <b>route</b>: every sub-task is "go to tile, INTERACT",
+    and a plan interleaves BFS paths between sites. The same recipe is trivial in a 4-site room and a long haul in a 22-site kitchen.</p>
+    ${sub("🗺️ Built-in layouts — interaction sites each",`<table><tr><th>Layout</th><th>Sites</th><th>Notes</th></tr>${lay}</table>`)}
+    ${sub("🧭 Component route cost (depends on state!)",cost)}
+    ${sub("🚶 Visit counts for representative recipes (single cook)",`<table><tr><th>Recipe</th><th>Diff</th><th>Components</th><th>≈ Visits</th><th>Extra ticks</th></tr>${vis}</table>`)}
+    ${sub("🏰 grand_kitchen site map (22 sites)",`<pre>X O T L M E F B C X   <span class="c">12 ingredient sources (all)</span>
+R . . . . . . . . P   <span class="c">1 plate source (D)</span>
+G . . 1 . 2 . . . P   <span class="c">2 pots (P,P)</span>
+Z . . . . . . . . N   <span class="c">1 oven (N), 1 pan (A)</span>
+Y . . 3 . 4 . . . A   <span class="c">2 cutting boards (//)</span>
+D . . . . . . . . S   <span class="c">sink (W), serving (S), trash (U)</span>
+X X X / / W U X X X   <span class="c">4 cook spawn points (1-4)</span></pre>`)}`;
+  cats.appendChild(category({id:"spatial",ico:"🗺️",ttl:"Spatial layer (map & route)",hook:"sites scattered → routing problem",cnt:"4–22 sites"},body));
+}
+// 11. Event product space
+{
+  const body=`<p class="lead2">A generatable <b>event</b> (a solvable order) is the product of the content space and the spatial space:</p>
+    <pre>event = ( recipe r )              <span class="c">~55 plausible</span>
+      × ( layout L ⊇ feasible(r) ) <span class="c">8 built-in + unbounded procedural</span>
+      × ( placement π of r's tiles)<span class="c">combinatorial — the dominant term</span>
+      × ( #agents, start tiles )   <span class="c">1–4 cooks</span>
+      × ( deadline T )             <span class="c">continuum, gated by solvability</span></pre>
+    <div class="callout blue"><b>Placement dominates.</b> A 4-track recipe needs ~6 sites; on a 22-cell border that's
+      22·21·20·19·18·17 ≈ <b>5.3 × 10⁷ placements — per recipe</b>. So ~55 recipes expand into tens of millions of distinct,
+      well-posed events before varying agents or deadline.</div>
+    <p class="muted" style="font-size:14px">A second multiplier at fixed placement: # valid routes = (topological sorts of the task DAG)
+      × (which duplicate tile to use). One placed deluxe-burger order already admits dozens of correct trajectories — the RL task diversity.</p>`;
+  cats.appendChild(category({id:"event",ico:"🎲",ttl:"The event space",hook:"recipe × map × placement × agents × deadline",cnt:"~10⁷"},body));
+}
+// 12. Complexity axes
+{
+  const A=[["Recipe","# distinct prep ops + # tool types","the multiset (≈ authored difficulty 1–4)"],
+    ["Route","Σ BFS distance over the required visits","placement geometry"],
+    ["Contention","(# required tool-uses) ÷ (# instances of that tool)","duplicate tools relieve it"],
+    ["Temporal","slack = deadline − (route + cook + chop ticks)","order timer"],
+    ["Coordination","# agents vs # parallel tracks; shared-tile conflicts","spatial + agent config"]];
+  let rows=A.map(([a,m,s])=>`<tr><td><b>${a}</b></td><td>${m}</td><td class="muted">${s}</td></tr>`).join("");
+  const body=`<p class="lead2">Difficulty decomposes into 5 orthogonal axes. A single solvability estimator:
+    <code class="inline">T_complete ≈ Σtravel + Σcook(batches) + 4·(#chopped) + interactions</code>; require it ≤ deadline.
+    Normalized by deadline, that's your continuous difficulty knob.</p>
+    <table><tr><th>Axis</th><th>Metric</th><th>Controlled by</th></tr>${rows}</table>
+    <div class="callout green">Three orthogonal generator knobs: <b>recipe grammar</b> (what), <b>placement</b> (where / how far),
+      <b>deadline &amp; agents</b> (how much pressure).</div>`;
+  cats.appendChild(category({id:"complexity",ico:"🎚️",ttl:"Complexity axes",hook:"how to tune event difficulty",cnt:"5"},body));
+}
+
+// ---- stat cards (link to categories) -----------------------------------
+const STATS=[["12","Ingredients","raw materials","ingredients"],["4","Prep states","raw·chopped·cooked·burnt","states"],
+  ["36","Components","~16 plausible","components"],["5","Tools","3 heat·1 chop·1 wash","tools"],
+  ["6","Actions","the control API","actions"],["~55","Plausible recipes","19 authored","funnel"],
+  ["8","Built-in maps","4–22 sites each","spatial"],["~10⁷","Events / recipe","via placement","event"]];
+const sg=document.getElementById("stats");
+STATS.forEach(([n,l,s,id])=>{
+  const c=el("div","stat");c.innerHTML=`<div class="n">${n}</div><div class="l">${l}</div><div class="sub">${s}</div>`;
+  c.onclick=()=>{const d=document.getElementById(id);d.open=true;d.scrollIntoView({behavior:"smooth",block:"start"});};
+  sg.appendChild(c);
+});
+// expand/collapse all
+const all=()=>document.querySelectorAll("details.cat");
+document.getElementById("expandAll").onclick=()=>all().forEach(d=>d.open=true);
+document.getElementById("collapseAll").onclick=()=>all().forEach(d=>d.open=false);
+// open via #hash
+if(location.hash){const d=document.getElementById(location.hash.slice(1));if(d&&d.tagName==="DETAILS")d.open=true;}
+</script>
+</body>
+</html>
