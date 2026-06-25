@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 server = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "websockets>=12", "pydantic>=2"]
+vlm = ["pillow>=10", "google-genai>=1"]      # top-down observation + Gemini agent loop
 dev = ["pytest"]
 
 [project.scripts]
