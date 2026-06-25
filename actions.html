@@ -87,6 +87,9 @@
   .log .ok{color:#bdeccd} .log .no{color:#ffb0a6}
   .log .ok::before{content:"✓ ";color:var(--green)} .log .no::before{content:"✗ ";color:var(--red)}
   .reset{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;margin-top:8px}
+  figure{margin:22px 0}
+  video{width:100%;border-radius:12px;border:1px solid var(--line);background:#0c0a12;display:block}
+  figcaption{color:var(--muted);font-size:13.5px;margin-top:10px}
   footer{padding:46px 0 70px;text-align:center;color:var(--muted)}
 </style>
 </head>
@@ -96,6 +99,7 @@
   <a href="index.html">← Home</a>
   <a href="taxonomy.html">▤ Taxonomy</a>
   <a href="#builder" style="color:var(--blue)">🎮 Try the chain builder</a>
+  <a href="#watch" style="color:var(--green)">▶ Watch Gemini play</a>
   <span class="spacer"></span>
   <a href="index.html#play" style="color:var(--accent)">▶ Run it</a>
 </nav>
@@ -214,6 +218,30 @@
           </ol></details>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="watch">
+  <div class="wrap">
+    <div class="kicker">Proof — a real VLM playing</div>
+    <h2>Watch Gemini play it, frame by frame</h2>
+    <p class="muted">True streaming: the game runs continuously and each <b>single frame</b> goes to an <i>offline</i>
+      Gemini model that must emit one <b>time-aligned</b> action — either a command or <b>"continue" (no interrupt)</b>.
+      That per-frame no-op is the inference-time trick that turns an offline model into a streaming controller.
+      In each video: <b>left</b> = the exact frame the VLM sees; <b>right</b> = its action this tick (a command in green,
+      or "continue · watching / auto"), the agent's low-level button, the running skill, the issued-command log, and the
+      outcome. Task: <b>Loaded Fries</b> (fry a potato → plate it → add cheese → serve, in that order).</p>
+    <figure>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/pro_loaded_fries.mp4"></video>
+      <figcaption><b style="color:var(--green)">gemini-2.5-pro ✓</b> — fries the potato, fetches a plate <i>while it cooks</i>,
+        scoops potato then cheese (correct order), serves → <b>DELIVERED +27</b>. 61 frames, ~15 commands.</figcaption>
+    </figure>
+    <figure>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/flash_loaded_fries.mp4"></video>
+      <figcaption><b style="color:var(--pink)">gemini-2.5-flash ✗</b> — same interface, weaker model: it <i>chops</i> the potato
+        instead of frying it and serves early without cheese → no delivery. The engine stays robust (negative score, no crash)
+        — exactly "task fails, engine fine."</figcaption>
+    </figure>
   </div>
 </section>
 
