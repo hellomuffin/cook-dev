@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CookSim — Teaching a VLM to Cook (High-Level Actions)</title>
-<meta name="description" content="How a streaming vision-language model controls the CookSim cook with natural-language high-level actions: a verb taxonomy, spatial grounding qualifiers, and a converter that compiles each phrase to low-level buttons." />
+<title>CookSim — Teaching a VLM to Cook (Manipulation Actions)</title>
+<meta name="description" content="The manipulation-level action interface a streaming VLM uses to control the CookSim cook: one locomotion command plus atomic object manipulations, with no task functionality bundled, so the model must compose a chain of commands to cook anything." />
 <style>
   :root{
     --bg:#15121b; --bg2:#1d1825; --card:#241e2e; --card2:#2c2536;
     --ink:#f4eee7; --muted:#b6abc2; --line:#3a3247;
-    --accent:#ffb454; --accent2:#ff8a4c; --green:#5fcf94; --blue:#5aa9e6; --pink:#e87da8;
+    --accent:#ffb454; --accent2:#ff8a4c; --green:#5fcf94; --blue:#5aa9e6; --pink:#e87da8; --red:#ff6a5a;
     --code:#1a1622;
   }
   *{box-sizing:border-box}
@@ -24,8 +24,7 @@
   nav .logo{font-weight:800;font-size:18px}
   nav .logo span{background:linear-gradient(90deg,#ffd27f,#ff8a4c);-webkit-background-clip:text;background-clip:text;color:transparent}
   nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
-  nav a:hover{color:var(--ink)}
-  nav .spacer{flex:1}
+  nav a:hover{color:var(--ink)} nav .spacer{flex:1}
   .wrap{max-width:980px;margin:0 auto;padding:0 24px}
   section{padding:54px 0;border-bottom:1px solid var(--line)}
   section h2{font-size:28px;margin:0 0 6px}
@@ -36,66 +35,58 @@
     radial-gradient(900px 500px at 0% 10%,rgba(255,138,76,.14),transparent)}
   header.hero h1{font-size:42px;margin:0 0 12px;letter-spacing:-1px}
   header.hero h1 .g{background:linear-gradient(90deg,#9bd0f5,#5aa9e6 60%,#ffb454);-webkit-background-clip:text;background-clip:text;color:transparent}
-  header.hero p.lead{font-size:19px;color:var(--muted);max-width:720px}
+  header.hero p.lead{font-size:19px;color:var(--muted);max-width:730px}
 
   .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
   @media(max-width:760px){.two{grid-template-columns:1fr}}
   .lvl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-  .lvl h3{margin:0 0 4px;font-size:18px}
-  .lvl.low{border-top:3px solid var(--pink)} .lvl.high{border-top:3px solid var(--green)}
+  .lvl h3{margin:0 0 4px;font-size:17px}
+  .lvl.low{border-top:3px solid var(--pink)} .lvl.mid{border-top:3px solid var(--green)} .lvl.no{border-top:3px solid var(--red)}
   .keys{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
   .key{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:700;font-family:"SF Mono",monospace}
-  .say{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0;font-style:italic;color:#cfe6ff}
+  .say{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:7px 11px;margin:5px 0;font-style:italic;color:#cfe6ff;font-size:14px}
+  .say.dead{color:#8e7;opacity:.6;text-decoration:line-through;text-decoration-color:var(--red)}
 
   .pipe{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0;justify-content:center}
   .pstep{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:center;min-width:104px}
-  .pstep .emoji{font-size:26px}.pstep .lbl{font-size:12px;color:var(--muted);margin-top:4px}
-  .pstep .t{font-size:13px;font-weight:700;color:var(--ink)}
+  .pstep .emoji{font-size:26px}.pstep .lbl{font-size:12px;color:var(--muted);margin-top:4px}.pstep .t{font-size:13px;font-weight:700}
   .arrow{color:var(--blue);font-size:22px;font-weight:800}
 
-  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:16px 0}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:14px 0}
   .vcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-  .vcard .vh{font-weight:800;font-size:15px;margin-bottom:2px}
-  .vcard .ico{font-size:18px;margin-right:6px}
+  .vcard.move{border-left:3px solid var(--blue)} .vcard.man{border-left:3px solid var(--green)}
+  .vcard .vh{font-weight:800;font-size:15px;margin-bottom:2px}.vcard .ico{font-size:18px;margin-right:6px}
   .vcard .does{color:var(--muted);font-size:13px;margin:4px 0}
   .vcard .comp{font-size:12px;color:#9bd0f5;font-family:"SF Mono",monospace;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:5px 8px;margin-top:6px}
-
   table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
   th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
   th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}
   .ex{color:#cfe6ff;font-style:italic}
   .callout{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
     border-left:4px solid var(--blue);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:14.5px}
+  .callout.red{border-left-color:var(--red)} .callout.green{border-left-color:var(--green)}
   code.inline{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13.5px;color:#ffd9a8}
 
-  /* interactive kitchen demo */
-  .demo{display:grid;grid-template-columns:auto 1fr;gap:20px;margin:18px 0}
-  @media(max-width:760px){.demo{grid-template-columns:1fr}}
-  .grid{display:grid;grid-template-columns:repeat(7,46px);grid-auto-rows:46px;gap:4px;background:#120f18;
-    padding:10px;border-radius:12px;border:1px solid var(--line)}
-  .cell{position:relative;border-radius:7px;background:#1e1a27;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;font-size:20px;transition:all .15s}
-  .cell.floor{background:#191521}
-  .cell .lab{position:absolute;bottom:-2px;font-size:7.5px;color:var(--muted);line-height:1;text-align:center;width:100%}
-  .cell .badge{position:absolute;top:-5px;right:-3px;background:var(--blue);color:#08263d;font-size:8px;font-weight:800;
-    border-radius:8px;padding:0 4px}
-  .cell.cook{font-size:22px}
-  .cell.hit{background:rgba(95,207,148,.30);box-shadow:0 0 0 2px var(--green),0 0 14px rgba(95,207,148,.5);z-index:2}
-  .cell.miss{opacity:.42;box-shadow:inset 0 0 0 2px rgba(232,125,168,.55)}
-  .cell.miss::after{content:"✕";position:absolute;font-size:16px;color:var(--pink);opacity:.9}
-  .chips{display:flex;flex-direction:column;gap:7px}
-  .chip{text-align:left;background:var(--card2);border:1px solid var(--line);color:#cfe6ff;border-radius:9px;
-    padding:9px 12px;font-size:14px;font-style:italic;cursor:pointer;transition:all .12s}
-  .chip:hover{border-color:var(--blue)} .chip.on{border-color:var(--blue);background:rgba(90,169,230,.16);color:#fff}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px;min-height:90px}
-  .panel .rsn{color:var(--ink);font-size:14.5px;margin:0 0 10px}
-  .panel .rsn b{color:var(--green)}
-  .steps{counter-reset:s;list-style:none;padding:0;margin:0}
-  .steps li{position:relative;padding:5px 0 5px 34px;font-size:13.5px;color:#dcd5e6}
-  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:4px;width:22px;height:22px;
-    border-radius:50%;background:linear-gradient(180deg,var(--blue),#3f86c4);color:#06243b;font-weight:800;
-    display:flex;align-items:center;justify-content:center;font-size:12px}
-  .steps li .btn{font-family:"SF Mono",monospace;color:#ffd9a8;font-size:12px}
+  /* chain builder */
+  .builder{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+  @media(max-width:760px){.builder{grid-template-columns:1fr}}
+  .cmds h4,.run h4{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .grp{margin-bottom:12px}
+  .grp .gl{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:700}
+  .cbtn{display:inline-block;margin:0 6px 6px 0;border-radius:9px;padding:8px 12px;font-size:13.5px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card2);color:#cfe6ff;font-style:italic}
+  .cbtn.man{color:#bdeccd}
+  .cbtn:hover{border-color:var(--blue)}
+  .goal{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:14px}
+  .goal.win{border-color:var(--green);background:rgba(95,207,148,.14)}
+  .statebox{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .sb{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:13px}
+  .sb b{color:var(--accent)}
+  .log{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:120px;max-height:260px;overflow:auto;font-size:13px}
+  .log .ln{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .log .ok{color:#bdeccd} .log .no{color:#ffb0a6}
+  .log .ok::before{content:"✓ ";color:var(--green)} .log .no::before{content:"✗ ";color:var(--red)}
+  .reset{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;margin-top:8px}
   footer{padding:46px 0 70px;text-align:center;color:var(--muted)}
 </style>
 </head>
@@ -104,7 +95,7 @@
   <div class="logo">🍳 <span>CookSim</span></div>
   <a href="index.html">← Home</a>
   <a href="taxonomy.html">▤ Taxonomy</a>
-  <a href="#demo" style="color:var(--blue)">🎮 Try the grounding demo</a>
+  <a href="#builder" style="color:var(--blue)">🎮 Try the chain builder</a>
   <span class="spacer"></span>
   <a href="index.html#play" style="color:var(--accent)">▶ Run it</a>
 </nav>
@@ -112,192 +103,200 @@
 <header class="hero">
   <div class="wrap">
     <div class="kicker">Lesson · Controlling the cook with a VLM</div>
-    <h1>Teaching a <span class="g">vision-language model</span> to cook.</h1>
-    <p class="lead">A streaming VLM watches the game and gives orders in plain language — "chop the potato",
-      "ladle the pot cooking rice onto my plate", "serve". A small converter turns each sentence into the exact
-      button presses the game needs. This page shows how — try the live grounding demo below.</p>
+    <h1>The cook speaks <span class="g">manipulation</span>, not magic.</h1>
+    <p class="lead">A streaming VLM controls the cook through small <b>physical</b> commands — "go to the board",
+      "pick up", "chop", "put down". Crucially, <b>no command does the task for it</b>: there is no "make the soup",
+      no "chop the potato" that fetches and dices in one breath. The model must <b>compose a chain</b> and time it
+      against what it sees. Build one yourself in the demo below.</p>
   </div>
 </header>
 
-<!-- 1. two levels -->
+<!-- the design rule -->
 <section>
   <div class="wrap">
-    <div class="kicker">The idea</div>
-    <h2>Two levels of control</h2>
-    <p class="muted">The VLM shouldn't have to micro-manage every footstep. It speaks in <b>skills</b>; the converter
-      handles the footwork. (It can still drop to raw buttons when it wants fine control — just slower.)</p>
+    <div class="kicker">The design rule</div>
+    <h2>Abstract the motor control — never the task</h2>
+    <p class="muted">We hide tedious low-level motor control (pathfinding, turning to face a tile) but we deliberately
+      <b>keep every bit of task functionality in the VLM's hands</b>. A command is a single physical act on one object;
+      it is never a sub-goal.</p>
     <div class="two">
       <div class="lvl low">
         <h3>⌨️ Low level — what the engine runs</h3>
-        <p class="muted" style="font-size:14px">6 buttons, one per tick. Every interaction is the <i>same</i> button.</p>
-        <div class="keys"><span class="key">▲ north</span><span class="key">▼ south</span><span class="key">◀ west</span><span class="key">▶ east</span><span class="key">● interact</span><span class="key">… stay</span></div>
-        <p class="muted" style="font-size:13px">To chop a potato: walk, walk, turn, interact, interact, interact, interact, interact… dozens of presses.</p>
+        <p class="muted" style="font-size:13.5px">6 buttons, one per tick; every interaction is the same button.</p>
+        <div class="keys"><span class="key">▲</span><span class="key">▼</span><span class="key">◀</span><span class="key">▶</span><span class="key">● interact</span><span class="key">… stay</span></div>
+        <p class="muted" style="font-size:13px">Too fiddly for a VLM to drive frame-by-frame.</p>
       </div>
-      <div class="lvl high">
-        <h3>🗣️ High level — what the VLM says</h3>
-        <p class="muted" style="font-size:14px">Natural-language skills. One sentence = a whole sub-task.</p>
-        <div class="say">"chop the potato"</div>
-        <div class="say">"ladle the pot cooking rice onto my plate"</div>
-        <div class="say">"serve"</div>
-        <p class="muted" style="font-size:13px">Each compiles to the right button sequence automatically.</p>
+      <div class="lvl mid">
+        <h3>🤖 Manipulation — what the VLM gets ✅</h3>
+        <p class="muted" style="font-size:13.5px">One mover + atomic object manipulations. Each acts on the tile the cook already faces.</p>
+        <div class="say">"go to the cutting board"</div>
+        <div class="say">"put down" · "chop" · "pick up"</div>
+        <p class="muted" style="font-size:13px">No task logic — the model supplies the plan.</p>
       </div>
     </div>
+    <div class="callout red"><b>What we deliberately do NOT give:</b> no
+      <span class="say dead" style="display:inline-block;margin:0 4px;padding:2px 8px">chop the potato</span>
+      <span class="say dead" style="display:inline-block;margin:0 4px;padding:2px 8px">cook the soup</span>
+      <span class="say dead" style="display:inline-block;margin:0 4px;padding:2px 8px">serve onion soup</span>.
+      Each of those bundles fetching, ordering, timing and plating — i.e. the <i>functionality</i>. Hand those to the VLM and the
+      task is trivial. Withhold them and it has to actually understand the kitchen.</div>
   </div>
 </section>
 
-<!-- 2. pipeline -->
-<section>
-  <div class="wrap">
-    <div class="kicker">How a sentence becomes buttons</div>
-    <h2>The converter pipeline</h2>
-    <div class="pipe">
-      <div class="pstep"><div class="emoji">🗣️</div><div class="t">say</div><div class="lbl">"chop the potato"</div></div>
-      <span class="arrow">→</span>
-      <div class="pstep"><div class="emoji">🧩</div><div class="t">parse</div><div class="lbl">verb = chop<br>object = potato</div></div>
-      <span class="arrow">→</span>
-      <div class="pstep"><div class="emoji">📍</div><div class="t">ground</div><div class="lbl">which board?<br>which item?</div></div>
-      <span class="arrow">→</span>
-      <div class="pstep"><div class="emoji">⚙️</div><div class="t">compile</div><div class="lbl">walk · face · interact ×N</div></div>
-      <span class="arrow">→</span>
-      <div class="pstep"><div class="emoji">🎮</div><div class="t">play</div><div class="lbl">buttons → game</div></div>
-    </div>
-    <div class="callout"><b>It's closed-loop, not a fixed recipe of presses.</b> Each tick the converter looks at the live game and
-      decides the next button — so it keeps pressing <code class="inline">interact</code> until the potato is actually chopped,
-      walks around a cook who's in the way, and faces the right tile first. The VLM says <i>what</i>; the loop figures out <i>how</i>.</div>
-  </div>
-</section>
-
-<!-- 3. verbs -->
+<!-- two kinds of command -->
 <section>
   <div class="wrap">
     <div class="kicker">The vocabulary</div>
-    <h2>The skills (verbs)</h2>
-    <p class="muted">Every skill compiles to the same primitive: <b>walk next to the target → turn to face it → press
-      interact as many times as needed</b>. The verb just decides the target and the stop condition.</p>
+    <h2>Two kinds of command</h2>
+    <h3 style="margin:14px 0 2px"><span style="color:var(--blue)">①</span> Locomotion — the only thing that moves</h3>
+    <p class="muted" style="font-size:14px">Exactly one command moves the cook, and it is the <b>only</b> command that names a target
+      (and therefore carries the grounding qualifiers below). Everything else acts on whatever the cook is currently facing.</p>
+    <div class="vgrid">
+      <div class="vcard move"><div class="vh"><span class="ico">🚶</span>go to &lt;object&gt;</div>
+        <div class="does">Pathfind next to an object and turn to face it. Abstracts away every footstep + the orient-first turn.</div>
+        <div class="comp">⤷ BFS path · face the tile</div></div>
+    </div>
+    <h3 style="margin:18px 0 2px"><span style="color:var(--green)">②</span> Manipulation — one object operation, where you stand</h3>
+    <p class="muted" style="font-size:14px">Each acts on the tile the cook faces and touches <b>one object</b>. It does <b>not</b> walk, fetch, sequence, or plate.
+      If the cook isn't in position, the command simply fails ("you're not at a board") — so the model must <code class="inline">go to</code> first.</p>
     <div class="vgrid" id="verbs"></div>
   </div>
 </section>
 
-<!-- 4. grounding -->
-<section id="demo">
+<!-- grounding -->
+<section>
   <div class="wrap">
-    <div class="kicker">The hard part</div>
-    <h2>Grounding: which "pot" do you mean?</h2>
-    <p class="muted">Plain language is ambiguous — say "the pot" when two pots are on the stove and the converter can't act.
-      The fix: let the VLM <b>attach a qualifier</b> that pins down the exact object. These inject spatial &amp; relational
-      meaning into the sentence:</p>
+    <div class="kicker">Grounding (only on "go to")</div>
+    <h2>Which object do you mean?</h2>
+    <p class="muted">Only <code class="inline">go to</code> picks an object, so that's the only place ambiguity lives. When several
+      candidates exist ("the pot" with two pots), the VLM attaches a <b>qualifier</b> that injects spatial / relational meaning.
+      Manipulations need no target — they act on the faced tile.</p>
     <table>
       <tr><th>Qualifier</th><th>Say it like</th><th>Resolves by</th></tr>
-      <tr><td><b>content</b></td><td class="ex">"the pot <u>cooking rice</u>"</td><td class="muted">what's inside / its job</td></tr>
-      <tr><td><b>state</b></td><td class="ex">"the <u>done</u> pot", "the <u>empty</u> board", "the <u>dirty</u> plate"</td><td class="muted">the station's status</td></tr>
-      <tr><td><b>spatial — absolute</b></td><td class="ex">"the <u>left</u> pot", "the <u>top-left</u> pan"</td><td class="muted">position on the grid</td></tr>
+      <tr><td><b>content</b></td><td class="ex">"go to the pot <u>cooking rice</u>"</td><td class="muted">what's inside / its job</td></tr>
+      <tr><td><b>state</b></td><td class="ex">"go to the <u>done</u> pot", "the <u>empty</u> board", "the <u>dirty</u> plate"</td><td class="muted">the station's status</td></tr>
+      <tr><td><b>spatial — absolute</b></td><td class="ex">"the <u>left</u> pot", "the <u>top-left</u> pan"</td><td class="muted">grid position</td></tr>
       <tr><td><b>spatial — relative</b></td><td class="ex">"the <u>nearest</u> pot"</td><td class="muted">distance to the cook</td></tr>
-      <tr><td><b>identity</b></td><td class="ex">"<u>pot 2</u>"</td><td class="muted">stations numbered top-to-bottom</td></tr>
+      <tr><td><b>identity</b></td><td class="ex">"<u>pot 2</u>"</td><td class="muted">stations numbered top→bottom</td></tr>
       <tr><td><b>exact</b></td><td class="ex">"the pot <u>at (2,0)</u>"</td><td class="muted">a precise tile (escape hatch)</td></tr>
     </table>
-    <div class="callout">💡 <b>Tip for grounding from video:</b> overlay small <b>ID badges</b> (and a faint coordinate grid) on each
-      station in the stream the VLM watches. Then it can always fall back to "pot 2" or "(2,0)" when words alone are ambiguous —
-      the picture supplies the names.</div>
+    <div class="callout">💡 Overlay small <b>ID badges</b> + a faint coordinate grid on the video the VLM watches, so it can always fall
+      back to "pot 2" / "(2,0)" when words alone are ambiguous — the picture supplies the names.</div>
+  </div>
+</section>
 
-    <h3 style="margin-top:26px">Try it — click a command, watch it ground</h3>
-    <div class="demo">
-      <div>
-        <div class="grid" id="grid"></div>
-        <p class="muted" style="font-size:12px;margin-top:8px">👩‍🍳 cook &nbsp; 🍲 pot &nbsp; 🔪 board &nbsp; 🍽️ plates &nbsp; 🛎️ serve &nbsp; 🧅🍚🥔 sources</p>
+<!-- chain builder -->
+<section id="builder">
+  <div class="wrap">
+    <div class="kicker">See why it's hard</div>
+    <h2>Build the chain yourself</h2>
+    <p class="muted">Goal: get a <b>chopped potato onto a plate</b>. With the old high-level command this was one word
+      (<span class="say dead" style="display:inline-block;padding:1px 7px">chop &amp; plate the potato</span>). Now you must compose it.
+      Click commands — watch ones in the wrong order or wrong place <b>fail</b>, exactly as they would for the VLM.</p>
+    <div class="builder">
+      <div class="cmds">
+        <h4>Commands</h4>
+        <div class="grp"><div class="gl">① MOVE</div><div id="moveBtns"></div></div>
+        <div class="grp"><div class="gl">② MANIPULATE (acts where you stand)</div><div id="manBtns"></div></div>
       </div>
-      <div>
-        <div class="chips" id="chips"></div>
-        <div class="panel" id="panel"><p class="rsn muted">Pick a command on the left to see which station it grounds to, and the low-level buttons it compiles into.</p></div>
+      <div class="run">
+        <h4>Cook</h4>
+        <div class="goal" id="goal">🎯 Goal: a plate holding chopped potato</div>
+        <div class="statebox" id="state"></div>
+        <div class="log" id="log"></div>
+        <button class="reset" id="reset">↺ reset</button>
+        <details style="margin-top:12px"><summary class="muted" style="cursor:pointer;font-size:13px">show one correct chain</summary>
+          <ol class="muted" style="font-size:13px;margin:8px 0 0">
+            <li>go to the potato crate → pick up</li>
+            <li>go to the cutting board → put down → chop</li>
+            <li>go to the plate stack → pick up</li>
+            <li>go to the cutting board → scoop onto plate ✓</li>
+          </ol></details>
       </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="wrap"><p>🍳 <b>CookSim</b> — high-level action interface for VLM control.
+  <div class="wrap"><p>🍳 <b>CookSim</b> — manipulation-level action interface for VLM control.
     <a href="taxonomy.html">See the recipe/event taxonomy →</a></p></div>
 </footer>
 
 <script>
-// ---- verbs ----
+// ---- manipulation verb cards ----
 const VERBS = [
-  ["🚶","go to / walk to","Stand next to a target and face it.","walk (BFS) · turn"],
-  ["🫳","get &lt;ingredient&gt;","Fetch a raw item from its source.","walk · interact"],
-  ["🍽️","get a plate","Grab a clean plate from the dispenser.","walk · interact"],
-  ["✋","pick up","Grab an item off a counter or station.","walk · face · interact"],
-  ["📥","put down","Place what you're holding onto a tile.","walk · face · interact"],
-  ["🔪","chop / cut","Place a raw item on a board, then chop it.","walk · interact (place) · interact ×4"],
-  ["🔥","cook / fry / boil / bake","Carry an item into a pot/pan/oven and start it.","get? · walk · interact · interact (start)"],
-  ["▶️","start","Begin cooking a filled station.","walk · interact (empty-handed)"],
-  ["🥄","ladle / scoop","Transfer cooked/chopped food onto your plate.","get plate? · walk · interact"],
-  ["🛎️","serve / deliver","Take the plate to the serving pass.","walk · interact"],
-  ["🚰","wash / clean","Rinse a dirty plate at the sink.","deposit · wash · take"],
-  ["🗑️","trash / discard","Bin whatever you're holding.","walk · interact"],
-  ["⏳","wait","Idle until a condition (e.g. the pot is done).","stay …"],
+  ["✋","pick up","Take the one item you're facing — a raw item from a crate, the diced food off a board, or a plate from the stack.","one interact · into an empty hand"],
+  ["📥","put down","Release the held item onto the tile you face — drop it into a pot, lay it on the board, set it on a counter.","one interact · out of hand"],
+  ["🔪","chop / cut","Dice the one raw item on the board you face. (Won't fetch it, won't plate it.)","interact until that item is diced"],
+  ["🔥","turn on","Start the filled pot / pan / oven you're facing.","one interact (empty-handed)"],
+  ["🥄","scoop","Move the ready food from the station you face onto the plate in your hand.","one interact (plate in hand)"],
+  ["🛎️","hand in","Place the finished plate into the serving pass you face.","one interact"],
+  ["🚰","wash","Run a dirty plate through the sink you face.","deposit · wash · then pick up"],
+  ["🗑️","discard","Bin the item you're holding at the trash you face.","one interact"],
 ];
-const vg = document.getElementById("verbs");
-VERBS.forEach(([i,n,d,c])=>{
-  const el=document.createElement("div"); el.className="vcard";
-  el.innerHTML=`<div class="vh"><span class="ico">${i}</span>${n}</div><div class="does">${d}</div><div class="comp">⤷ ${c}</div>`;
-  vg.appendChild(el);
-});
+const vg=document.getElementById("verbs");
+VERBS.forEach(([i,n,d,c])=>{const el=document.createElement("div");el.className="vcard man";
+  el.innerHTML=`<div class="vh"><span class="ico">${i}</span>${n}</div><div class="does">${d}</div><div class="comp">⤷ ${c}</div>`;vg.appendChild(el);});
 
-// ---- interactive grid ----
-const W=7,H=5, COOK=[3,2];
-const STATIONS = {
-  "0,0":{e:"🧅",l:"onion"}, "0,1":{e:"🍚",l:"rice"}, "0,3":{e:"🥔",l:"potato"},
-  "4,0":{e:"🍲",l:"rice·cooking",id:"pot 1"}, "4,2":{e:"🍲",l:"empty",id:"pot 2"},
-  "2,4":{e:"🔪",l:"board"}, "6,3":{e:"🍽️",l:"plates"}, "6,4":{e:"🛎️",l:"serve"},
-};
-const grid=document.getElementById("grid");
-const cellEls={};
-for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-  const k=x+","+y, d=document.createElement("div");
-  const st=STATIONS[k];
-  d.className="cell "+(st?"":"floor");
-  if(x===COOK[0]&&y===COOK[1]){ d.classList.add("cook"); d.innerHTML="👩‍🍳"; }
-  else if(st){ d.innerHTML=`${st.e}<span class="lab">${st.l}</span>`+(st.id?`<span class="badge">${st.id.replace('pot ','#')}</span>`:""); }
-  cellEls[k]=d; grid.appendChild(d);
+// ---- chain builder (abstract kitchen state machine) ----
+const S = {at:null, hand:null, board:null};
+const HOLD = {potato_raw:"raw potato", potato_chopped:"chopped potato", plate:"clean plate", "plate+potato":"plate + chopped potato"};
+const ATL = {potato:"potato crate", board:"cutting board", plates:"plate stack"};
+const ok=(m)=>({ok:true,m}); const bad=(m)=>({ok:false,m});
+
+const MOVES=[
+  ["go to the potato crate",(s)=>{s.at="potato";return ok("walked to the potato crate");}],
+  ["go to the cutting board",(s)=>{s.at="board";return ok("walked to the cutting board");}],
+  ["go to the plate stack",(s)=>{s.at="plates";return ok("walked to the plate stack");}],
+];
+const MANS=[
+  ["pick up",(s)=>{
+    if(s.hand) return bad("your hands are full ("+HOLD[s.hand]+")");
+    if(s.at==="potato") {s.hand="potato_raw";return ok("picked up a raw potato");}
+    if(s.at==="plates") {s.hand="plate";return ok("picked up a clean plate");}
+    if(s.at==="board"&&s.board==="potato_chopped"){s.hand="potato_chopped";s.board=null;return ok("took the chopped potato off the board");}
+    return bad(s.at? "nothing to pick up at the "+ATL[s.at] : "you're not anywhere — go somewhere first");
+  }],
+  ["put down",(s)=>{
+    if(!s.hand) return bad("your hands are empty");
+    if(s.at==="board"&&s.hand==="potato_raw"&&!s.board){s.board="potato_raw";s.hand=null;return ok("placed the raw potato on the board");}
+    return bad("can't put "+(HOLD[s.hand]||"that")+(s.at?(" on the "+ATL[s.at]):" down here"));
+  }],
+  ["chop",(s)=>{
+    if(s.at!=="board") return bad("you're not at the board — go to it first");
+    if(s.board==="potato_raw"){s.board="potato_chopped";return ok("chopped — the potato is now diced");}
+    if(s.board==="potato_chopped") return bad("it's already chopped");
+    return bad("nothing raw on the board to chop");
+  }],
+  ["scoop onto plate",(s)=>{
+    if(s.at==="board"&&s.hand==="plate"&&s.board==="potato_chopped"){s.hand="plate+potato";s.board=null;return ok("scooped the chopped potato onto the plate");}
+    return bad("need: at the board, holding a plate, with chopped potato on the board");
+  }],
+];
+const logEl=document.getElementById("log"), stateEl=document.getElementById("state"), goalEl=document.getElementById("goal");
+function render(){
+  stateEl.innerHTML =
+    `<div class="sb">📍 at: <b>${S.at?ATL[S.at]:"—"}</b></div>`+
+    `<div class="sb">✋ holding: <b>${S.hand?HOLD[S.hand]:"empty"}</b></div>`+
+    `<div class="sb">🔪 board: <b>${S.board?HOLD[S.board]:"empty"}</b></div>`;
+  const win = S.hand==="plate+potato";
+  goalEl.classList.toggle("win",win);
+  goalEl.innerHTML = win ? "🎉 Goal reached — a plate holding chopped potato!" : "🎯 Goal: a plate holding chopped potato";
 }
-
-const EXAMPLES = [
-  {p:"go to the pot cooking rice", hit:["4,0"], miss:["4,2"],
-   r:"Two pots exist. The <b>content</b> qualifier 'cooking rice' keeps only <b>pot 1</b> — pot 2 is empty.",
-   s:["walk up to the floor tile under pot 1 <span class='btn'>▲ ▲ …</span>","turn to face it <span class='btn'>▲</span>","arrived — 'go to' issues no interact"]},
-  {p:"ladle the pot cooking rice onto my plate", hit:["4,0"], miss:["4,2"], extra:["6,3"],
-   r:"Same <b>pot 1</b>. Ladling needs a clean plate, so the skill <b>auto-fetches one</b> first.",
-   s:["get a plate → walk to 🍽️, <span class='btn'>● interact</span>","walk to pot 1, face it","<span class='btn'>● interact</span> → scoop rice onto the plate","done once the plate's contents grow"]},
-  {p:"chop the potato", hit:["2,4"], miss:[], extra:["0,3"],
-   r:"One board, so no qualifier needed. The skill fetches the potato, places it, then chops until done.",
-   s:["get potato → walk to 🥔, <span class='btn'>● interact</span>","walk to the board, face it","<span class='btn'>● interact</span> → place potato on board","<span class='btn'>● ● ● ●</span> → chop until state = chopped","done when the board shows 'chopped potato'"]},
-  {p:"go to pot 2", hit:["4,2"], miss:["4,0"],
-   r:"<b>Identity</b> qualifier: pots are numbered top-to-bottom, so 'pot 2' is the lower one — even though it's empty.",
-   s:["walk to the tile beside pot 2","turn to face it"]},
-  {p:"go to the nearest pot", hit:["4,2"], miss:["4,0"],
-   r:"<b>Relative spatial</b> qualifier: pot 2 (4,2) is closer to the cook (3,2) than pot 1 (4,0).",
-   s:["walk one step right toward pot 2","turn to face it"]},
-  {p:"go to the left pot", hit:["4,0","4,2"], miss:[],
-   r:"⚠️ Both pots share the same column (x=4), so '<b>left</b>' can't separate them — this stays <b>ambiguous</b>. Use 'cooking rice', 'pot 2', or '(4,2)' instead.",
-   s:["grounding fails → the converter asks the VLM to add a qualifier"]},
-  {p:"serve", hit:["6,4"], miss:[],
-   r:"No ambiguity — one serving pass. (You must be holding a finished plate.)",
-   s:["walk to 🛎️, face it","<span class='btn'>● interact</span> → deliver the dish"]},
-];
-const chips=document.getElementById("chips"), panel=document.getElementById("panel");
-function clearHi(){ Object.values(cellEls).forEach(c=>c.classList.remove("hit","miss","extra")); }
-EXAMPLES.forEach((ex,idx)=>{
-  const b=document.createElement("button"); b.className="chip"; b.textContent='"'+ex.p+'"';
-  b.onclick=()=>{
-    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("on")); b.classList.add("on");
-    clearHi();
-    (ex.hit||[]).forEach(k=>cellEls[k]&&cellEls[k].classList.add("hit"));
-    (ex.miss||[]).forEach(k=>cellEls[k]&&cellEls[k].classList.add("miss"));
-    (ex.extra||[]).forEach(k=>cellEls[k]&&cellEls[k].classList.add("hit"));
-    panel.innerHTML=`<p class="rsn">${ex.r}</p><ol class="steps">${ex.s.map(x=>`<li>${x}</li>`).join("")}</ol>`;
-  };
-  chips.appendChild(b);
-});
-document.querySelector(".chip").click();   // open the first by default
+function fire(label, fn){
+  const r=fn(S);
+  const ln=document.createElement("div"); ln.className="ln "+(r.ok?"ok":"no");
+  ln.innerHTML=`<i>${label}</i> — ${r.m}`; logEl.appendChild(ln); logEl.scrollTop=logEl.scrollHeight;
+  render();
+}
+function mkBtns(arr, host, cls){
+  arr.forEach(([label,fn])=>{const b=document.createElement("span");b.className="cbtn "+cls;b.textContent=label;
+    b.onclick=()=>fire(label,fn);host.appendChild(b);});
+}
+mkBtns(MOVES, document.getElementById("moveBtns"), "");
+mkBtns(MANS, document.getElementById("manBtns"), "man");
+document.getElementById("reset").onclick=()=>{S.at=S.hand=S.board=null;logEl.innerHTML="";render();};
+render();
 </script>
 </body>
 </html>
