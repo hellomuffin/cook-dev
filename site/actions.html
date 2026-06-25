@@ -225,26 +225,27 @@
   <div class="wrap">
     <div class="kicker">Proof — pure-vision streaming, no state leak</div>
     <h2>Watch Gemini play it, frame by frame</h2>
-    <p class="muted">True streaming, honest input: the game runs continuously and each <b>single rendered frame</b> (the real
-      3D scene — <b>no labels, no status text, no coordinates</b>) goes to an <i>offline</i> Gemini model. Every frame it
-      emits one <b>time-aligned</b> action — a command or <b>"continue" (the single no-op / no-interrupt)</b> — and it must
-      judge from the <i>pixels</i> alone whether its last command finished. Its only memory is the list of commands it has
-      issued. In each video: <b>left</b> = the exact frame the model sees; <b>right</b> = a human-only panel (the model never
-      sees it) with its action, the agent's button, its command log, and the outcome.</p>
-    <div class="callout"><b>Instance grounding task.</b> Two pots are cooking — one holds <b>onions (yellow)</b>, one holds
+    <p class="muted">Honest input: the game runs continuously and the model sees only the <b>real rendered 3D frames</b>
+      (<b>no labels, no status text, no coordinates, no "holding"</b>). We adapt an <i>offline</i> model into a streaming
+      controller with the <b>sliding-window policy</b> (the strong inference-time strategy from
+      <a href="https://arxiv.org/pdf/2604.07634">arXiv:2604.07634</a> §4.1): about <b>once per second</b> we send the model the
+      <b>last 5 frames</b> (oldest→newest, so it can see motion) plus its <b>last 5 responses</b>, and it answers with an
+      <b>empty action (no-op)</b> or one command — judging from the pixels whether its last command has finished. Latest models.
+      In each video: <b>left</b> = exactly what the model sees; <b>right</b> = a human-only panel (the model never sees it) with
+      its action, the agent's button, its command log, and the outcome.</p>
+    <div class="callout"><b>Instance-grounding task.</b> Two pots are cooking — one holds <b>onions (yellow)</b>, one holds
       <b>tomatoes (red)</b> — and the order is <b>Onion Soup</b>. The model must <i>look</i>, identify the onion pot, and scoop
-      <b>that</b> one. Scooping the wrong pot delivers tomato soup and fails. Nothing in the text says which pot is which.</p>
+      <b>that</b> one. Nothing in the text says which pot is which; scooping the wrong pot would deliver tomato soup and fail.</p>
     <figure>
-      <video controls muted loop playsinline preload="metadata" src="assets/stream/rgb_pro_soup_pick.mp4"></video>
-      <figcaption><b style="color:var(--green)">gemini-2.5-pro ✓</b> — identifies the yellow (onion) pot, scoops 3 onions, serves
-        → <b>DELIVERED +21</b>. It even <i>recovers visually</i>: it once heads to serve an empty plate, sees in the frame that
-        it's empty, and goes back to scoop the right pot.</figcaption>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/sw_pro_soup_pick.mp4"></video>
+      <figcaption><b style="color:var(--green)">gemini-3.1-pro-preview ✓</b> — looks, says <i>"go to the right pot"</i> (the yellow
+        onion one), scoops 3 onions and serves → <b>DELIVERED +21</b>, in 26 frames. Uses "empty · no-op" while the cook walks.</figcaption>
     </figure>
     <figure>
-      <video controls muted loop playsinline preload="metadata" src="assets/stream/rgb_flash_soup_pick.mp4"></video>
-      <figcaption><b style="color:var(--pink)">gemini-2.5-flash ✗</b> — same interface, weaker model: it tries to "pick up" the
-        plate while still walking, never re-grabs it after arriving, and carries an empty plate until it stalls. No delivery; the
-        engine stays robust — "task fails, engine fine." (Weaker at video, as expected.)</figcaption>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/sw_flash_soup_pick.mp4"></video>
+      <figcaption><b style="color:var(--green)">gemini-3.5-flash ✓</b> — same task, the smaller model: it scoops a beat too early,
+        <i>sees in the frames that the plate is still empty</i>, goes back to the onion pot and gets it right → <b>+21</b>. The
+        5-frame motion window + no-op is what lets even the weaker model recover.</figcaption>
     </figure>
   </div>
 </section>

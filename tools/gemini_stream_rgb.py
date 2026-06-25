@@ -37,7 +37,7 @@ _MANIP = {"pickup", "putdown", "chop", "start", "scoop", "serve", "wash", "trash
 
 GPU = ["--no-sandbox", "--use-gl=angle", "--use-angle=vulkan", "--enable-features=Vulkan",
        "--ignore-gpu-blocklist", "--enable-gpu", "--autoplay-policy=no-user-gesture-required"]
-PAGE = "http://127.0.0.1:8085/static/headless_render.html"
+PAGE = os.environ.get("COOKSIM_PAGE", "http://127.0.0.1:8085/static/headless_render.html")
 
 SYS = """You are a STREAMING controller for one cook in a 3D top-down cooking game. You receive ONE
 video frame at a time and output exactly ONE action for THIS frame.
@@ -81,7 +81,8 @@ NOOP = {"continue", "none", "no-op", "noop", "no interrupt", "wait", "watch", "k
 
 def make_game(task):
     if task == "soup_pick":
-        g = KitchenGame(load_layout("bistro"), config=GameConfig(horizon=10**9, pot_cook_time=34),
+        # cook fast, never burn — so the test is the INSTANCE choice, not a race
+        g = KitchenGame(load_layout("bistro"), config=GameConfig(horizon=10**9, pot_cook_time=10, pot_burn_time=10**9),
                         n_players=1, seed=0, order_recipe_ids=["onion_soup"])
         pots = sorted(p for p, s in g.stations.items() if isinstance(s, CookStation))
         for ing, pos in (("tomato", pots[0]), ("onion", pots[1])):     # left red, right yellow
