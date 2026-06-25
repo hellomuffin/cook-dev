@@ -147,13 +147,16 @@ def _parse_target(t: str) -> Tuple[str, str, Dict[str, object]]:
     """Return (obj_token, ingredient, quals) for a 'go to' / 'wait until' phrase."""
     quals = _parse_quals(t)
     ing = _canon_ingredient(t)
-    obj = ""
-    for syn, canon in sorted(_STATION_SYN.items(), key=lambda kv: -len(kv[0])):
-        if re.search(rf"\b{re.escape(syn)}\b", t):
-            obj = canon
-            break
-    if not obj and ing:
-        obj = "source"
+    # pick the EARLIEST-mentioned station word (the head noun usually comes first,
+    # e.g. "the PLATES on the left counter" -> plate, not counter); tie-break longer.
+    best = None
+    for syn, canon in _STATION_SYN.items():
+        m = re.search(rf"\b{re.escape(syn)}\b", t)
+        if m:
+            key = (m.start(), -len(syn))
+            if best is None or key < best[0]:
+                best = (key, canon)
+    obj = best[1] if best else ("source" if ing else "")
     return obj, ing, quals
 
 

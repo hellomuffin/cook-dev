@@ -247,6 +247,20 @@
         <i>sees in the frames that the plate is still empty</i>, goes back to the onion pot and gets it right → <b>+21</b>. The
         5-frame motion window + no-op is what lets even the weaker model recover.</figcaption>
     </figure>
+
+    <h3 style="margin-top:34px">…and the real <span style="color:var(--blue)">Gemini Live</span> API (audio-native, true streaming session)</h3>
+    <p class="muted">The two above adapt an <i>offline</i> model. This one uses the actual <b>Gemini Live</b> bidi API: a persistent
+      session with its <b>own internal memory</b>, frames streamed in, and the model's reply spoken as <b>audio → transcribed to
+      text</b>. Gemini Live is <i>not</i> proactive, so we <b>ping it every frame</b> ("next action?") — the system prompt holds all
+      the context once, up front. The HUD's command is the model's <i>spoken</i> sentence, transcribed.</p>
+    <figure>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/live_soup_pick.mp4"></video>
+      <figcaption><b style="color:var(--blue)">gemini-3.1-flash-live-preview (Live) ✓</b> — over the live session it says
+        <i>"go to the plates" → "pick up a plate" → "go to the pot with the onions" → "scoop the food… on the right pot with the
+        onions" → "serve it"</i> and delivers <b>+21</b> in 20 frames. The audio-native Live models are <i>weak and chatty</i>
+        (they often mistime or stall — offline still wins per <a href="https://arxiv.org/pdf/2507.09313">arXiv:2507.09313</a>), but
+        with an explicit per-frame ping + intent-queuing the real streaming API does complete the instance task.</figcaption>
+    </figure>
   </div>
 </section>
 

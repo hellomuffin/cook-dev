@@ -44,7 +44,10 @@ pan / cutting board / sink, "the plates", "the serving pass") · "pick up" · "p
 "scoop" (hold a plate, add the faced station's food onto it) · "serve".
 RULES: a manipulation only works while standing at and FACING the right tile, else nothing happens — go to it
 first. To plate cooked food, HOLD a plate and "scoop" (don't "pick up"). The cook moves one tile per frame and
-takes several frames to arrive — say "continue" until you SEE it has clearly arrived. Keep replies to a few words."""
+takes several frames to arrive — say "continue" until you SEE it has clearly arrived. Keep replies to a few words.
+IMPORTANT: only say "continue" while the cook is actively walking or food is cooking. If the cook is standing
+still with nothing in progress, do NOT say continue — say the NEXT command to make progress toward the dish
+(plan: get a plate -> go to the onion pot -> scoop -> go to the serving pass -> serve)."""
 
 NOOP = {"continue", "none", "no-op", "noop", "wait", "watch", "stay", "keep going", "nothing", "no action", "hold", "same"}
 
