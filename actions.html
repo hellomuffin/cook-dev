@@ -223,24 +223,28 @@
 
 <section id="watch">
   <div class="wrap">
-    <div class="kicker">Proof — a real VLM playing</div>
+    <div class="kicker">Proof — pure-vision streaming, no state leak</div>
     <h2>Watch Gemini play it, frame by frame</h2>
-    <p class="muted">True streaming: the game runs continuously and each <b>single frame</b> goes to an <i>offline</i>
-      Gemini model that must emit one <b>time-aligned</b> action — either a command or <b>"continue" (no interrupt)</b>.
-      That per-frame no-op is the inference-time trick that turns an offline model into a streaming controller.
-      In each video: <b>left</b> = the exact frame the VLM sees; <b>right</b> = its action this tick (a command in green,
-      or "continue · watching / auto"), the agent's low-level button, the running skill, the issued-command log, and the
-      outcome. Task: <b>Loaded Fries</b> (fry a potato → plate it → add cheese → serve, in that order).</p>
+    <p class="muted">True streaming, honest input: the game runs continuously and each <b>single rendered frame</b> (the real
+      3D scene — <b>no labels, no status text, no coordinates</b>) goes to an <i>offline</i> Gemini model. Every frame it
+      emits one <b>time-aligned</b> action — a command or <b>"continue" (the single no-op / no-interrupt)</b> — and it must
+      judge from the <i>pixels</i> alone whether its last command finished. Its only memory is the list of commands it has
+      issued. In each video: <b>left</b> = the exact frame the model sees; <b>right</b> = a human-only panel (the model never
+      sees it) with its action, the agent's button, its command log, and the outcome.</p>
+    <div class="callout"><b>Instance grounding task.</b> Two pots are cooking — one holds <b>onions (yellow)</b>, one holds
+      <b>tomatoes (red)</b> — and the order is <b>Onion Soup</b>. The model must <i>look</i>, identify the onion pot, and scoop
+      <b>that</b> one. Scooping the wrong pot delivers tomato soup and fails. Nothing in the text says which pot is which.</p>
     <figure>
-      <video controls muted loop playsinline preload="metadata" src="assets/stream/pro_loaded_fries.mp4"></video>
-      <figcaption><b style="color:var(--green)">gemini-2.5-pro ✓</b> — fries the potato, fetches a plate <i>while it cooks</i>,
-        scoops potato then cheese (correct order), serves → <b>DELIVERED +27</b>. 61 frames, ~15 commands.</figcaption>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/rgb_pro_soup_pick.mp4"></video>
+      <figcaption><b style="color:var(--green)">gemini-2.5-pro ✓</b> — identifies the yellow (onion) pot, scoops 3 onions, serves
+        → <b>DELIVERED +21</b>. It even <i>recovers visually</i>: it once heads to serve an empty plate, sees in the frame that
+        it's empty, and goes back to scoop the right pot.</figcaption>
     </figure>
     <figure>
-      <video controls muted loop playsinline preload="metadata" src="assets/stream/flash_loaded_fries.mp4"></video>
-      <figcaption><b style="color:var(--pink)">gemini-2.5-flash ✗</b> — same interface, weaker model: it <i>chops</i> the potato
-        instead of frying it and serves early without cheese → no delivery. The engine stays robust (negative score, no crash)
-        — exactly "task fails, engine fine."</figcaption>
+      <video controls muted loop playsinline preload="metadata" src="assets/stream/rgb_flash_soup_pick.mp4"></video>
+      <figcaption><b style="color:var(--pink)">gemini-2.5-flash ✗</b> — same interface, weaker model: it tries to "pick up" the
+        plate while still walking, never re-grabs it after arriving, and carries an empty plate until it stalls. No delivery; the
+        engine stays robust — "task fails, engine fine." (Weaker at video, as expected.)</figcaption>
     </figure>
   </div>
 </section>
