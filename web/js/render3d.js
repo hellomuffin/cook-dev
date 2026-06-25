@@ -51,7 +51,7 @@ function tintFor(state, base) {
 
 class KitchenRenderer3D {
   constructor(view) {
-    const r = new THREE.WebGLRenderer({ canvas: view, antialias: true, powerPreference: "high-performance" });
+    const r = new THREE.WebGLRenderer({ canvas: view, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: !!window.__capture });
     r.shadowMap.enabled = !window.__noshadow;   // disabled for GPU (ANGLE/Vulkan) headless recording
     r.shadowMap.type = THREE.PCFSoftShadowMap;
     r.outputColorSpace = THREE.SRGBColorSpace;

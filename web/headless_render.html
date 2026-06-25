@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- Headless single-frame renderer: a VLM-observation harness. Python drives the
+     authoritative game, pushes a render_state() dict via window.__renderFrame, and
+     screenshots the REAL 3D scene — no game-state text is ever drawn. -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<style>html,body{margin:0;background:#15131b;overflow:hidden}</style>
+</head>
+<body>
+<canvas id="stage" width="760" height="540"></canvas>
+<script type="module">
+window.__capture = true;     // enable preserveDrawingBuffer so toDataURL works
+window.__noshadow = true;    // ANGLE/Vulkan headless shadow bug
+import "./js/render3d.js";
+let r = null;
+function ensure() {
+  if (!r) { const c = document.getElementById("stage"); r = new window.KitchenRenderer(c); r.resize(c.width, c.height); }
+  return r;
+}
+// returns a PNG data URL of the rendered frame for the given state
+window.__renderFrame = (json) => {
+  const rr = ensure();
+  rr.setState(typeof json === "string" ? JSON.parse(json) : json);
+  rr.update(1.0);    // snap cook to its tile (interp clamps)
+  rr.update(0.05);   // updates dynamic content + effects (and renders with follow-cam)
+  // Override with a FIXED whole-kitchen camera so a viewer can judge the cook's
+  // absolute position & arrival frame-to-frame (the follow-cam re-centers and
+  // hides motion). Not state — just a stable viewpoint. Then re-render.
+  const s = rr.state, span = Math.max(s.width, s.height), d = span * 0.92 + 2.5;
+  rr.camera.position.set(0, d * 1.18, d * 0.66);
+  rr.camera.lookAt(0, 0.3, 0);
+  rr.composer.render();
+  return document.getElementById("stage").toDataURL("image/png");
+};
+window.__ready = true;
+</script>
+</body>
+</html>
