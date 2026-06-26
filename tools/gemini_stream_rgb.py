@@ -79,7 +79,33 @@ first. To plate cooked/chopped food, HOLD a plate and "scoop" (do NOT "pick up" 
 NOOP = {"continue", "none", "no-op", "noop", "no interrupt", "wait", "watch", "keep going", "stay", "hold"}
 
 
+# Three escalating multi-step challenge levels (ordered recipes; burning disabled
+# so the test is the multi-step reasoning, not a cook-timer race).
+HARD_TASKS = {
+    "hard": ("burger_bar", "cheeseburger",
+             "RECIPE — Cheeseburger (build the plate in THIS EXACT ORDER): (1) a BUN (raw, from the bun "
+             "source), then (2) a FRIED PATTY — cook a piece of meat in the PAN first, then (3) CHEESE "
+             "(raw). To put each item on the plate, HOLD the plate and 'scoop' at the bun source / the "
+             "done pan / the cheese source. Add them bun -> patty -> cheese, then serve."),
+    "harder": ("grand_kitchen", "fried_rice",
+               "RECIPE — Fried Rice (build the plate in THIS EXACT ORDER, three different cooking tools): "
+               "(1) COOKED RICE — cook rice in a POT; (2) a FRIED EGG — cook an egg in the PAN; (3) CHOPPED "
+               "ONION — chop an onion on the BOARD. Then hold a plate and scoop them onto it in the order "
+               "rice -> egg -> onion, and serve. (There are two pots and two boards — any will do.)"),
+    "hardest": ("diner", "deluxe_burger",
+                "RECIPE — Deluxe Burger (build the plate in THIS EXACT ORDER, four components): (1) BUN "
+                "(raw); (2) FRIED PATTY (cook meat in the PAN); (3) CHOPPED LETTUCE (chop on the BOARD); "
+                "(4) CHOPPED TOMATO (chop on the BOARD). There is ONE board, so chop lettuce first, scoop "
+                "it onto the plate, then chop the tomato. Add bun -> patty -> lettuce -> tomato in order, "
+                "then serve."),
+}
+
+
 def make_game(task):
+    if task in HARD_TASKS:
+        lay, rid, rtext = HARD_TASKS[task]
+        cfg = GameConfig(horizon=10**9, pot_burn_time=10**9, pan_burn_time=10**9, oven_burn_time=10**9)
+        return (KitchenGame(load_layout(lay), config=cfg, n_players=1, seed=0, order_recipe_ids=[rid]), rtext)
     if task == "soup_pick":
         # cook fast, never burn — so the test is the INSTANCE choice, not a race
         g = KitchenGame(load_layout("bistro"), config=GameConfig(horizon=10**9, pot_cook_time=10, pot_burn_time=10**9),
@@ -291,7 +317,7 @@ async def run(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["loaded_fries", "soup_pick"], default="soup_pick")
+    ap.add_argument("--task", choices=["loaded_fries", "soup_pick", "hard", "harder", "hardest"], default="soup_pick")
     ap.add_argument("--model", default="gemini-2.5-pro")
     ap.add_argument("--max-frames", type=int, default=150)
     ap.add_argument("--fps", type=int, default=4)

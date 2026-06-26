@@ -174,7 +174,7 @@ async def run(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["loaded_fries", "soup_pick"], default="soup_pick")
+    ap.add_argument("--task", choices=["loaded_fries", "soup_pick", "hard", "harder", "hardest"], default="soup_pick")
     ap.add_argument("--model", default="gemini-2.5-flash-native-audio-latest")
     ap.add_argument("--max-frames", type=int, default=80)
     ap.add_argument("--fps", type=int, default=4)

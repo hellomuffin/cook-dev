@@ -165,7 +165,7 @@ async def run(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["loaded_fries", "soup_pick"], default="soup_pick")
+    ap.add_argument("--task", choices=["loaded_fries", "soup_pick", "hard", "harder", "hardest"], default="soup_pick")
     ap.add_argument("--model", default="gemini-3.1-pro-preview")
     ap.add_argument("--poll", type=int, default=3, help="ticks between decisions (~1s)")
     ap.add_argument("--max-frames", type=int, default=140)
