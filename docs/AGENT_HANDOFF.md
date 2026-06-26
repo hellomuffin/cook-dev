@@ -14,10 +14,10 @@ Last updated: 2026-06-25.
 - **What CookSim is:** a from-scratch Overcooked-style game — Python engine (`cooksim/core`),
   Gym/PettingZoo wrappers (`cooksim/envs`), a real-time 3D WebGL renderer (`web/js/render3d.js`),
   a FastAPI+WebSocket server (`cooksim/server`), a level editor, and a teaching website (`site/`).
-- **Where it lives now:** GitHub **`github.com/hellomuffin/cook-dev`** (PUBLIC). The old
+- **Where it lives now:** GitHub **`github.com/hellomuffin/cook-bench`** (PUBLIC). The old
   `hellomuffin/cooksim` repo was made **private** (reversible takedown) — *do not use it*. Local
-  working copy: **`~/cooksim`** (git `origin` already points to cook-dev).
-- **Live website:** **https://hellomuffin.github.io/cook-dev/** (served from the `gh-pages` branch).
+  working copy: **`~/cooksim`** (git `origin` already points to cook-bench).
+- **Live website:** **https://hellomuffin.github.io/cook-bench/** (served from the `gh-pages` branch).
   Subpages: `/taxonomy.html` (recipe/event space) and `/actions.html` (VLM control + streaming videos).
 - **Active research:** controlling the cook with a **streaming VLM**. Two working approaches:
   (a) **offline sliding-window** (best), (b) **Gemini Live** (real streaming API). See §8–9.
@@ -139,7 +139,7 @@ Three pages in `site/` (self-contained HTML, shared dark CSS, no build step):
 (VLM control + streaming videos). All use **relative** links so they work at any base path.
 
 **GitHub Pages serves the `gh-pages` branch ROOT** (i.e. the *contents* of `site/` live at the branch
-root, not under `/site/`). The site lives at `https://hellomuffin.github.io/cook-dev/`.
+root, not under `/site/`). The site lives at `https://hellomuffin.github.io/cook-bench/`.
 
 ### Deploy procedure (copy `site/` → gh-pages root, via a worktree)
 ```bash
@@ -158,8 +158,8 @@ Then poll the Pages build (token is embedded in the remote URL):
 ```bash
 tok=$(git remote get-url origin | grep -oP 'ghp_[A-Za-z0-9]+')
 until [ "$(curl -s -H "Authorization: token $tok" \
-  https://api.github.com/repos/hellomuffin/cook-dev/pages/builds/latest | grep -oP '"status":\s*"\K[^"]+')" = "built" ]; do sleep 6; done
-curl -s -o /dev/null -w "%{http_code}\n" "https://hellomuffin.github.io/cook-dev/actions.html?cb=$RANDOM"
+  https://api.github.com/repos/hellomuffin/cook-bench/pages/builds/latest | grep -oP '"status":\s*"\K[^"]+')" = "built" ]; do sleep 6; done
+curl -s -o /dev/null -w "%{http_code}\n" "https://hellomuffin.github.io/cook-bench/actions.html?cb=$RANDOM"
 ```
 **Verify pages render with no JS errors** before deploying: `tools/check_page.py` (Playwright) loads a
 page, collects console/page errors, screenshots. (Note it expects a `#expandAll` button → only fully
